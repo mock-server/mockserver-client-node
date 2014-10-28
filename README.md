@@ -2,14 +2,14 @@
 
 > Communicate with [MockServer](http://mock-server.com/) from any node or grunt build
 
-[![Build Status](https://drone.io/github.com/jamesdbloom/mockserver-client-node/status.png)](https://drone.io/github.com/jamesdbloom/mockserver-client-node/latest) [![Dependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node.png)](https://david-dm.org/jamesdbloom/mockserver-client-node) [![devDependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node/dev-status.png)](https://david-dm.org/jamesdbloom/mockserver-client-node#info=devDependencies)
+[![Build Status](https://drone.io/github.com/jamesdbloom/mockserver-client-node/status.png)](https://drone.io/github.com/jamesdbloom/mockserver-client-node/latest) [![Dependency Status](https://david-dm.org/jamesdbloom/mockserver-client.png)](https://david-dm.org/jamesdbloom/mockserver-client) [![devDependency Status](https://david-dm.org/jamesdbloom/mockserver-client/dev-status.png)](https://david-dm.org/jamesdbloom/mockserver-client#info=devDependencies)
 [![Still Maintained](http://stillmaintained.com/jamesdbloom/mockserver.png)](http://stillmaintained.com/jamesdbloom/mockserver) 
 
 
 [![Stories in Backlog](https://badge.waffle.io/jamesdbloom/mockserver.png?label=proposal&title=Proposals)](https://waffle.io/jamesdbloom/mockserver) [![Stories in Backlog](https://badge.waffle.io/jamesdbloom/mockserver.png?label=ready&title=Ready)](https://waffle.io/jamesdbloom/mockserver) [![Stories in Backlog](https://badge.waffle.io/jamesdbloom/mockserver.png?label=in%20progress&title=In%20Progress)](https://waffle.io/jamesdbloom/mockserver)
 
 
-[![NPM](https://nodei.co/npm/mockserver-client-node.png?downloads=true&stars=true)](https://nodei.co/npm/mockserver-client-node/)
+[![NPM](https://nodei.co/npm/mockserver-client.png?downloads=true&stars=true)](https://nodei.co/npm/mockserver-client/)
 
 ## Getting Started
 
@@ -22,7 +22,7 @@ An addition to this module for communicating with the MockServer there is also a
 The both the MockServer and proxy clients can be created as follows:
 
 ```js
-var mockServer = require('../../mockserver-client-node'),
+var mockServer = require('../../mockserver-client'),
     mockServerClient = mockServer.mockServerClient, // MockServer client
     proxyClient = mockServer.proxyClient; // proxy client
 ```
@@ -88,6 +88,7 @@ mockServerClient("localhost", 1080).verify(
 ```
 ## Release History
  * 2014-28-11   v0.0.1   Initial release
+ * 2014-28-11   v0.0.2   Fixed module naming
 
 ---
 
