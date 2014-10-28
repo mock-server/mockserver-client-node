@@ -22,7 +22,7 @@ An addition to this module for communicating with the MockServer there is also a
 The both the MockServer and proxy clients can be created as follows:
 
 ```js
-var mockServer = require('../../mockserver-client'),
+var mockServer = require('mockserver-client'),
     mockServerClient = mockServer.mockServerClient, // MockServer client
     proxyClient = mockServer.proxyClient; // proxy client
 ```
