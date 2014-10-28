@@ -1,0 +1,24 @@
+{
+  "name": "mockserver-client",
+  "version": "0.0.2",
+  "homepage": "https://github.com/jamesdbloom/mockserver-client-node",
+  "authors": [
+    "James Bloom <jamesdbloom@gmail.com>"
+  ],
+  "description": "A node client for the MockServer",
+  "main": "mockserver-client.js",
+  "keywords": [
+    "mockserver",
+    "client"
+  ],
+  "license": "Apache",
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+    ".*",
+    "Gruntfile.js",
+    "*.iml"
+  ]
+}
