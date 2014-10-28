@@ -33,7 +33,8 @@ var mockServer = require('../../mockserver-client'),
 Then an simple expectation can be setup as follows:
 
 ```js
-mockServerClient("localhost", 1080).mockSimpleResponse('/somePath', { name: 'value' }, 203);
+mockServerClient("localhost", 1080).
+    mockSimpleResponse('/somePath', { name: 'value' }, 203);
 ```
 
 Or a more complex expectation can be setup as follows:
