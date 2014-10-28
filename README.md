@@ -2,7 +2,7 @@
 
 > Communicate with [MockServer](http://mock-server.com/) from any node or grunt build
 
-[![Build Status](https://drone.io/github.com/jamesdbloom/mockserver-client-node/status.png)](https://drone.io/github.com/jamesdbloom/mockserver-client-node/latest) [![Dependency Status](https://david-dm.org/jamesdbloom/mockserver-client.png)](https://david-dm.org/jamesdbloom/mockserver-client) [![devDependency Status](https://david-dm.org/jamesdbloom/mockserver-client/dev-status.png)](https://david-dm.org/jamesdbloom/mockserver-client#info=devDependencies)
+[![Build Status](https://drone.io/github.com/jamesdbloom/mockserver-client-node/status.png)](https://drone.io/github.com/jamesdbloom/mockserver-client-node/latest) [![Dependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node.png)](https://david-dm.org/jamesdbloom/mockserver-client-node) [![devDependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node/dev-status.png)](https://david-dm.org/jamesdbloom/mockserver-client-node#info=devDependencies)
 [![Still Maintained](http://stillmaintained.com/jamesdbloom/mockserver.png)](http://stillmaintained.com/jamesdbloom/mockserver) 
 
 
