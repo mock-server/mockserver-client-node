@@ -86,3 +86,9 @@ mockServerClient("localhost", 1080).verify(
         'body': 'someBody'
     }, 1, true);
 ```
+## Release History
+ * 2014-28-11   v0.0.1   Initial release
+
+---
+
+Task submitted by [James D Bloom](http://blog.jamesdbloom.com)

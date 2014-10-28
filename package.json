@@ -10,10 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jamesdbloom/mockserver.git"
+    "url": "https://github.com/jamesdbloom/mockserver-client-node.git"
   },
   "bugs": {
-    "url": "https://github.com/jamesdbloom/mockserver/issues"
+    "url": "https://github.com/jamesdbloom/mockserver-client-node/issues"
   },
   "licenses": [
     {
