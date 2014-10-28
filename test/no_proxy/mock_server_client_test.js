@@ -2,7 +2,7 @@
 
     'use strict';
 
-    var mockServer = require('../../mockServerClient'),
+    var mockServer = require('../../mockserver-client-node'),
         mockServerClient = mockServer.mockServerClient,
         proxyClient = mockServer.proxyClient,
         Q = require('q'),
