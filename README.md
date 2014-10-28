@@ -90,6 +90,7 @@ mockServerClient("localhost", 1080).verify(
 ## Release History
  * 2014-28-11   v0.0.1   Initial release
  * 2014-28-11   v0.0.2   Fixed module naming
+ * 2014-28-11   v0.0.3   Fixing module loading
 
 ---
 
