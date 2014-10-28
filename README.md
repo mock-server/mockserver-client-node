@@ -74,7 +74,7 @@ mockServerClient("localhost", 1080).mockAnyResponse(
 
 For the full syntax support see [MockServer - Creating JavaScript Expectations](http://mock-server.com/#create-expectations-javascript).
 
-## Verify Request
+## Verify Requests
 
 It is also possible to verify that request were made as follows:
 
