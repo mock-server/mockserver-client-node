@@ -33,7 +33,7 @@
     "grunt-contrib-jshint": "~0.10",
     "grunt-contrib-nodeunit": "~0.4",
     "grunt-run-node": "~0.1",
-    "mockserver-grunt": "~0.0",
+    "mockserver-grunt": "~1.0",
     "nodeunit": "~0.9",
     "sinon": "~1.10"
   },
