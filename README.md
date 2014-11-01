@@ -88,10 +88,11 @@ mockServerClient("localhost", 1080).verify(
     }, 1, true);
 ```
 ## Release History
- * 2014-28-11   v0.0.1   Initial release
- * 2014-28-11   v0.0.2   Fixed module naming
- * 2014-28-11   v0.0.3   Fixing module loading
- * 2014-28-11   v0.0.4   Fixing badges
+ * 2014-28-10   v0.0.1   Initial release
+ * 2014-28-10   v0.0.2   Fixed module naming
+ * 2014-28-10   v0.0.3   Fixing module loading
+ * 2014-28-10   v0.0.4   Fixing badges
+ * 2014-01-11   v1.0.0   Cleaned code & removed duplication
 
 ---
 

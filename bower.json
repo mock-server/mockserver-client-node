@@ -1,24 +1,25 @@
 {
-  "name": "mockserver-client",
-  "version": "0.0.4",
-  "homepage": "https://github.com/jamesdbloom/mockserver-client-node",
-  "authors": [
-    "James Bloom <jamesdbloom@gmail.com>"
-  ],
-  "description": "A node client for the MockServer",
-  "main": "mockserver-client.js",
-  "keywords": [
-    "mockserver",
-    "client"
-  ],
-  "license": "Apache",
-  "ignore": [
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests",
-    ".*",
-    "Gruntfile.js",
-    "*.iml"
-  ]
+    "name": "mockserver-client",
+    "version": "1.0.0",
+    "homepage": "https://github.com/jamesdbloom/mockserver-client-node",
+    "authors": [
+        "James Bloom <jamesdbloom@gmail.com>"
+    ],
+    "description": "A node client for the MockServer",
+    "main": "mockserver-client.js",
+    "keywords": [
+        "mockserver",
+        "client",
+        "gruntplugin"
+    ],
+    "license": "Apache",
+    "ignore": [
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests",
+        ".*",
+        "Gruntfile.js",
+        "*.iml"
+    ]
 }
