@@ -1,6 +1,6 @@
 {
     "name": "mockserver-client",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "homepage": "https://github.com/jamesdbloom/mockserver-client-node",
     "authors": [
         "James Bloom <jamesdbloom@gmail.com>"

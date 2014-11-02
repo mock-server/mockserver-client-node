@@ -9,7 +9,7 @@
 [![Stories in Backlog](https://badge.waffle.io/jamesdbloom/mockserver.png?label=proposal&title=Proposals)](https://waffle.io/jamesdbloom/mockserver) [![Stories in Backlog](https://badge.waffle.io/jamesdbloom/mockserver.png?label=ready&title=Ready)](https://waffle.io/jamesdbloom/mockserver) [![Stories in Backlog](https://badge.waffle.io/jamesdbloom/mockserver.png?label=in%20progress&title=In%20Progress)](https://waffle.io/jamesdbloom/mockserver)
 
 
-[![NPM](https://nodei.co/npm/mockserver-client.png?downloads=true&stars=true)](https://nodei.co/npm/mockserver-client/)
+[![NPM](https://nodei.co/npm/mockserver-client.png?downloads=true&stars=true)](https://nodei.co/npm/mockserver-client/) [![wercker status](https://app.wercker.com/status/7b78f11513b3dc5379f510a7ac82d0d6/m "wercker status")](https://app.wercker.com/project/bykey/7b78f11513b3dc5379f510a7ac82d0d6)
 
 ## Getting Started
 
@@ -93,6 +93,7 @@ mockServerClient("localhost", 1080).verify(
  * 2014-28-10   v0.0.3   Fixing module loading
  * 2014-28-10   v0.0.4   Fixing badges
  * 2014-01-11   v1.0.0   Cleaned code & removed duplication
+ * 2014-02-11   v1.0.1   Added wercher build process
 
 ---
 
