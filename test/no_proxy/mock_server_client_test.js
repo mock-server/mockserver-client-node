@@ -70,7 +70,7 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // then - matching request
@@ -79,7 +79,7 @@
                     test.equal(response.statusCode, 200);
                     test.equal(response.body, '{"name":"value"}');
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // then - matching request, but no times remaining
@@ -87,7 +87,7 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // end
@@ -148,7 +148,7 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // then - matching request
@@ -157,7 +157,7 @@
                     test.equal(response.statusCode, 200);
                     test.equal(response.body, '{"name":"first_body"}');
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // then - matches second expectation as body different
@@ -166,7 +166,7 @@
                     test.equal(response.statusCode, 200);
                     test.equal(response.body, '{"name":"second_body"}');
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // end
@@ -182,7 +182,7 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // then - matching request
@@ -191,7 +191,7 @@
                     test.equal(response.statusCode, 200);
                     test.equal(response.body, '{"name":"value"}');
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // then - matching request, but no times remaining
@@ -199,7 +199,7 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // end
@@ -222,7 +222,7 @@
                     test.equal(response.body, '{"name":"value"}');
                     test.equal(response.headers, '{"X-Test":"test-value"}');
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // end
@@ -237,7 +237,7 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 203);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // when
@@ -261,13 +261,13 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 203);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
             sendRequest("POST", "http://localhost:1080/somePath", "someBody")
                 .then(function (response) {
                     test.equal(response.statusCode, 203);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // when
@@ -290,7 +290,7 @@
 //                .then(function (response) {
 //                    test.equal(response.statusCode, 203);
 //                }, function (error) {
-//                    console.log(error);
+//                    test.ok(false, error);
 //                });
 //
 //            // when
@@ -313,7 +313,7 @@
 //                .then(function (response) {
 //                    test.equal(response.statusCode, 203);
 //                }, function (error) {
-//                    console.log(error);
+//                    test.ok(false, error);
 //                });
 //
 //            // when
@@ -338,7 +338,7 @@
 //                .then(function (response) {
 //                    test.equal(response.statusCode, 203);
 //                }, function (error) {
-//                    console.log(error);
+//                    test.ok(false, error);
 //                });
 //
 //            // when
@@ -368,7 +368,7 @@
                     test.equal(response.statusCode, 200);
                     test.equal(response.body, '{"name":"value"}');
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // when
@@ -379,7 +379,7 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // then - matching request and not cleared
@@ -388,7 +388,7 @@
                     test.equal(response.statusCode, 200);
                     test.equal(response.body, '{"name":"value"}');
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // end
@@ -408,7 +408,7 @@
                     test.equal(response.statusCode, 200);
                     test.equal(response.body, '{"name":"value"}');
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // when
@@ -419,7 +419,7 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // then - matching request but also cleared
@@ -427,7 +427,7 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // end

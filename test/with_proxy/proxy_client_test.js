@@ -40,13 +40,13 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 203);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
             sendRequest("POST", "http://localhost:1080/somePath", "someBody")
                 .then(function (response) {
                     test.equal(response.statusCode, 203);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // when
@@ -65,13 +65,13 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
             sendRequest("POST", "http://localhost:1080/somePath", "someBody")
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // when
@@ -91,7 +91,7 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // when
@@ -110,7 +110,7 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // when
@@ -131,7 +131,7 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // when
@@ -152,13 +152,13 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
             sendRequest("POST", "http://localhost:1080/somePath", "someBody")
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // then
@@ -190,13 +190,13 @@
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
             sendRequest("POST", "http://localhost:1080/somePath", "someBody")
                 .then(function (response) {
                     test.equal(response.statusCode, 404);
                 }, function (error) {
-                    console.log(error);
+                    test.ok(false, error);
                 });
 
             // then
