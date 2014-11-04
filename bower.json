@@ -6,7 +6,7 @@
         "James Bloom <jamesdbloom@gmail.com>"
     ],
     "description": "A node client for the MockServer",
-    "main": "mockserver-client.js",
+    "main": "index.js",
     "keywords": [
         "mockserver",
         "client",
