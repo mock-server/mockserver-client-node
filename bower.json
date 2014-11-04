@@ -21,5 +21,8 @@
         ".*",
         "Gruntfile.js",
         "*.iml"
+    ],
+    "moduleType": [
+        "node"
     ]
 }
