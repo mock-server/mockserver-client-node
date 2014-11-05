@@ -20,7 +20,8 @@
         "tests",
         ".*",
         "Gruntfile.js",
-        "*.iml"
+        "*.iml",
+        "*.yml"
     ],
     "dependencies": {
         "q": "~1.0",
