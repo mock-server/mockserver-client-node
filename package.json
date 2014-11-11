@@ -46,7 +46,7 @@
         "gruntplugin"
     ],
     "dependencies": {
-        "q": "~1.0",
+        "q": "~1.1",
         "request": "~2.47"
     }
 }
