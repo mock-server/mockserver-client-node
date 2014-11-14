@@ -34,8 +34,7 @@
         "grunt-contrib-nodeunit": "~0.4",
         "grunt-run-node": "~0.1",
         "mockserver-grunt": "~1.0",
-        "nodeunit": "~0.9",
-        "sinon": "~1.10"
+        "nodeunit": "~0.9"
     },
     "peerDependencies": {
         "grunt": "~0.4"
@@ -47,6 +46,6 @@
     ],
     "dependencies": {
         "q": "~1.1",
-        "request": "~2.47"
+        "request": "~2.48"
     }
 }
