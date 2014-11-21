@@ -2,223 +2,390 @@
 
     'use strict';
 
-    var mockServer = require('../../'),
-        mockServerClient = mockServer.mockServerClient,
-        proxyClient = mockServer.proxyClient,
-        Q = require('q'),
-        request = require('request'),
-        sendRequest = function (method, url, body) {
-            var deferred = Q.defer();
-            var options = {
-                method: method,
-                url: url,
-                body: body
-            };
-            request(options, function (error, response) {
-                if (error) {
-                    deferred.reject(new Error(error));
-                } else {
-                    deferred.resolve(response);
-                }
-            });
-            return deferred.promise;
+    var mockServer = require('../../');
+    var mockServerClient = mockServer.mockServerClient;
+    var proxyClient = mockServer.proxyClient;
+    var Q = require('q');
+    var http = require('http');
+
+    function sendRequestViaProxy(destinationUrl, jsonBody) {
+        var deferred = Q.defer();
+
+        var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
+        var options = {
+            method: "POST",
+            host: "localhost",
+            port: 1090,
+            headers: {
+                Host: "localhost:1080"
+            },
+            path: destinationUrl
         };
+
+        var callback = function (response) {
+            var body = '';
+
+            if (response.statusCode === 400 || response.statusCode === 404) {
+                deferred.reject(response.statusCode);
+            }
+
+            response.on('data', function (chunk) {
+                body += chunk;
+            });
+
+            response.on('end', function () {
+                deferred.resolve({
+                    statusCode: response.statusCode,
+                    headers: response.headers,
+                    body: body
+                });
+            });
+        };
+
+        var req = http.request(options, callback);
+        req.write(body);
+        req.end();
+
+        return deferred.promise;
+    }
 
     exports.mock_server_started = {
         setUp: function (callback) {
-            mockServerClient("localhost", 1080).reset();
-            proxyClient("localhost", 1090).reset();
-            callback();
+            mockServerClient("localhost", 1080).reset().then(function () {
+                proxyClient("localhost", 1090).reset().then(function () {
+                    callback();
+                }, function (error) {
+                    throw 'Failed with error ' + JSON.stringify(error);
+                });
+            }, function (error) {
+                throw 'Failed with error ' + JSON.stringify(error);
+            });
         },
 
         'should verify exact number of requests have been sent': function (test) {
-            // given
+            // given - a client
             var client = proxyClient("localhost", 1090);
-            mockServerClient("localhost", 1080).mockSimpleResponse('/somePath', { name: 'value' }, 203);
-            mockServerClient("localhost", 1080).mockSimpleResponse('/somePath', { name: 'value' }, 203);
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
+            // and - a request
+            sendRequestViaProxy("http://localhost:1080/somePath", "someBody")
                 .then(function (response) {
-                    test.equal(response.statusCode, 203);
+                    test.ok(false, "expecting 404 response");
                 }, function (error) {
-                    test.ok(false, error);
-                });
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 203);
-                }, function (error) {
-                    test.ok(false, error);
-                });
+                    test.equal(error, 404);
+                }).then(function () {
+                    // and - another request
+                    sendRequestViaProxy("http://localhost:1080/somePath", "someBody")
+                        .then(function (response) {
+                            test.ok(false, "expecting 404 response");
+                        }, function (error) {
+                            test.equal(error, 404);
+                        }).then(function () {
 
-            // when
-            client.verify(
-                {
-                    'method': 'POST',
-                    'path': '/somePath',
-                    'body': 'someBody'
-                }, 2, true);
+
+                            // and - a verification that passes
+                            client.verify(
+                                {
+                                    'method': 'POST',
+                                    'path': '/somePath',
+                                    'body': 'someBody'
+                                }, 2, true).then(function () {
+                                    test.done();
+                                }, function () {
+                                    test.ok(false, "verification should pass");
+                                    test.done();
+                                });
+                        });
+                });
         },
 
         'should verify at least a number of requests have been sent': function (test) {
-            // given
+            // given - a client
             var client = proxyClient("localhost", 1090);
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
+            // and - a request
+            sendRequestViaProxy("http://localhost:1080/somePath", "someBody")
                 .then(function (response) {
-                    test.equal(response.statusCode, 404);
+                    test.ok(false, "expecting 404 response");
                 }, function (error) {
-                    test.ok(false, error);
-                });
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 404);
-                }, function (error) {
-                    test.ok(false, error);
-                });
+                    test.equal(error, 404);
+                }).then(function () {
+                    // and - another request
+                    sendRequestViaProxy("http://localhost:1080/someOtherPath", "someBody")
+                        .then(function (response) {
+                            test.ok(false, "expecting 404 response");
+                        }, function (error) {
+                            test.equal(error, 404);
+                        }).then(function () {
 
-            // when
-            client.verify(
-                {
-                    'method': 'POST',
-                    'path': '/somePath',
-                    'body': 'someBody'
-                }, 1);
+
+                            // and - a verification that passes
+                            client.verify(
+                                {
+                                    'method': 'POST',
+                                    'path': '/somePath',
+                                    'body': 'someBody'
+                                }, 1).then(function () {
+                                    test.done();
+                                }, function () {
+                                    test.ok(false, "verification should pass");
+                                    test.done();
+                                });
+                        });
+                });
         },
 
-
         'should fail when no requests have been sent': function (test) {
-            // given
+            // given - a client
             var client = proxyClient("localhost", 1090);
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
+            // and - a request
+            sendRequestViaProxy("http://localhost:1080/somePath", "someBody")
                 .then(function (response) {
-                    test.equal(response.statusCode, 404);
+                    test.ok(false, "expecting 404 response");
                 }, function (error) {
-                    test.ok(false, error);
-                });
+                    test.equal(error, 404);
+                }).then(function () {
 
-            // when
-            test.throws(function () {
-                client.verify(
-                    {
-                        'path': '/someOtherPath'
-                    }, 1);
-            });
+                    // when - a verification that should fail
+                    client.verify(
+                        {
+                            'path': '/someOtherPath'
+                        }, 1).then(function () {
+                            test.ok(false, "verification should have failed");
+                        }, function (message) {
+                            test.equals(message, "Request not found at least once, expected:<{\n" +
+                                "  \"path\" : \"/someOtherPath\"\n" +
+                                "}> but was:<{\n" +
+                                "  \"method\" : \"POST\",\n" +
+                                "  \"path\" : \"/somePath\",\n" +
+                                "  \"body\" : \"someBody\",\n" +
+                                "  \"headers\" : [ {\n" +
+                                "    \"name\" : \"Host\",\n" +
+                                "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                "  }, {\n" +
+                                "    \"name\" : \"Content-Length\",\n" +
+                                "    \"values\" : [ \"8\" ]\n" +
+                                "  } ]\n" +
+                                "}>");
+                        }).then(function () {
+                            test.done();
+                        });
+                });
         },
 
         'should fail when not enough exact requests have been sent': function (test) {
-            // given
+            // given - a client
             var client = proxyClient("localhost", 1090);
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
+            // and - a request
+            sendRequestViaProxy("http://localhost:1080/somePath", "someBody")
                 .then(function (response) {
-                    test.equal(response.statusCode, 404);
+                    test.ok(false, "expecting 404 response");
                 }, function (error) {
-                    test.ok(false, error);
-                });
+                    test.equal(error, 404);
+                }).then(function () {
 
-            // when
-            test.throws(function () {
-                client.verify(
-                    {
-                        'method': 'POST',
-                        'path': '/somePath',
-                        'body': 'someBody'
-                    }, 2, true);
-            });
+                    // when - a verification that should fail
+                    client.verify(
+                        {
+                            'method': 'POST',
+                            'path': '/somePath',
+                            'body': 'someBody'
+                        }, 2, true).then(function () {
+                            test.ok(false, "verification should have failed");
+                        }, function (message) {
+                            test.equals(message, "Request not found exactly 2 times, expected:<{\n" +
+                                "  \"method\" : \"POST\",\n" +
+                                "  \"path\" : \"/somePath\",\n" +
+                                "  \"body\" : \"someBody\"\n" +
+                                "}> but was:<{\n" +
+                                "  \"method\" : \"POST\",\n" +
+                                "  \"path\" : \"/somePath\",\n" +
+                                "  \"body\" : \"someBody\",\n" +
+                                "  \"headers\" : [ {\n" +
+                                "    \"name\" : \"Host\",\n" +
+                                "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                "  }, {\n" +
+                                "    \"name\" : \"Content-Length\",\n" +
+                                "    \"values\" : [ \"8\" ]\n" +
+                                "  } ]\n" +
+                                "}>");
+                        }).then(function () {
+                            test.done();
+                        });
+                });
         },
 
         'should fail when not enough at least requests have been sent': function (test) {
-            // given
+            // given - a client
             var client = proxyClient("localhost", 1090);
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
+            // and - a request
+            sendRequestViaProxy("http://localhost:1080/somePath", "someBody")
                 .then(function (response) {
-                    test.equal(response.statusCode, 404);
+                    test.ok(false, "expecting 404 response");
                 }, function (error) {
-                    test.ok(false, error);
-                });
+                    test.equal(error, 404);
+                }).then(function () {
 
-            // when
-            test.throws(function () {
-                client.verify(
-                    {
-                        'method': 'POST',
-                        'path': '/somePath',
-                        'body': 'someBody'
-                    }, 2);
-            });
+                    // when - a verification that should fail
+                    client.verify(
+                        {
+                            'method': 'POST',
+                            'path': '/somePath',
+                            'body': 'someBody'
+                        }, 2).then(function () {
+                            test.ok(false, "verification should have failed");
+                        }, function (message) {
+                            test.equals(message, "Request not found at least 2 times, expected:<{\n" +
+                                "  \"method\" : \"POST\",\n" +
+                                "  \"path\" : \"/somePath\",\n" +
+                                "  \"body\" : \"someBody\"\n" +
+                                "}> but was:<{\n" +
+                                "  \"method\" : \"POST\",\n" +
+                                "  \"path\" : \"/somePath\",\n" +
+                                "  \"body\" : \"someBody\",\n" +
+                                "  \"headers\" : [ {\n" +
+                                "    \"name\" : \"Host\",\n" +
+                                "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                "  }, {\n" +
+                                "    \"name\" : \"Content-Length\",\n" +
+                                "    \"values\" : [ \"8\" ]\n" +
+                                "  } ]\n" +
+                                "}>");
+                        }).then(function () {
+                            test.done();
+                        });
+                });
         },
 
         'should clear proxy': function (test) {
-            // given
+            // given - a client
             var client = proxyClient("localhost", 1090);
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
+            // and - a request
+            sendRequestViaProxy("http://localhost:1080/somePath", "someBody")
                 .then(function (response) {
-                    test.equal(response.statusCode, 404);
+                    test.ok(false, "expecting 404 response");
                 }, function (error) {
-                    test.ok(false, error);
+                    test.equal(error, 404);
+                }).then(function () {
+                    // and - another request
+                    sendRequestViaProxy("http://localhost:1080/someOtherPath", "someBody")
+                        .then(function (response) {
+                            test.ok(false, "expecting 404 response");
+                        }, function (error) {
+                            test.equal(error, 404);
+                        }).then(function () {
+
+
+                            // and - a verification that passes
+                            client.verify(
+                                {
+                                    'method': 'POST',
+                                    'path': '/somePath',
+                                    'body': 'someBody'
+                                }, 1).then(function () {
+                                    // when - matching requests cleared
+                                    client.clear('/somePath').then(function () {
+
+                                        // then - the verification should fail requests that were cleared
+                                        client.verify(
+                                            {
+                                                'method': 'POST',
+                                                'path': '/somePath',
+                                                'body': 'someBody'
+                                            }, 1).then(function () {
+                                                test.ok(false, "verification should have failed");
+                                            }, function (message) {
+                                                test.equals(message, "Request not found at least once, expected:<{\n" +
+                                                    "  \"method\" : \"POST\",\n" +
+                                                    "  \"path\" : \"/somePath\",\n" +
+                                                    "  \"body\" : \"someBody\"\n" +
+                                                    "}> but was:<{\n" +
+                                                    "  \"method\" : \"POST\",\n" +
+                                                    "  \"path\" : \"/someOtherPath\",\n" +
+                                                    "  \"body\" : \"someBody\",\n" +
+                                                    "  \"headers\" : [ {\n" +
+                                                    "    \"name\" : \"Host\",\n" +
+                                                    "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                                    "  }, {\n" +
+                                                    "    \"name\" : \"Content-Length\",\n" +
+                                                    "    \"values\" : [ \"8\" ]\n" +
+                                                    "  } ]\n" +
+                                                    "}>");
+                                            }).then(function () {
+
+                                                // then - the verification should pass for other requests
+                                                client.verify(
+                                                    {
+                                                        'method': 'POST',
+                                                        'path': '/someOtherPath',
+                                                        'body': 'someBody'
+                                                    }, 1).then(function () {
+                                                        test.done();
+                                                    }, function () {
+                                                        test.ok(false, "verification should have passed");
+                                                        test.done();
+                                                    });
+                                            });
+                                    }, function () {
+                                        test.ok(false, "client should not fail when resetting");
+                                    });
+                                }, function () {
+                                    test.ok(false, "verification should pass");
+                                });
+                        });
                 });
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 404);
-                }, function (error) {
-                    test.ok(false, error);
-                });
-
-            // then
-            client.verify(
-                {
-                    'method': 'POST',
-                    'path': '/somePath',
-                    'body': 'someBody'
-                }, 1);
-
-            // when
-            client.clear('/somePath');
-
-            // then
-            test.throws(function () {
-                client.verify(
-                    {
-                        'method': 'POST',
-                        'path': '/somePath',
-                        'body': 'someBody'
-                    }, 1);
-            });
         },
 
         'should reset proxy': function (test) {
-            // given
+            // given - a client
             var client = proxyClient("localhost", 1090);
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
+            // and - a request
+            sendRequestViaProxy("http://localhost:1080/somePath", "someBody")
                 .then(function (response) {
-                    test.equal(response.statusCode, 404);
+                    test.ok(false, "expecting 404 response");
                 }, function (error) {
-                    test.ok(false, error);
+                    test.equal(error, 404);
+                }).then(function () {
+                    // and - another request
+                    sendRequestViaProxy("http://localhost:1080/somePath", "someBody")
+                        .then(function (response) {
+                            test.ok(false, "expecting 404 response");
+                        }, function (error) {
+                            test.equal(error, 404);
+                        }).then(function () {
+
+                            // and - a verification that passes
+                            client.verify(
+                                {
+                                    'method': 'POST',
+                                    'path': '/somePath',
+                                    'body': 'someBody'
+                                }, 1).then(function () {
+                                    // when - all recorded requests reset
+                                    client.reset().then(function () {
+
+                                        // then - the verification should fail
+                                        client.verify(
+                                            {
+                                                'method': 'POST',
+                                                'path': '/somePath',
+                                                'body': 'someBody'
+                                            }, 1).then(function () {
+                                                test.ok(false, "verification should have failed");
+                                            }, function (message) {
+                                                test.equals(message, "Request not found at least once, expected:<{\n" +
+                                                    "  \"method\" : \"POST\",\n" +
+                                                    "  \"path\" : \"/somePath\",\n" +
+                                                    "  \"body\" : \"someBody\"\n" +
+                                                    "}> but was:<>");
+                                            }).then(function () {
+                                                test.done();
+                                            });
+                                    }, function () {
+                                        test.ok(false, "client should not fail when resetting");
+                                    });
+                                }, function () {
+                                    test.ok(false, "verification should pass");
+                                });
+                        });
                 });
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 404);
-                }, function (error) {
-                    test.ok(false, error);
-                });
-
-            // then
-            client.verify(
-                {
-                    'method': 'POST',
-                    'path': '/somePath',
-                    'body': 'someBody'
-                }, 1);
-
-            // when
-            client.reset();
-
-            // then
-            test.throws(function () {
-                client.verify(
-                    {
-                        'method': 'POST',
-                        'path': '/somePath',
-                        'body': 'someBody'
-                    }, 1);
-            });
         }
     };
 

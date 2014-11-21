@@ -10,22 +10,42 @@
     "use strict";
 
     var Q = require('q');
-    var request = require('request');
+    var http = require('http');
 
-    function sendRequest(url, jsonBody) {
+    function sendRequest(host, port, path, jsonBody) {
         var deferred = Q.defer();
+
+        var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
         var options = {
             method: 'PUT',
-            url: url,
-            json: jsonBody
+            host: host,
+            path: path,
+            port: port
         };
-        request(options, function (error, response, body) {
-            if (error) {
-                deferred.reject(new Error(error));
-            } else {
-                deferred.resolve(body && JSON.parse(body));
+
+        var callback = function (response) {
+            var body = '';
+
+            if (response.statusCode === 400 || response.statusCode === 404) {
+                deferred.reject(response.statusCode);
             }
-        });
+
+            response.on('data', function (chunk) {
+                body += chunk;
+            });
+
+            response.on('end', function () {
+                deferred.resolve({
+                    statusCode: response.statusCode,
+                    body: body
+                });
+            });
+        };
+
+        var req = http.request(options, callback);
+        req.write(body);
+        req.end();
+
         return deferred.promise;
     }
 
@@ -40,175 +60,201 @@
      */
     var mockServerClient = function (host, port) {
 
-            var mockServerUrl = "http://" + host + ":" + port,
-                /**
-                 * The default headers added to to the mocked response when using mockSimpleResponse(...)
-                 */
-                defaultResponseHeaders = [
-                    {"name": "Content-Type", "values": ["application/json; charset=utf-8"]},
-                    {"name": "Cache-Control", "values": ["no-cache, no-store"]}
-                ],
-                createResponseMatcher = function (path) {
-                    return {
-                        method: "",
-                        path: path,
-                        body: "",
-                        headers: [],
-                        cookies: [],
-                        parameters: []
-                    };
-                },
-                createExpectation = function (path, responseBody, statusCode) {
-                    var headers = [];
-                    return {
-                        httpRequest: createResponseMatcher(path),
-                        httpResponse: {
-                            statusCode: statusCode || 200,
-                            body: JSON.stringify(responseBody),
-                            cookies: [],
-                            headers: defaultResponseHeaders,
-                            delay: {
-                                timeUnit: "MICROSECONDS",
-                                value: 0
-                            }
-                        },
-                        times: {
-                            remainingTimes: 1,
-                            unlimited: false
-                        }
-                    };
-                },
-                /**
-                 * Setup an expectation in the MockServer by specifying an expectation object
-                 * for example:
-                 *
-                 *   mockServerClient("localhost", 1080).mockAnyResponse(
-                 *       {
-                 *           'httpRequest': {
-                 *               'path': '/somePath',
-                 *               'body': {
-                 *                   'type': "STRING",
-                 *                   'value': 'someBody'
-                 *               }
-                 *           },
-                 *           'httpResponse': {
-                 *               'statusCode': 200,
-                 *               'body': Base64.encode(JSON.stringify({ name: 'first_body' })),
-                 *               'delay': {
-                 *                   'timeUnit': 'MILLISECONDS',
-                 *                   'value': 250
-                 *               }
-                 *           },
-                 *           'times': {
-                 *               'remainingTimes': 1,
-                 *               'unlimited': false
-                 *           }
-                 *       }
-                 *   );
-                 *
-                 * @param expectation the expectation to setup on the MockServer
-                 */
-                mockAnyResponse = function (expectation) {
-                    return sendRequest(mockServerUrl + "/expectation", expectation);
-                },
-                /**
-                 * Setup an expectation in the MockServer without having to specify the full expectation object
-                 * for example:
-                 *
-                 *   mockServerClient("localhost", 1080).mockSimpleResponse('/somePath', { name: 'value' }, 203);
-                 *
-                 * @param path the path to match requests against
-                 * @param responseBody the response body to return if a request matches
-                 * @param statusCode the response code to return if a request matches
-                 */
-                mockSimpleResponse = function (path, responseBody, statusCode) {
-                    return mockAnyResponse(createExpectation(path, responseBody, statusCode));
-                },
-                /**
-                 * Override the default headers that are used to specify the response headers in mockSimpleResponse(...)
-                 * (note: if you use mockAnyResponse(...) the default headers are not used)
-                 * for example:
-                 *
-                 *   mockServerClient("localhost", 1080).setDefaultHeaders([
-                 *       {"name": "Content-Type", "values": ["application/json; charset=utf-8"]},
-                 *       {"name": "Cache-Control", "values": ["no-cache, no-store"]}
-                 *   ])
-                 *
-                 * @param headers the path to match requests against
-                 */
-                setDefaultHeaders = function (headers) {
-                    defaultResponseHeaders = headers;
-                },
-                butFoundAssertionErrorMessage = function (expectedMessage) {
-                    sendRequest(mockServerUrl + "/retrieve").then(function (expectations) {
-                        throw expectedMessage + " but " + (expectations ? "only found " + expectations : "found no requests");
-                    });
-                },
-                retrieve = function (request) {
-                    return sendRequest(mockServerUrl + "/retrieve", request);
-                },
-                /**
-                 * Verify a request has been sent for example:
-                 *
-                 *   expect(client.verify({
-                 *       'httpRequest': {
-                 *           'method': 'POST',
-                 *           'path': '/somePath'
-                 *       }
-                 *   })).toBeTruthy();
-                 *
-                 * @param request the http request that must be matched for this verification to pass
-                 * @param count   the number of times this request must be matched
-                 * @param exact   true if the count is matched as "equal to" or false if the count is matched as "greater than or equal to"
-                 */
-                verify = function (request, count, exact) {
-                    return retrieve(request)
-                        .then(function (expectations) {
-                            if (!expectations) {
-                                butFoundAssertionErrorMessage("Expected " + JSON.stringify(request));
-                            }
-                            if (exact) {
-                                if (expectations.length !== count) {
-                                    butFoundAssertionErrorMessage("Expected " + JSON.stringify(request));
-                                }
-                            } else {
-                                if (expectations.length < count) {
-                                    butFoundAssertionErrorMessage("Expected " + JSON.stringify(request));
-                                }
-                            }
-                            return _this;
-                        });
-                },
-                /**
-                 * Reset MockServer by clearing all expectations
-                 */
-                reset = function () {
-                    return sendRequest(mockServerUrl + "/reset");
-                },
-                /**
-                 * Clear all expectations that match the specified path
-                 *
-                 * @param path the path to decide which expectations to cleared
-                 */
-                clear = function (path) {
-                    return sendRequest(mockServerUrl + "/clear", createResponseMatcher(path || ".*"));
-                },
-                /**
-                 * Pretty-print the json for all expectations for the specified path.
-                 * This is particularly helpful when debugging expectations. The expectation
-                 * are printed into a dedicated log called mockserver_request.log
-                 *
-                 * @param path the path to decide which expectations to dump to the log
-                 */
-                dumpToLogs = function (path) {
-                    return sendRequest(mockServerUrl + "/dumpToLog", createResponseMatcher(path || ".*"));
+            /**
+             * The default headers added to to the mocked response when using mockSimpleResponse(...)
+             */
+            var defaultResponseHeaders = [
+                {"name": "Content-Type", "values": ["application/json; charset=utf-8"]},
+                {"name": "Cache-Control", "values": ["no-cache, no-store"]}
+            ];
+            var createResponseMatcher = function (path) {
+                return {
+                    method: "",
+                    path: path,
+                    body: "",
+                    headers: [],
+                    cookies: [],
+                    parameters: []
                 };
+            };
+            var createExpectation = function (path, responseBody, statusCode) {
+                return {
+                    httpRequest: createResponseMatcher(path),
+                    httpResponse: {
+                        statusCode: statusCode || 200,
+                        body: JSON.stringify(responseBody),
+                        cookies: [],
+                        headers: defaultResponseHeaders,
+                        delay: {
+                            timeUnit: "MICROSECONDS",
+                            value: 0
+                        }
+                    },
+                    times: {
+                        remainingTimes: 1,
+                        unlimited: false
+                    }
+                };
+            };
+            /**
+             * Setup an expectation in the MockServer by specifying an expectation object
+             * for example:
+             *
+             *   mockServerClient("localhost", 1080).mockAnyResponse(
+             *       {
+             *           'httpRequest': {
+             *               'path': '/somePath',
+             *               'body': {
+             *                   'type': "STRING",
+             *                   'value': 'someBody'
+             *               }
+             *           },
+             *           'httpResponse': {
+             *               'statusCode': 200,
+             *               'body': Base64.encode(JSON.stringify({ name: 'first_body' })),
+             *               'delay': {
+             *                   'timeUnit': 'MILLISECONDS',
+             *                   'value': 250
+             *               }
+             *           },
+             *           'times': {
+             *               'remainingTimes': 1,
+             *               'unlimited': false
+             *           }
+             *       }
+             *   );
+             *
+             * @param expectation the expectation to setup on the MockServer
+             */
+            var mockAnyResponse = function (expectation) {
+                return sendRequest(host, port, "/expectation", expectation);
+            };
+            /**
+             * Setup an expectation in the MockServer without having to specify the full expectation object
+             * for example:
+             *
+             *   mockServerClient("localhost", 1080).mockSimpleResponse('/somePath', { name: 'value' }, 203);
+             *
+             * @param path the path to match requests against
+             * @param responseBody the response body to return if a request matches
+             * @param statusCode the response code to return if a request matches
+             */
+            var mockSimpleResponse = function (path, responseBody, statusCode) {
+                return mockAnyResponse(createExpectation(path, responseBody, statusCode));
+            };
+            /**
+             * Override the default headers that are used to specify the response headers in mockSimpleResponse(...)
+             * (note: if you use mockAnyResponse(...) the default headers are not used)
+             * for example:
+             *
+             *   mockServerClient("localhost", 1080).setDefaultHeaders([
+             *       {"name": "Content-Type", "values": ["application/json; charset=utf-8"]},
+             *       {"name": "Cache-Control", "values": ["no-cache, no-store"]}
+             *   ])
+             *
+             * @param headers the path to match requests against
+             */
+            var setDefaultHeaders = function (headers) {
+                defaultResponseHeaders = headers;
+            };
+            /**
+             * Verify a request has been sent for example:
+             *
+             *   expect(client.verify({
+             *       'httpRequest': {
+             *           'method': 'POST',
+             *           'path': '/somePath'
+             *       }
+             *   })).toBeTruthy();
+             *
+             * @param request the http request that must be matched for this verification to pass
+             * @param count   the number of times this request must be matched
+             * @param exact   true if the count is matched as "equal to" or false if the count is matched as "greater than or equal to"
+             */
+            var verify = function (request, count, exact) {
+                if (count === undefined) {
+                    count = 1;
+                }
+                return sendRequest(host, port, "/verify", {
+                    "httpRequest": request,
+                    "times": {
+                        "count": count,
+                        "exact": exact
+                    }
+                }).then(function (result) {
+                    if (result.statusCode !== 202) {
+                        console && console.error && console.error(result.body);
+                        throw result.body;
+                    }
+                    return _this;
+                });
+            };
+            /**
+             * Verify a sequence of requests has been sent for example:
+             *
+             *   client.verifySequence(
+             *       {
+             *          'method': 'POST',
+             *          'path': '/first_request'
+             *       },
+             *       {
+             *          'method': 'POST',
+             *          'path': '/second_request'
+             *       },
+             *       {
+             *          'method': 'POST',
+             *          'path': '/third_request'
+             *       }
+             *   );
+             *
+             * @param arguments the list of http requests that must be matched for this verification to pass
+             */
+            var verifySequence = function () {
+                var requestSequence = [];
+                for (var i = 0; i < arguments.length; i++) {
+                    requestSequence.push(arguments[i]);
+                }
+                return sendRequest(host, port, "/verifySequence", {
+                    "httpRequests": requestSequence
+                }).then(function (result) {
+                    if (result.statusCode !== 202) {
+                        console && console.error && console.error(result.body);
+                        throw result.body;
+                    }
+                    return _this;
+                });
+            };
+            /**
+             * Reset MockServer by clearing all expectations
+             */
+            var reset = function () {
+                return sendRequest(host, port, "/reset");
+            };
+            /**
+             * Clear all expectations that match the specified path
+             *
+             * @param path the path to decide which expectations to cleared
+             */
+            var clear = function (path) {
+                return sendRequest(host, port, "/clear", createResponseMatcher(path || ".*"));
+            };
+            /**
+             * Pretty-print the json for all expectations for the specified path.
+             * This is particularly helpful when debugging expectations. The expectation
+             * are printed into a dedicated log called mockserver_request.log
+             *
+             * @param path the path to decide which expectations to dump to the log
+             */
+            var dumpToLogs = function (path) {
+                return sendRequest(host, port, "/dumpToLog", createResponseMatcher(path || ".*"));
+            };
 
             var _this = {
                 mockAnyResponse: mockAnyResponse,
                 mockSimpleResponse: mockSimpleResponse,
                 setDefaultHeaders: setDefaultHeaders,
                 verify: verify,
+                verifySequence: verifySequence,
                 reset: reset,
                 clear: clear,
                 dumpToLogs: dumpToLogs
@@ -226,90 +272,110 @@
          */
         proxyClient = function (host, port) {
 
-            var proxyUrl = "http://" + host + ":" + port,
-                createResponseMatcher = function (path) {
-                    return {
-                        method: "",
-                        path: path,
-                        body: "",
-                        headers: [],
-                        cookies: [],
-                        parameters: []
-                    };
-                },
-                butFoundAssertionErrorMessage = function (expectedMessage) {
-                    sendRequest(proxyUrl + "/retrieve").then(function (requests) {
-                        throw expectedMessage + " but " + (requests ? "only found " + requests : "found no requests");
-                    });
-                },
-                /**
-                 * Retrieve the recorded requests that match the httpRequest parameter as a JSON array, use null for the parameter to retrieve all requests
-                 *
-                 * @param request the http request that is matched against when deciding whether to return each expectation, use null for the parameter to retrieve for all requests
-                 * @return a JSON array of all expectations that have been recorded by the proxy
-                 */
-                retrieve = function (request) {
-                    return sendRequest(proxyUrl + "/retrieve", request);
-                },
-                /**
-                 * Verify a request has been sent for example:
-                 *
-                 *   expect(client.verify({
-                 *       'httpRequest': {
-                 *           'method': 'POST',
-                 *           'path': '/somePath'
-                 *       }
-                 *   })).toBeTruthy();
-                 *
-                 * @param request the http request that must be matched for this verification to pass
-                 * @param count   the number of times this request must be matched
-                 * @param exact   true if the count is matched as "equal to" or false if the count is matched as "greater than or equal to"
-                 */
-                verify = function (request, count, exact) {
-                    return retrieve(request)
-                        .then(function (requests) {
-                            if (!requests) {
-                                butFoundAssertionErrorMessage("Expected " + JSON.stringify(request));
-                            }
-                            if (exact) {
-                                if (requests.length !== count) {
-                                    butFoundAssertionErrorMessage("Expected " + JSON.stringify(request));
-                                }
-                            } else {
-                                if (requests.length < count) {
-                                    butFoundAssertionErrorMessage("Expected " + JSON.stringify(request));
-                                }
-                            }
-                            return _this;
-                        });
-                },
-                /**
-                 * Reset the proxy by clearing all recorded requests
-                 */
-                reset = function () {
-                    return sendRequest(proxyUrl + "/reset");
-                },
-                /**
-                 * Clear all recorded requests that match the specified path
-                 *
-                 * @param path the path to decide which expectations to cleared
-                 */
-                clear = function (path) {
-                    return sendRequest(proxyUrl + "/clear", createResponseMatcher(path || ".*"));
-                },
-                /**
-                 * Pretty-print the json for all requests / responses that match the specified path
-                 * as Expectations to the log. They are printed into a dedicated log called mockserver_request.log
-                 *
-                 * @param path the path to decide which expectations to dump to the log
-                 */
-                dumpToLogs = function (path) {
-                    return sendRequest(proxyUrl + "/dumpToLog", createResponseMatcher(path || ".*", ""));
+            var createResponseMatcher = function (path) {
+                return {
+                    method: "",
+                    path: path,
+                    body: "",
+                    headers: [],
+                    cookies: [],
+                    parameters: []
                 };
+            };
+            /**
+             * Verify a request has been sent for example:
+             *
+             *   expect(client.verify({
+             *       'httpRequest': {
+             *           'method': 'POST',
+             *           'path': '/somePath'
+             *       }
+             *   })).toBeTruthy();
+             *
+             * @param request the http request that must be matched for this verification to pass
+             * @param count   the number of times this request must be matched
+             * @param exact   true if the count is matched as "equal to" or false if the count is matched as "greater than or equal to"
+             */
+            var verify = function (request, count, exact) {
+                if (count === undefined) {
+                    count = 1;
+                }
+                return sendRequest(host, port, "/verify", JSON.stringify({
+                    "httpRequest": request,
+                    "times": {
+                        "count": count,
+                        "exact": exact
+                    }
+                })).then(function (result) {
+                    if (result.statusCode !== 202) {
+                        console && console.error && console.error(result.body);
+                        throw result.body;
+                    }
+                    return _this;
+                });
+            };
+            /**
+             * Verify a sequence of requests has been sent for example:
+             *
+             *   client.verifySequence(
+             *       {
+             *          'method': 'POST',
+             *          'path': '/first_request'
+             *       },
+             *       {
+             *          'method': 'POST',
+             *          'path': '/second_request'
+             *       },
+             *       {
+             *          'method': 'POST',
+             *          'path': '/third_request'
+             *       }
+             *   );
+             *
+             * @param arguments the list of http requests that must be matched for this verification to pass
+             */
+            var verifySequence = function () {
+                var requestSequence = [];
+                for (var i = 0; i < arguments.length; i++) {
+                    requestSequence.push(arguments[i]);
+                }
+                return sendRequest(host, port, "/verifySequence", JSON.stringify({
+                    "httpRequests": requestSequence
+                })).then(function (result) {
+                    if (result.statusCode !== 202) {
+                        console && console.error && console.error(result.body);
+                        throw result.body;
+                    }
+                    return _this;
+                });
+            };
+            /**
+             * Reset the proxy by clearing all recorded requests
+             */
+            var reset = function () {
+                return sendRequest(host, port, "/reset");
+            };
+            /**
+             * Clear all recorded requests that match the specified path
+             *
+             * @param path the path to decide which expectations to cleared
+             */
+            var clear = function (path) {
+                return sendRequest(host, port, "/clear", createResponseMatcher(path || ".*"));
+            };
+            /**
+             * Pretty-print the json for all requests / responses that match the specified path
+             * as Expectations to the log. They are printed into a dedicated log called mockserver_request.log
+             *
+             * @param path the path to decide which expectations to dump to the log
+             */
+            var dumpToLogs = function (path) {
+                return sendRequest(host, port, "/dumpToLog", createResponseMatcher(path || ".*", ""));
+            };
 
             var _this = {
-                retrieve: retrieve,
                 verify: verify,
+                verifySequence: verifySequence,
                 reset: reset,
                 clear: clear,
                 dumpToLogs: dumpToLogs

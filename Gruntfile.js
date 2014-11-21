@@ -11,6 +11,9 @@
 module.exports = function (grunt) {
 
     grunt.initConfig({
+        exec: {
+            stop_existing_mockservers: './stop_MockServer.sh'
+        },
         jshint: {
             options: {
                 jshintrc: '.jshintrc'
@@ -19,8 +22,8 @@ module.exports = function (grunt) {
                 'Gruntfile.js',
                 'js/**/*.js',
                 '!js/lib/**/*.js',
-                '<%= nodeunit.no_proxy %>'//,
-//                '<%= nodeunit.with_proxy %>'
+                '<%= nodeunit.no_proxy %>',
+                '<%= nodeunit.with_proxy %>'
             ]
         },
         start_mockserver: {
@@ -42,15 +45,16 @@ module.exports = function (grunt) {
             no_proxy: [
                 'test/no_proxy/*_test.js'
             ],
-//            with_proxy: [
-//                'test/with_proxy/*_test.js'
-//            ],
+            with_proxy: [
+                'test/with_proxy/*_test.js'
+            ],
             options: {
                 reporter: 'nested'
             }
         }
     });
 
+    grunt.loadNpmTasks('grunt-exec');
     grunt.loadNpmTasks('mockserver-grunt');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-clean');
@@ -58,5 +62,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('test', ['start_mockserver:start', 'nodeunit', 'stop_mockserver:stop']);
 
-    grunt.registerTask('default', ['jshint', 'test']);
+    grunt.registerTask('wrecker', ['jshint', 'test']);
+    grunt.registerTask('default', ['exec', 'wrecker']);
 };

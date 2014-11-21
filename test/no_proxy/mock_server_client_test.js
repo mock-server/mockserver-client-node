@@ -2,37 +2,65 @@
 
     'use strict';
 
-    var mockServer = require('../../'),
-        mockServerClient = mockServer.mockServerClient,
-        proxyClient = mockServer.proxyClient,
-        Q = require('q'),
-        request = require('request'),
-        sendRequest = function (method, url, body) {
-            var deferred = Q.defer();
-            var options = {
-                method: method,
-                url: url,
-                body: body
-            };
-            request(options, function (error, response) {
-                if (error) {
-                    deferred.reject(new Error(error));
-                } else {
-                    deferred.resolve(response);
-                }
-            });
-            return deferred.promise;
+    var mockServer = require('../../');
+    var mockServerClient = mockServer.mockServerClient;
+    var proxyClient = mockServer.proxyClient;
+    var Q = require('q');
+    var http = require('http');
+
+    function sendRequest(method, host, port, path, jsonBody) {
+        var deferred = Q.defer();
+
+        var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
+        var options = {
+            method: method,
+            host: host,
+            path: path,
+            port: port
         };
+
+        var callback = function (response) {
+            var body = '';
+
+            if (response.statusCode === 400 || response.statusCode === 404) {
+                deferred.reject(response.statusCode);
+            }
+
+            response.on('data', function (chunk) {
+                body += chunk;
+            });
+
+            response.on('end', function () {
+                deferred.resolve({
+                    statusCode: response.statusCode,
+                    headers: response.headers,
+                    body: body
+                });
+            });
+        };
+
+        var req = http.request(options, callback);
+        req.write(body);
+        req.end();
+
+        return deferred.promise;
+    }
 
     exports.mock_server_started = {
         setUp: function (callback) {
-            mockServerClient("localhost", 1080).reset();
-            proxyClient("localhost", 1090).reset();
-            callback();
+            mockServerClient("localhost", 1080).reset().then(function () {
+                proxyClient("localhost", 1090).reset().then(function () {
+                    callback();
+                }, function (error) {
+                    throw 'Failed with error ' + JSON.stringify(error);
+                });
+            }, function (error) {
+                throw 'Failed with error ' + JSON.stringify(error);
+            });
         },
 
         'should create full expectation with string body': function (test) {
-            // when
+            // given - a client and expectation
             mockServerClient("localhost", 1080).mockAnyResponse(
                 {
                     'httpRequest': {
@@ -63,39 +91,43 @@
                         'unlimited': false
                     }
                 }
-            );
+            ).then(function () {
 
-            // then - non matching request
-            sendRequest("GET", "http://localhost:1080/otherPath")
-                .then(function (response) {
-                    test.equal(response.statusCode, 404);
-                }, function (error) {
-                    test.ok(false, error);
+                    // then - non matching request
+                    sendRequest("GET", "localhost", 1080, "/otherPath")
+                        .then(function (response) {
+                            test.ok(false, "should not match expectation");
+                        }, function (error) {
+                            test.equal(error, 404);
+                        }).then(function () {
+
+                            // then - matching request
+                            sendRequest("POST", "localhost", 1080, "/somePath?test=true", "someBody")
+                                .then(function (response) {
+                                    test.equal(response.statusCode, 200);
+                                    test.equal(response.body, '{"name":"value"}');
+                                }, function (error) {
+                                    test.ok(false, "should match expectation");
+                                }).then(function () {
+
+                                    // then - matching request, but no times remaining
+                                    sendRequest("POST", "localhost", 1080, "/somePath?test=true", "someBody")
+                                        .then(function (response) {
+                                            test.ok(false, "should match expectation but no times remaining");
+                                        }, function (error) {
+                                            test.equal(error, 404);
+                                        }).then(function () {
+                                            test.done();
+                                        });
+                                });
+                        });
                 });
-
-            // then - matching request
-            sendRequest("POST", "http://localhost:1080/somePath?test=true", "someBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 200);
-                    test.equal(response.body, '{"name":"value"}');
-                }, function (error) {
-                    test.ok(false, error);
-                });
-
-            // then - matching request, but no times remaining
-            sendRequest("POST", "http://localhost:1080/somePath?test=true", "someBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 404);
-                }, function (error) {
-                    test.ok(false, error);
-                });
-
-            // end
-            test.done();
         },
+
         'should match on body only': function (test) {
-            // when
+            // given - a client
             var client = mockServerClient("localhost", 1080);
+            // and - an expectation
             client.mockAnyResponse(
                 {
                     'httpRequest': {
@@ -118,320 +150,421 @@
                         'unlimited': false
                     }
                 }
-            );
-            client.mockAnyResponse(
-                {
-                    'httpRequest': {
-                        'path': '/somePath',
-                        'body': {
-                            'type': "REGEX",
-                            'value': 'someOtherBody'
+            ).then(function () {
+                    // and - another expectation
+                    client.mockAnyResponse(
+                        {
+                            'httpRequest': {
+                                'path': '/somePath',
+                                'body': {
+                                    'type': "REGEX",
+                                    'value': 'someOtherBody'
+                                }
+                            },
+                            'httpResponse': {
+                                'statusCode': 200,
+                                'body': JSON.stringify({ name: 'second_body' }),
+                                'delay': {
+                                    'timeUnit': 'MILLISECONDS',
+                                    'value': 250
+                                }
+                            },
+                            'times': {
+                                'remainingTimes': 1,
+                                'unlimited': false
+                            }
                         }
-                    },
-                    'httpResponse': {
-                        'statusCode': 200,
-                        'body': JSON.stringify({ name: 'second_body' }),
-                        'delay': {
-                            'timeUnit': 'MILLISECONDS',
-                            'value': 250
-                        }
-                    },
-                    'times': {
-                        'remainingTimes': 1,
-                        'unlimited': false
-                    }
-                }
-            );
+                    ).then(function () {
 
-            // then - non matching request
-            sendRequest("POST", "http://localhost:1080/otherPath", "someIncorrectBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 404);
-                }, function (error) {
-                    test.ok(false, error);
+                            // then - non matching request
+                            sendRequest("POST", "localhost", 1080, "/otherPath", "someIncorrectBody")
+                                .then(function (response) {
+                                    test.ok(false, "should not match expectation");
+                                }, function (error) {
+                                    test.equal(error, 404);
+                                }).then(function () {
+
+                                    // then - request that matches first expectation
+                                    sendRequest("POST", "localhost", 1080, "/somePath", "someBody")
+                                        .then(function (response) {
+                                            test.equal(response.statusCode, 200);
+                                            test.equal(response.body, '{"name":"first_body"}');
+                                        }, function () {
+                                            test.ok(false, "should match expectation");
+                                        }).then(function () {
+
+                                            // then - request that matches second expectation
+                                            sendRequest("POST", "localhost", 1080, "/somePath", "someOtherBody")
+                                                .then(function (response) {
+                                                    test.equal(response.statusCode, 200);
+                                                    test.equal(response.body, '{"name":"second_body"}');
+                                                }, function (error) {
+                                                    test.ok(false, "should match expectation");
+                                                }).then(function () {
+                                                    test.done();
+                                                });
+                                        });
+                                });
+                        });
                 });
-
-            // then - matching request
-            sendRequest("POST", "http://localhost:1080/otherPath", "someBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 200);
-                    test.equal(response.body, '{"name":"first_body"}');
-                }, function (error) {
-                    test.ok(false, error);
-                });
-
-            // then - matches second expectation as body different
-            sendRequest("POST", "http://localhost:1080/otherPath", "someOtherBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 200);
-                    test.equal(response.body, '{"name":"second_body"}');
-                }, function (error) {
-                    test.ok(false, error);
-                });
-
-            // end
-            test.done();
         },
 
         'should create simple response expectation': function (test) {
-            // when
-            mockServerClient("localhost", 1080).mockSimpleResponse('/somePath', { name: 'value' }, 203);
+            // given - a client and expectation
+            mockServerClient("localhost", 1080).mockSimpleResponse('/somePath', { name: 'value' }, 203).then(function () {
 
-            // then - non matching request
-            sendRequest("POST", "http://localhost:1080/otherPath")
-                .then(function (response) {
-                    test.equal(response.statusCode, 404);
-                }, function (error) {
-                    test.ok(false, error);
-                });
+                // then - non matching request
+                sendRequest("POST", "localhost", 1080, "/otherPath")
+                    .then(function (response) {
+                        test.ok(false, "should not match expectation");
+                    }, function (error) {
+                        test.equal(error, 404);
+                    }).then(function () {
 
-            // then - matching request
-            sendRequest("POST", "http://localhost:1080/somePath?test=true", "someBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 200);
-                    test.equal(response.body, '{"name":"value"}');
-                }, function (error) {
-                    test.ok(false, error);
-                });
+                        // then - matching request
+                        sendRequest("POST", "localhost", 1080, "/somePath?test=true", "someBody")
+                            .then(function (response) {
+                                test.equal(response.statusCode, 203);
+                                test.equal(response.body, '{"name":"value"}');
+                            }, function () {
+                                test.ok(false, "should match expectation");
+                            }).then(function () {
 
-            // then - matching request, but no times remaining
-            sendRequest("POST", "http://localhost:1080/somePath?test=true", "someBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 404);
-                }, function (error) {
-                    test.ok(false, error);
-                });
-
-            // end
-            test.done();
+                                // then - matching request, but no times remaining
+                                sendRequest("POST", "localhost", 1080, "/somePath?test=true", "someBody")
+                                    .then(function (response) {
+                                        test.ok(false, "should match expectation but no times remaining");
+                                    }, function (error) {
+                                        test.equal(error, 404);
+                                    }).then(function () {
+                                        test.done();
+                                    });
+                            });
+                    });
+            });
         },
 
         'should update default headers for simple response expectation': function (test) {
-            // when
+            // given - a client
             var client = mockServerClient("localhost", 1080);
+            // and - default headers
             client.setDefaultHeaders([
-                {"name": "Content-Type", "values": ["application/json; charset=utf-8"]},
-                {"name": "X-Test", "values": ["test-value"]}
+                {"name": "content-type", "values": ["application/json; charset=utf-8"]},
+                {"name": "x-test", "values": ["test-value"]}
             ]);
-            client.mockSimpleResponse('/somePath', { name: 'value' }, 203);
+            // and - an expectation
+            client.mockSimpleResponse('/somePath', { name: 'value' }, 203).then(function () {
 
-            // then - matching request
-            sendRequest("POST", "http://localhost:1080/somePath?test=true", "someBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 203);
-                    test.equal(response.body, '{"name":"value"}');
-                    test.equal(response.headers, '{"X-Test":"test-value"}');
-                }, function (error) {
-                    test.ok(false, error);
-                });
-
-            // end
-            test.done();
+                // then - matching request
+                sendRequest("POST", "localhost", 1080, "/somePath?test=true", "someBody")
+                    .then(function (response) {
+                        test.equal(response.statusCode, 203);
+                        test.equal(response.body, '{"name":"value"}');
+                        test.equal(response.headers["content-type"], "application/json; charset=utf-8");
+                        test.equal(response.headers["x-test"], "test-value");
+                        test.done();
+                    }, function (error) {
+                        test.ok(false, "should match expectation");
+                        test.done();
+                    });
+            });
         },
 
         'should verify exact number of requests have been sent': function (test) {
-            // given
+            // given - a client
             var client = mockServerClient("localhost", 1080);
-            client.mockSimpleResponse('/somePath', { name: 'value' }, 203);
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 203);
-                }, function (error) {
-                    test.ok(false, error);
-                });
+            // and - an expectation
+            client.mockSimpleResponse('/somePath', { name: 'value' }, 203).then(function () {
+                // and - a request
+                sendRequest("POST", "localhost", 1080, "/somePath", "someBody")
+                    .then(function (response) {
+                        test.equal(response.statusCode, 203);
+                    }, function (error) {
+                        test.ok(false, error);
+                    }).then(function () {
 
-            // when
-            client.verify(
-                {
-                    'method': 'POST',
-                    'path': '/somePath',
-                    'body': 'someBody'
-                }, 1, true);
-
-            // end
-            test.done();
+                        // when - verify at least one request
+                        client.verify(
+                            {
+                                'method': 'POST',
+                                'path': '/somePath',
+                                'body': 'someBody'
+                            }, 1, true).then(function () {
+                                test.done();
+                            }, function () {
+                                test.ok(false, "verification should pass");
+                                test.done();
+                            });
+                    });
+            });
         },
 
         'should verify at least a number of requests have been sent': function (test) {
-            // given
+            // given - a client
             var client = mockServerClient("localhost", 1080);
-            client.mockSimpleResponse('/somePath', { name: 'value' }, 203);
-            client.mockSimpleResponse('/somePath', { name: 'value' }, 203);
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 203);
-                }, function (error) {
-                    test.ok(false, error);
-                });
-            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
-                .then(function (response) {
-                    test.equal(response.statusCode, 203);
-                }, function (error) {
-                    test.ok(false, error);
-                });
+            // and - an expectation
+            client.mockSimpleResponse('/somePath', { name: 'value' }, 203).then(function () {
+                // and - another expectation
+                client.mockSimpleResponse('/somePath', { name: 'value' }, 203).then(function () {
+                    // and - a request
+                    sendRequest("POST", "localhost", 1080, "/somePath", "someBody")
+                        .then(function (response) {
+                            test.equal(response.statusCode, 203);
+                        }, function (error) {
+                            test.ok(false, error);
+                        }).then(function () {
+                            // and - another request
+                            sendRequest("POST", "localhost", 1080, "/somePath", "someBody")
+                                .then(function (response) {
+                                    test.equal(response.statusCode, 203);
+                                }, function (error) {
+                                    test.ok(false, error);
+                                }).then(function () {
 
-            // when
-            client.verify(
-                {
-                    'method': 'POST',
-                    'path': '/somePath',
-                    'body': 'someBody'
-                }, 1);
-
-            // end
-            test.done();
+                                    // when - verify at least one request
+                                    client.verify(
+                                        {
+                                            'method': 'POST',
+                                            'path': '/somePath',
+                                            'body': 'someBody'
+                                        }, 1).then(function () {
+                                            test.done();
+                                        }, function () {
+                                            test.ok(false, "verification should pass");
+                                            test.done();
+                                        });
+                                });
+                        });
+                });
+            });
         },
 
-//        'should fail when no requests have been sent': function (test) {
-//            // given
-//            var client = mockServerClient("localhost", 1080);
-//            client.mockSimpleResponse('/somePath', { name: 'value' }, 203);
-//            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
-//                .then(function (response) {
-//                    test.equal(response.statusCode, 203);
-//                }, function (error) {
-//                    test.ok(false, error);
-//                });
-//
-//            // when
-//            test.throws(function () {
-//                client.verify(
-//                    {
-//                        'path': '/someOtherPath'
-//                    }, 1);
-//            });
-//
-//            // end
-//            test.done();
-//        },
+        'should fail when no requests have been sent': function (test) {
+            // given - a client
+            var client = mockServerClient("localhost", 1080);
+            // and - an expectation
+            client.mockSimpleResponse('/somePath', { name: 'value' }, 203).then(function () {
+                // and - a request
+                sendRequest("POST", "localhost", 1080, "/somePath", "someBody")
+                    .then(function (response) {
+                        test.equal(response.statusCode, 203);
+                    }, function (error) {
+                        test.ok(false, error);
+                    }).then(function () {
 
-//        'should fail when not enough exact requests have been sent': function (test) {
-//            // given
-//            var client = mockServerClient("localhost", 1080);
-//            client.mockSimpleResponse('/somePath', { name: 'value' }, 203);
-//            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
-//                .then(function (response) {
-//                    test.equal(response.statusCode, 203);
-//                }, function (error) {
-//                    test.ok(false, error);
-//                });
-//
-//            // when
-//            test.throws(function () {
-//                client.verify(
-//                    {
-//                        'method': 'POST',
-//                        'path': '/somePath',
-//                        'body': 'someBody'
-//                    }, 2, true);
-//            });
-//
-//            // end
-//            test.done();
-//        },
+                        // when - verify at least one request (should fail)
+                        client.verify(
+                            {
+                                'path': '/someOtherPath'
+                            }, 1)
+                            .then(function () {
+                                test.ok(false, "verification should have failed");
+                                test.done();
+                            }, function (message) {
+                                test.equals(message, "Request not found at least once, expected:<{\n" +
+                                    "  \"path\" : \"/someOtherPath\"\n" +
+                                    "}> but was:<{\n" +
+                                    "  \"method\" : \"POST\",\n" +
+                                    "  \"path\" : \"/somePath\",\n" +
+                                    "  \"body\" : \"someBody\",\n" +
+                                    "  \"headers\" : [ {\n" +
+                                    "    \"name\" : \"Host\",\n" +
+                                    "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                    "  }, {\n" +
+                                    "    \"name\" : \"Content-Length\",\n" +
+                                    "    \"values\" : [ \"8\" ]\n" +
+                                    "  } ]\n" +
+                                    "}>");
+                                test.done();
+                            });
+                    });
+            });
+        },
 
-//        'should fail when not enough at least requests have been sent': function (test) {
-//            // given
-//            var client = mockServerClient("localhost", 1080);
-//            client.mockSimpleResponse('/somePath', { name: 'value' }, 203);
-//            sendRequest("POST", "http://localhost:1080/somePath", "someBody")
-//                .then(function (response) {
-//                    test.equal(response.statusCode, 203);
-//                }, function (error) {
-//                    test.ok(false, error);
-//                });
-//
-//            // when
-//            test.throws(function () {
-//                client.verify(
-//                    {
-//                        'method': 'POST',
-//                        'path': '/somePath',
-//                        'body': 'someBody'
-//                    }, 2);
-//            });
-//
-//            // end
-//            test.done();
-//        },
+        'should fail when not enough exact requests have been sent': function (test) {
+            // given - a client
+            var client = mockServerClient("localhost", 1080);
+            // and - an expectation
+            client.mockSimpleResponse('/somePath', { name: 'value' }, 203).then(function () {
+                // and - a request
+                sendRequest("POST", "localhost", 1080, "/somePath", "someBody")
+                    .then(function (response) {
+                        test.equal(response.statusCode, 203);
+                    }, function (error) {
+                        test.ok(false, error);
+                    }).then(function () {
+
+                        // when - verify exact two requests (should fail)
+                        client.verify(
+                            {
+                                'method': 'POST',
+                                'path': '/somePath',
+                                'body': 'someBody'
+                            }, 2, true)
+                            .then(function () {
+                                test.ok(false, "verification should have failed");
+                                test.done();
+                            }, function (message) {
+                                test.equals(message, "Request not found exactly 2 times, expected:<{\n" +
+                                    "  \"method\" : \"POST\",\n" +
+                                    "  \"path\" : \"/somePath\",\n" +
+                                    "  \"body\" : \"someBody\"\n" +
+                                    "}> but was:<{\n" +
+                                    "  \"method\" : \"POST\",\n" +
+                                    "  \"path\" : \"/somePath\",\n" +
+                                    "  \"body\" : \"someBody\",\n" +
+                                    "  \"headers\" : [ {\n" +
+                                    "    \"name\" : \"Host\",\n" +
+                                    "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                    "  }, {\n" +
+                                    "    \"name\" : \"Content-Length\",\n" +
+                                    "    \"values\" : [ \"8\" ]\n" +
+                                    "  } ]\n" +
+                                    "}>");
+                                test.done();
+                            });
+                    });
+            });
+        },
+
+        'should fail when not enough at least requests have been sent': function (test) {
+            // given - a client
+            var client = mockServerClient("localhost", 1080);
+            // and - an expectation
+            client.mockSimpleResponse('/somePath', { name: 'value' }, 203).then(function () {
+                // and - a request
+                sendRequest("POST", "localhost", 1080, "/somePath", "someBody")
+                    .then(function (response) {
+                        test.equal(response.statusCode, 203);
+                    }, function (error) {
+                        test.ok(false, error);
+                    }).then(function () {
+
+                        // when - verify at least two requests (should fail)
+                        client.verify(
+                            {
+                                'method': 'POST',
+                                'path': '/somePath',
+                                'body': 'someBody'
+                            }, 2)
+                            .then(function () {
+                                test.ok(false, "verification should have failed");
+                                test.done();
+                            }, function (message) {
+                                test.equals(message, "Request not found at least 2 times, expected:<{\n" +
+                                    "  \"method\" : \"POST\",\n" +
+                                    "  \"path\" : \"/somePath\",\n" +
+                                    "  \"body\" : \"someBody\"\n" +
+                                    "}> but was:<{\n" +
+                                    "  \"method\" : \"POST\",\n" +
+                                    "  \"path\" : \"/somePath\",\n" +
+                                    "  \"body\" : \"someBody\",\n" +
+                                    "  \"headers\" : [ {\n" +
+                                    "    \"name\" : \"Host\",\n" +
+                                    "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                    "  }, {\n" +
+                                    "    \"name\" : \"Content-Length\",\n" +
+                                    "    \"values\" : [ \"8\" ]\n" +
+                                    "  } ]\n" +
+                                    "}>");
+                                test.done();
+                            });
+                    });
+            });
+        },
 
         'should clear expectations': function (test) {
-            // when
+            // given - a client
             var client = mockServerClient("localhost", 1080);
-            client.mockSimpleResponse('/somePathOne', { name: 'value' }, 200);
-            client.mockSimpleResponse('/somePathOne', { name: 'value' }, 200);
-            client.mockSimpleResponse('/somePathTwo', { name: 'value' }, 200);
+            // and - an expectation
+            client.mockSimpleResponse('/somePathOne', { name: 'value' }, 200).then(function () {
+                // and - another expectation
+                client.mockSimpleResponse('/somePathOne', { name: 'value' }, 200).then(function () {
+                    // and - another expectation
+                    client.mockSimpleResponse('/somePathTwo', { name: 'value' }, 200).then(function () {
+                        // and - a matching request (that returns 200)
+                        sendRequest("GET", "localhost", 1080, "/somePathOne")
+                            .then(function (response) {
+                                test.equal(response.statusCode, 200);
+                                test.equal(response.body, '{"name":"value"}');
+                            }, function (error) {
+                                test.ok(false, error);
+                            }).then(function () {
 
-            // then - matching request
-            sendRequest("GET", "http://localhost:1080/somePathOne")
-                .then(function (response) {
-                    test.equal(response.statusCode, 200);
-                    test.equal(response.body, '{"name":"value"}');
-                }, function (error) {
-                    test.ok(false, error);
+                                // when - some expectations cleared
+                                client.clear('/somePathOne').then(function () {
+
+                                    // then - request matching cleared expectation should return 404
+                                    sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                        .then(function (response) {
+                                            test.ok(false, "should clear matching expectations");
+                                        }, function (error) {
+                                            test.equals(404, error);
+                                        }).then(function () {
+
+                                            // and - request matching non-cleared expectation should return 200
+                                            sendRequest("GET", "localhost", 1080, "/somePathTwo")
+                                                .then(function (response) {
+                                                    test.equal(response.statusCode, 200);
+                                                    test.equal(response.body, '{"name":"value"}');
+                                                    test.done();
+                                                }, function (error) {
+                                                    test.ok(false, "should not clear non-matching expectations");
+                                                    test.done();
+                                                });
+                                        });
+                                });
+                            });
+                    });
                 });
-
-            // when
-            client.clear('/somePathOne');
-
-            // then - matching request but cleared
-            sendRequest("GET", "http://localhost:1080/somePathOne")
-                .then(function (response) {
-                    test.equal(response.statusCode, 404);
-                }, function (error) {
-                    test.ok(false, error);
-                });
-
-            // then - matching request and not cleared
-            sendRequest("GET", "http://localhost:1080/somePathTwo")
-                .then(function (response) {
-                    test.equal(response.statusCode, 200);
-                    test.equal(response.body, '{"name":"value"}');
-                }, function (error) {
-                    test.ok(false, error);
-                });
-
-            // end
-            test.done();
+            });
         },
 
         'should reset expectations': function (test) {
-            // when
+            // given - a client
             var client = mockServerClient("localhost", 1080);
-            client.mockSimpleResponse('/somePathOne', { name: 'value' }, 200);
-            client.mockSimpleResponse('/somePathOne', { name: 'value' }, 200);
-            client.mockSimpleResponse('/somePathTwo', { name: 'value' }, 200);
+            // and - an expectation
+            client.mockSimpleResponse('/somePathOne', { name: 'value' }, 200).then(function () {
+                // and - another expectation
+                client.mockSimpleResponse('/somePathOne', { name: 'value' }, 200).then(function () {
+                    // and - another expectation
+                    client.mockSimpleResponse('/somePathTwo', { name: 'value' }, 200).then(function () {
+                        // and - a matching request (that returns 200)
+                        sendRequest("GET", "localhost", 1080, "/somePathOne")
+                            .then(function (response) {
+                                test.equal(response.statusCode, 200);
+                                test.equal(response.body, '{"name":"value"}');
+                            }, function (error) {
+                                test.ok(false, "should match expectation");
+                            }).then(function () {
 
-            // then - matching request
-            sendRequest("GET", "http://localhost:1080/somePathOne")
-                .then(function (response) {
-                    test.equal(response.statusCode, 200);
-                    test.equal(response.body, '{"name":"value"}');
-                }, function (error) {
-                    test.ok(false, error);
+                                // when - all expectations reset
+                                client.reset().then(function () {
+
+                                    // then - request matching one reset expectation should return 404
+                                    sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                        .then(function () {
+                                            test.ok(false, "should clear all expectations");
+                                        }, function (error) {
+                                            test.equals(404, error);
+                                        }).then(function () {
+
+                                            // then - request matching other reset expectation should return 404
+                                            sendRequest("GET", "localhost", 1080, "/somePathTwo")
+                                                .then(function () {
+                                                    test.ok(false, "should clear all expectations");
+                                                    test.done();
+                                                }, function (error) {
+                                                    test.equals(404, error);
+                                                    test.done();
+                                                });
+
+                                        });
+                                });
+                            });
+                    });
                 });
-
-            // when
-            client.reset();
-
-            // then - matching request but cleared
-            sendRequest("GET", "http://localhost:1080/somePathOne")
-                .then(function (response) {
-                    test.equal(response.statusCode, 404);
-                }, function (error) {
-                    test.ok(false, error);
-                });
-
-            // then - matching request but also cleared
-            sendRequest("GET", "http://localhost:1080/somePathTwo")
-                .then(function (response) {
-                    test.equal(response.statusCode, 404);
-                }, function (error) {
-                    test.ok(false, error);
-                });
-
-            // end
-            test.done();
+            });
         }
     };
 

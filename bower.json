@@ -1,6 +1,6 @@
 {
     "name": "mockserver-client",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "homepage": "https://github.com/jamesdbloom/mockserver-client-node",
     "authors": [
         "James Bloom <jamesdbloom@gmail.com>"
@@ -24,8 +24,7 @@
         "*.yml"
     ],
     "dependencies": {
-        "q": "~1.0",
-        "request": "~2.47"
+        "q": "~1.0"
     },
     "moduleType": [
         "node"
