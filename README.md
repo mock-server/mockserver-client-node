@@ -94,7 +94,8 @@ mockServerClient("localhost", 1080).verify(
  * 2014-28-10   v0.0.4   Fixing badges
  * 2014-01-11   v1.0.0   Cleaned code & removed duplication
  * 2014-02-11   v1.0.1   Added wercker build process
- * 2014-02-21   v1.0.2   Fixed asynchronous errors
+ * 2014-21-11   v1.0.2   Fixed asynchronous errors
+ * 2014-04-12   v1.0.3   Improved connection error handling
 
 ---
 
