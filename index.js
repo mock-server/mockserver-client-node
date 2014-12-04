@@ -23,26 +23,31 @@
             port: port
         };
 
-        var callback = function (response) {
-            var body = '';
+        var req = http.request(options);
+
+        req.once('response', function (response) {
+            var data = '';
 
             if (response.statusCode === 400 || response.statusCode === 404) {
                 deferred.reject(response.statusCode);
             }
 
             response.on('data', function (chunk) {
-                body += chunk;
+                data += chunk;
             });
 
             response.on('end', function () {
                 deferred.resolve({
                     statusCode: response.statusCode,
-                    body: body
+                    body: data
                 });
             });
-        };
+        });
 
-        var req = http.request(options, callback);
+        req.once('error', function (error) {
+            deferred.reject(error);
+        });
+
         req.write(body);
         req.end();
 
