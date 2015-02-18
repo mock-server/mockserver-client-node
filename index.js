@@ -13,7 +13,13 @@
     var http = require('http');
 
     function sendRequest(host, port, path, jsonBody) {
-        var deferred = Q.defer();
+        var promise = (global.protractor ? protractor.promise : Q);
+        var deferred = promise.defer();
+
+        if (global.protractor)
+        {
+            deferred.resolve = deferred.fulfill;
+        }
 
         var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
         var options = {

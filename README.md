@@ -96,6 +96,7 @@ mockServerClient("localhost", 1080).verify(
  * 2014-02-11   v1.0.1   Added wercker build process
  * 2014-21-11   v1.0.2   Fixed asynchronous errors
  * 2014-04-12   v1.0.3   Improved connection error handling
+ * 2014-04-12   v1.0.4   Supporting protractor based promises
 
 ---
 
