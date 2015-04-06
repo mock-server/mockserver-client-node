@@ -97,6 +97,7 @@ mockServerClient("localhost", 1080).verify(
  * 2014-21-11   v1.0.2   Fixed asynchronous errors
  * 2014-04-12   v1.0.3   Improved connection error handling
  * 2014-04-12   v1.0.4   Supporting protractor based promises
+ * 2015-04-06   v1.0.5   Upgrading dependencies
 
 ---
 

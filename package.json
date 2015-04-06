@@ -1,7 +1,7 @@
 {
     "name": "mockserver-client",
     "description": "A node client for the MockServer",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "homepage": "https://github.com/jamesdbloom/mockserver",
     "author": {
         "name": "James Bloom",
@@ -30,7 +30,7 @@
     "devDependencies": {
         "grunt": "~0.4",
         "grunt-contrib-clean": "~0.6",
-        "grunt-contrib-jshint": "~0.10",
+        "grunt-contrib-jshint": "~0.11",
         "grunt-contrib-nodeunit": "~0.4",
         "grunt-run-node": "~0.1",
         "grunt-exec": "~0.4",
@@ -46,6 +46,6 @@
         "gruntplugin"
     ],
     "dependencies": {
-        "q": "~1.1"
+        "q": "~2.0"
     }
 }
