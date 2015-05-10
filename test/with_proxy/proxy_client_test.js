@@ -155,14 +155,14 @@
                                 "}> but was:<{\n" +
                                 "  \"method\" : \"POST\",\n" +
                                 "  \"path\" : \"/somePath\",\n" +
-                                "  \"body\" : \"someBody\",\n" +
                                 "  \"headers\" : [ {\n" +
                                 "    \"name\" : \"Host\",\n" +
                                 "    \"values\" : [ \"localhost:1080\" ]\n" +
                                 "  }, {\n" +
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
-                                "  } ]\n" +
+                                "  } ],\n" +
+                                "  \"body\" : \"someBody\"\n" +
                                 "}>");
                         }).then(function () {
                             test.done();
@@ -197,14 +197,14 @@
                                 "}> but was:<{\n" +
                                 "  \"method\" : \"POST\",\n" +
                                 "  \"path\" : \"/somePath\",\n" +
-                                "  \"body\" : \"someBody\",\n" +
                                 "  \"headers\" : [ {\n" +
                                 "    \"name\" : \"Host\",\n" +
                                 "    \"values\" : [ \"localhost:1080\" ]\n" +
                                 "  }, {\n" +
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
-                                "  } ]\n" +
+                                "  } ],\n" +
+                                "  \"body\" : \"someBody\"\n" +
                                 "}>");
                         }).then(function () {
                             test.done();
@@ -239,14 +239,14 @@
                                 "}> but was:<{\n" +
                                 "  \"method\" : \"POST\",\n" +
                                 "  \"path\" : \"/somePath\",\n" +
-                                "  \"body\" : \"someBody\",\n" +
                                 "  \"headers\" : [ {\n" +
                                 "    \"name\" : \"Host\",\n" +
                                 "    \"values\" : [ \"localhost:1080\" ]\n" +
                                 "  }, {\n" +
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
-                                "  } ]\n" +
+                                "  } ],\n" +
+                                "  \"body\" : \"someBody\"\n" +
                                 "}>");
                         }).then(function () {
                             test.done();
@@ -299,14 +299,14 @@
                                                     "}> but was:<{\n" +
                                                     "  \"method\" : \"POST\",\n" +
                                                     "  \"path\" : \"/someOtherPath\",\n" +
-                                                    "  \"body\" : \"someBody\",\n" +
                                                     "  \"headers\" : [ {\n" +
                                                     "    \"name\" : \"Host\",\n" +
                                                     "    \"values\" : [ \"localhost:1080\" ]\n" +
                                                     "  }, {\n" +
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"8\" ]\n" +
-                                                    "  } ]\n" +
+                                                    "  } ],\n" +
+                                                    "  \"body\" : \"someBody\"\n" +
                                                     "}>");
                                             }).then(function () {
 
