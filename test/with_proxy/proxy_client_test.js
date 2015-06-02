@@ -254,7 +254,7 @@
                 });
         },
 
-        'should clear proxy': function (test) {
+        'should clear proxy by path': function (test) {
             // given - a client
             var client = proxyClient("localhost", 1090);
             // and - a request
@@ -282,6 +282,170 @@
                                 }, 1).then(function () {
                                     // when - matching requests cleared
                                     client.clear('/somePath').then(function () {
+
+                                        // then - the verification should fail requests that were cleared
+                                        client.verify(
+                                            {
+                                                'method': 'POST',
+                                                'path': '/somePath',
+                                                'body': 'someBody'
+                                            }, 1).then(function () {
+                                                test.ok(false, "verification should have failed");
+                                            }, function (message) {
+                                                test.equals(message, "Request not found at least once, expected:<{\n" +
+                                                    "  \"method\" : \"POST\",\n" +
+                                                    "  \"path\" : \"/somePath\",\n" +
+                                                    "  \"body\" : \"someBody\"\n" +
+                                                    "}> but was:<{\n" +
+                                                    "  \"method\" : \"POST\",\n" +
+                                                    "  \"path\" : \"/someOtherPath\",\n" +
+                                                    "  \"headers\" : [ {\n" +
+                                                    "    \"name\" : \"Host\",\n" +
+                                                    "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                                    "  }, {\n" +
+                                                    "    \"name\" : \"Content-Length\",\n" +
+                                                    "    \"values\" : [ \"8\" ]\n" +
+                                                    "  } ],\n" +
+                                                    "  \"body\" : \"someBody\"\n" +
+                                                    "}>");
+                                            }).then(function () {
+
+                                                // then - the verification should pass for other requests
+                                                client.verify(
+                                                    {
+                                                        'method': 'POST',
+                                                        'path': '/someOtherPath',
+                                                        'body': 'someBody'
+                                                    }, 1).then(function () {
+                                                        test.done();
+                                                    }, function () {
+                                                        test.ok(false, "verification should have passed");
+                                                        test.done();
+                                                    });
+                                            });
+                                    }, function () {
+                                        test.ok(false, "client should not fail when resetting");
+                                    });
+                                }, function () {
+                                    test.ok(false, "verification should pass");
+                                });
+                        });
+                });
+        },
+
+        'should clear proxy by request matcher': function (test) {
+            // given - a client
+            var client = proxyClient("localhost", 1090);
+            // and - a request
+            sendRequestViaProxy("http://localhost:1080/somePath", "someBody")
+                .then(function (response) {
+                    test.ok(false, "expecting 404 response");
+                }, function (error) {
+                    test.equal(error, 404);
+                }).then(function () {
+                    // and - another request
+                    sendRequestViaProxy("http://localhost:1080/someOtherPath", "someBody")
+                        .then(function (response) {
+                            test.ok(false, "expecting 404 response");
+                        }, function (error) {
+                            test.equal(error, 404);
+                        }).then(function () {
+
+
+                            // and - a verification that passes
+                            client.verify(
+                                {
+                                    'method': 'POST',
+                                    'path': '/somePath',
+                                    'body': 'someBody'
+                                }, 1).then(function () {
+                                    // when - matching requests cleared
+                                    client.clear({
+                                        "path": "/somePath"
+                                    }).then(function () {
+
+                                        // then - the verification should fail requests that were cleared
+                                        client.verify(
+                                            {
+                                                'method': 'POST',
+                                                'path': '/somePath',
+                                                'body': 'someBody'
+                                            }, 1).then(function () {
+                                                test.ok(false, "verification should have failed");
+                                            }, function (message) {
+                                                test.equals(message, "Request not found at least once, expected:<{\n" +
+                                                    "  \"method\" : \"POST\",\n" +
+                                                    "  \"path\" : \"/somePath\",\n" +
+                                                    "  \"body\" : \"someBody\"\n" +
+                                                    "}> but was:<{\n" +
+                                                    "  \"method\" : \"POST\",\n" +
+                                                    "  \"path\" : \"/someOtherPath\",\n" +
+                                                    "  \"headers\" : [ {\n" +
+                                                    "    \"name\" : \"Host\",\n" +
+                                                    "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                                    "  }, {\n" +
+                                                    "    \"name\" : \"Content-Length\",\n" +
+                                                    "    \"values\" : [ \"8\" ]\n" +
+                                                    "  } ],\n" +
+                                                    "  \"body\" : \"someBody\"\n" +
+                                                    "}>");
+                                            }).then(function () {
+
+                                                // then - the verification should pass for other requests
+                                                client.verify(
+                                                    {
+                                                        'method': 'POST',
+                                                        'path': '/someOtherPath',
+                                                        'body': 'someBody'
+                                                    }, 1).then(function () {
+                                                        test.done();
+                                                    }, function () {
+                                                        test.ok(false, "verification should have passed");
+                                                        test.done();
+                                                    });
+                                            });
+                                    }, function () {
+                                        test.ok(false, "client should not fail when resetting");
+                                    });
+                                }, function () {
+                                    test.ok(false, "verification should pass");
+                                });
+                        });
+                });
+        },
+
+        'should clear proxy by expectation matcher': function (test) {
+            // given - a client
+            var client = proxyClient("localhost", 1090);
+            // and - a request
+            sendRequestViaProxy("http://localhost:1080/somePath", "someBody")
+                .then(function (response) {
+                    test.ok(false, "expecting 404 response");
+                }, function (error) {
+                    test.equal(error, 404);
+                }).then(function () {
+                    // and - another request
+                    sendRequestViaProxy("http://localhost:1080/someOtherPath", "someBody")
+                        .then(function (response) {
+                            test.ok(false, "expecting 404 response");
+                        }, function (error) {
+                            test.equal(error, 404);
+                        }).then(function () {
+
+
+                            // and - a verification that passes
+                            client.verify(
+                                {
+                                    'method': 'POST',
+                                    'path': '/somePath',
+                                    'body': 'someBody'
+                                }, 1).then(function () {
+                                    // when - matching requests cleared
+                                    client.clear({
+                                        "httpRequest": {
+                                            "path": "/somePath"
+                                        }
+                                    }).then(function () {
 
                                         // then - the verification should fail requests that were cleared
                                         client.verify(

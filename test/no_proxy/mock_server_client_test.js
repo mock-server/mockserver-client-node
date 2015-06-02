@@ -473,7 +473,7 @@
             });
         },
 
-        'should clear expectations': function (test) {
+        'should clear expectations by path': function (test) {
             // given - a client
             var client = mockServerClient("localhost", 1080);
             // and - an expectation
@@ -493,6 +493,106 @@
 
                                 // when - some expectations cleared
                                 client.clear('/somePathOne').then(function () {
+
+                                    // then - request matching cleared expectation should return 404
+                                    sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                        .then(function (response) {
+                                            test.ok(false, "should clear matching expectations");
+                                        }, function (error) {
+                                            test.equals(404, error);
+                                        }).then(function () {
+
+                                            // and - request matching non-cleared expectation should return 200
+                                            sendRequest("GET", "localhost", 1080, "/somePathTwo")
+                                                .then(function (response) {
+                                                    test.equal(response.statusCode, 200);
+                                                    test.equal(response.body, '{"name":"value"}');
+                                                    test.done();
+                                                }, function (error) {
+                                                    test.ok(false, "should not clear non-matching expectations");
+                                                    test.done();
+                                                });
+                                        });
+                                });
+                            });
+                    });
+                });
+            });
+        },
+
+        'should clear expectations by request matcher': function (test) {
+            // given - a client
+            var client = mockServerClient("localhost", 1080);
+            // and - an expectation
+            client.mockSimpleResponse('/somePathOne', { name: 'value' }, 200).then(function () {
+                // and - another expectation
+                client.mockSimpleResponse('/somePathOne', { name: 'value' }, 200).then(function () {
+                    // and - another expectation
+                    client.mockSimpleResponse('/somePathTwo', { name: 'value' }, 200).then(function () {
+                        // and - a matching request (that returns 200)
+                        sendRequest("GET", "localhost", 1080, "/somePathOne")
+                            .then(function (response) {
+                                test.equal(response.statusCode, 200);
+                                test.equal(response.body, '{"name":"value"}');
+                            }, function (error) {
+                                test.ok(false, error);
+                            }).then(function () {
+
+                                // when - some expectations cleared
+                                client.clear({
+                                    "path": "/somePathOne"
+                                }).then(function () {
+
+                                    // then - request matching cleared expectation should return 404
+                                    sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                        .then(function (response) {
+                                            test.ok(false, "should clear matching expectations");
+                                        }, function (error) {
+                                            test.equals(404, error);
+                                        }).then(function () {
+
+                                            // and - request matching non-cleared expectation should return 200
+                                            sendRequest("GET", "localhost", 1080, "/somePathTwo")
+                                                .then(function (response) {
+                                                    test.equal(response.statusCode, 200);
+                                                    test.equal(response.body, '{"name":"value"}');
+                                                    test.done();
+                                                }, function (error) {
+                                                    test.ok(false, "should not clear non-matching expectations");
+                                                    test.done();
+                                                });
+                                        });
+                                });
+                            });
+                    });
+                });
+            });
+        },
+
+        'should clear expectations by expectation matcher': function (test) {
+            // given - a client
+            var client = mockServerClient("localhost", 1080);
+            // and - an expectation
+            client.mockSimpleResponse('/somePathOne', { name: 'value' }, 200).then(function () {
+                // and - another expectation
+                client.mockSimpleResponse('/somePathOne', { name: 'value' }, 200).then(function () {
+                    // and - another expectation
+                    client.mockSimpleResponse('/somePathTwo', { name: 'value' }, 200).then(function () {
+                        // and - a matching request (that returns 200)
+                        sendRequest("GET", "localhost", 1080, "/somePathOne")
+                            .then(function (response) {
+                                test.equal(response.statusCode, 200);
+                                test.equal(response.body, '{"name":"value"}');
+                            }, function (error) {
+                                test.ok(false, error);
+                            }).then(function () {
+
+                                // when - some expectations cleared
+                                client.clear({
+                                    "httpRequest": {
+                                        "path": "/somePathOne"
+                                    }
+                                }).then(function () {
 
                                     // then - request matching cleared expectation should return 404
                                     sendRequest("GET", "localhost", 1080, "/somePathOne")

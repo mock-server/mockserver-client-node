@@ -26,7 +26,10 @@
             method: 'PUT',
             host: host,
             path: path,
-            port: port
+            port: port,
+            headers: {
+                'Content-Type': "application/json; charset=utf-8"
+            }
         };
 
         var req = http.request(options);
@@ -244,20 +247,36 @@
             /**
              * Clear all expectations that match the specified path
              *
-             * @param path the path to decide which expectations to cleared
+             * @param pathOrRequestMatcher  if a string is passed in the value will be treated as the path to
+             *                              decide which expectations to cleared, however if an object is passed
+             *                              in the value will be treated as a full request matcher object
              */
-            var clear = function (path) {
-                return sendRequest(host, port, "/clear", createResponseMatcher(path || ".*"));
+            var clear = function (pathOrRequestMatcher) {
+                if (typeof pathOrRequestMatcher === "string") {
+                    return sendRequest(host, port, "/clear", createResponseMatcher(pathOrRequestMatcher));
+                } else if (pathOrRequestMatcher) {
+                    return sendRequest(host, port, "/clear", pathOrRequestMatcher);
+                } else {
+                    return sendRequest(host, port, "/clear", createResponseMatcher(".*"));
+                }
             };
             /**
              * Pretty-print the json for all expectations for the specified path.
              * This is particularly helpful when debugging expectations. The expectation
              * are printed into a dedicated log called mockserver_request.log
              *
-             * @param path the path to decide which expectations to dump to the log
+             * @param pathOrRequestMatcher  if a string is passed in the value will be treated as the path to
+             *                              decide which expectations to cleared, however if an object is passed
+             *                              in the value will be treated as a full request matcher object
              */
-            var dumpToLogs = function (path) {
-                return sendRequest(host, port, "/dumpToLog", createResponseMatcher(path || ".*"));
+            var dumpToLogs = function (pathOrRequestMatcher) {
+                if (typeof pathOrRequestMatcher === "string") {
+                    return sendRequest(host, port, "/dumpToLog", createResponseMatcher(pathOrRequestMatcher));
+                } else if (pathOrRequestMatcher) {
+                    return sendRequest(host, port, "/dumpToLog", pathOrRequestMatcher);
+                } else {
+                    return sendRequest(host, port, "/dumpToLog", createResponseMatcher(".*"));
+                }
             };
 
             var _this = {
@@ -369,19 +388,35 @@
             /**
              * Clear all recorded requests that match the specified path
              *
-             * @param path the path to decide which expectations to cleared
+             * @param pathOrRequestMatcher  if a string is passed in the value will be treated as the path to
+             *                              decide which recorded requests to cleared, however if an object is
+             *                              passed in the value will be treated as a full request matcher object
              */
-            var clear = function (path) {
-                return sendRequest(host, port, "/clear", createResponseMatcher(path || ".*"));
+            var clear = function (pathOrRequestMatcher) {
+                if (typeof pathOrRequestMatcher === "string") {
+                    return sendRequest(host, port, "/clear", createResponseMatcher(pathOrRequestMatcher));
+                } else if (pathOrRequestMatcher) {
+                    return sendRequest(host, port, "/clear", pathOrRequestMatcher);
+                } else {
+                    return sendRequest(host, port, "/clear", createResponseMatcher(".*"));
+                }
             };
             /**
              * Pretty-print the json for all requests / responses that match the specified path
              * as Expectations to the log. They are printed into a dedicated log called mockserver_request.log
              *
-             * @param path the path to decide which expectations to dump to the log
+             * @param pathOrRequestMatcher  if a string is passed in the value will be treated as the path to
+             *                              decide which recorded requests to cleared, however if an object is
+             *                              passed in the value will be treated as a full request matcher object
              */
-            var dumpToLogs = function (path) {
-                return sendRequest(host, port, "/dumpToLog", createResponseMatcher(path || ".*", ""));
+            var dumpToLogs = function (pathOrRequestMatcher) {
+                if (typeof pathOrRequestMatcher === "string") {
+                    return sendRequest(host, port, "/dumpToLog", createResponseMatcher(pathOrRequestMatcher));
+                } else if (pathOrRequestMatcher) {
+                    return sendRequest(host, port, "/dumpToLog", pathOrRequestMatcher);
+                } else {
+                    return sendRequest(host, port, "/dumpToLog", createResponseMatcher(".*"));
+                }
             };
 
             var _this = {
