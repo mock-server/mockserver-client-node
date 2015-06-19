@@ -103,3 +103,7 @@ mockServerClient("localhost", 1080).verify(
 ---
 
 Task submitted by [James D Bloom](http://blog.jamesdbloom.com)
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jamesdbloom/mockserver-client-node/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
