@@ -3,13 +3,13 @@
 > Communicate with [MockServer](http://mock-server.com/) from any node or grunt build
 
 [![Build Status](https://drone.io/github.com/jamesdbloom/mockserver-client-node/status.png)](https://drone.io/github.com/jamesdbloom/mockserver-client-node/latest) [![Dependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node.png)](https://david-dm.org/jamesdbloom/mockserver-client-node) [![devDependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node/dev-status.png)](https://david-dm.org/jamesdbloom/mockserver-client-node#info=devDependencies)
-[![Still Maintained](http://stillmaintained.com/jamesdbloom/mockserver.png)](http://stillmaintained.com/jamesdbloom/mockserver) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jamesdbloom/mockserver-client-node/trend.png)](https://bitdeli.com/free "Bitdeli Badge") 
-
-
-[![Stories in Backlog](https://badge.waffle.io/jamesdbloom/mockserver.png?label=proposal&title=Proposals)](https://waffle.io/jamesdbloom/mockserver) [![Stories in Backlog](https://badge.waffle.io/jamesdbloom/mockserver.png?label=ready&title=Ready)](https://waffle.io/jamesdbloom/mockserver) [![Stories in Backlog](https://badge.waffle.io/jamesdbloom/mockserver.png?label=in%20progress&title=In%20Progress)](https://waffle.io/jamesdbloom/mockserver)
+[![Still Maintained](http://stillmaintained.com/jamesdbloom/mockserver.png)](http://stillmaintained.com/jamesdbloom/mockserver)
 
 
 [![NPM](https://nodei.co/npm/mockserver-client.png?downloads=true&stars=true)](https://nodei.co/npm/mockserver-client/) [![wercker status](https://app.wercker.com/status/7b78f11513b3dc5379f510a7ac82d0d6/m "wercker status")](https://app.wercker.com/project/bykey/7b78f11513b3dc5379f510a7ac82d0d6)
+
+
+For chat room: [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/jamesdbloom/mockserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Getting Started
 
