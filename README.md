@@ -98,6 +98,7 @@ mockServerClient("localhost", 1080).verify(
  * 2014-04-12   v1.0.4   Supporting protractor based promises
  * 2015-04-06   v1.0.5   Upgrading dependencies
  * 2015-06-02   v1.0.6   Improved clear and dumpToLog options
+ * 2015-09-27   v1.0.7   Fixed error with query parameter handling
 
 ---
 
