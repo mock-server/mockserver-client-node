@@ -88,7 +88,7 @@
                     body: "",
                     headers: [],
                     cookies: [],
-                    parameters: []
+                    queryStringParameters: []
                 };
             };
             var createExpectation = function (path, responseBody, statusCode) {
@@ -309,7 +309,7 @@
                     body: "",
                     headers: [],
                     cookies: [],
-                    parameters: []
+                    queryStringParameters: []
                 };
             };
             /**

@@ -45,8 +45,7 @@ mockServerClient("localhost", 1080).mockAnyResponse(
         'httpRequest': {
             'method': 'POST',
             'path': '/somePath',
-            'queryString': 'test=true',
-            'parameters': [
+            'queryStringParameters': [
                 {
                     'name': 'test',
                     'values': [ 'true' ]

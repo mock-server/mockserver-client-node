@@ -162,6 +162,8 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
+                                "  \"keepAlive\" : true,\n" +
+                                "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
                         }).then(function () {
@@ -204,6 +206,8 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
+                                "  \"keepAlive\" : true,\n" +
+                                "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
                         }).then(function () {
@@ -246,6 +250,8 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
+                                "  \"keepAlive\" : true,\n" +
+                                "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
                         }).then(function () {
@@ -306,6 +312,8 @@
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"8\" ]\n" +
                                                     "  } ],\n" +
+                                                    "  \"keepAlive\" : true,\n" +
+                                                    "  \"secure\" : false,\n" +
                                                     "  \"body\" : \"someBody\"\n" +
                                                     "}>");
                                             }).then(function () {
@@ -387,6 +395,8 @@
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"8\" ]\n" +
                                                     "  } ],\n" +
+                                                    "  \"keepAlive\" : true,\n" +
+                                                    "  \"secure\" : false,\n" +
                                                     "  \"body\" : \"someBody\"\n" +
                                                     "}>");
                                             }).then(function () {
@@ -470,6 +480,8 @@
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"8\" ]\n" +
                                                     "  } ],\n" +
+                                                    "  \"keepAlive\" : true,\n" +
+                                                    "  \"secure\" : false,\n" +
                                                     "  \"body\" : \"someBody\"\n" +
                                                     "}>");
                                             }).then(function () {

@@ -8,7 +8,7 @@
     var Q = require('q');
     var http = require('http');
 
-    function sendRequest(method, host, port, path, jsonBody) {
+    function sendRequest(method, host, port, path, jsonBody, headers) {
         var deferred = Q.defer();
 
         var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
@@ -16,7 +16,8 @@
             method: method,
             host: host,
             path: path,
-            port: port
+            port: port,
+            headers: headers
         };
 
         var callback = function (response) {
@@ -66,8 +67,7 @@
                     'httpRequest': {
                         'method': 'POST',
                         'path': '/somePath',
-                        'queryString': 'test=true',
-                        'parameters': [
+                        'queryStringParameters': [
                             {
                                 'name': 'test',
                                 'values': [ 'true' ]
@@ -124,6 +124,247 @@
                 });
         },
 
+        'should match on method only': function (test) {
+            // given - a client
+            var client = mockServerClient("localhost", 1080);
+            // and - an expectation
+            client.mockAnyResponse(
+                {
+                    'httpRequest': {
+                        'method': 'GET'
+                    },
+                    'httpResponse': {
+                        'statusCode': 200,
+                        'body': JSON.stringify({ name: 'first_body' }),
+                        'delay': {
+                            'timeUnit': 'MILLISECONDS',
+                            'value': 250
+                        }
+                    },
+                    'times': {
+                        'remainingTimes': 1,
+                        'unlimited': false
+                    }
+                }
+            ).then(function () {
+                    // and - another expectation
+                    client.mockAnyResponse(
+                        {
+                            'httpRequest': {
+                                'method': 'POST'
+                            },
+                            'httpResponse': {
+                                'statusCode': 200,
+                                'body': JSON.stringify({ name: 'second_body' }),
+                                'delay': {
+                                    'timeUnit': 'MILLISECONDS',
+                                    'value': 250
+                                }
+                            },
+                            'times': {
+                                'remainingTimes': 1,
+                                'unlimited': false
+                            }
+                        }
+                    ).then(function () {
+
+                            // then - matching no expectation
+                            sendRequest("PUT", "localhost", 1080, "/somePath")
+                                .then(function (response) {
+                                    test.ok(false, "should not match expectation");
+                                }, function (error) {
+                                    test.equal(error, 404);
+                                }).then(function () {
+
+                                    // then - matching first expectation
+                                    sendRequest("GET", "localhost", 1080, "/somePath")
+                                        .then(function (response) {
+                                            test.equal(response.statusCode, 200);
+                                            test.equal(response.body, '{"name":"first_body"}');
+                                        }, function () {
+                                            test.ok(false, "should match expectation");
+                                        }).then(function () {
+
+                                            // then - request that matches second expectation
+                                            sendRequest("POST", "localhost", 1080, "/somePath")
+                                                .then(function (response) {
+                                                    test.equal(response.statusCode, 200);
+                                                    test.equal(response.body, '{"name":"second_body"}');
+                                                }, function (error) {
+                                                    test.ok(false, "should match expectation");
+                                                }).then(function () {
+                                                    test.done();
+                                                });
+                                        });
+                                });
+                        });
+                });
+        },
+
+        'should match on path only': function (test) {
+            // given - a client
+            var client = mockServerClient("localhost", 1080);
+            // and - an expectation
+            client.mockAnyResponse(
+                {
+                    'httpRequest': {
+                        'path': '/firstPath'
+                    },
+                    'httpResponse': {
+                        'statusCode': 200,
+                        'body': JSON.stringify({ name: 'first_body' }),
+                        'delay': {
+                            'timeUnit': 'MILLISECONDS',
+                            'value': 250
+                        }
+                    },
+                    'times': {
+                        'remainingTimes': 1,
+                        'unlimited': false
+                    }
+                }
+            ).then(function () {
+                    // and - another expectation
+                    client.mockAnyResponse(
+                        {
+                            'httpRequest': {
+                                'path': '/secondPath'
+                            },
+                            'httpResponse': {
+                                'statusCode': 200,
+                                'body': JSON.stringify({ name: 'second_body' }),
+                                'delay': {
+                                    'timeUnit': 'MILLISECONDS',
+                                    'value': 250
+                                }
+                            },
+                            'times': {
+                                'remainingTimes': 1,
+                                'unlimited': false
+                            }
+                        }
+                    ).then(function () {
+
+                            // then - matching no expectation
+                            sendRequest("GET", "localhost", 1080, "/otherPath")
+                                .then(function (response) {
+                                    test.ok(false, "should not match expectation");
+                                }, function (error) {
+                                    test.equal(error, 404);
+                                }).then(function () {
+
+                                    // then - matching first expectation
+                                    sendRequest("GET", "localhost", 1080, "/firstPath")
+                                        .then(function (response) {
+                                            test.equal(response.statusCode, 200);
+                                            test.equal(response.body, '{"name":"first_body"}');
+                                        }, function () {
+                                            test.ok(false, "should match expectation");
+                                        }).then(function () {
+
+                                            // then - request that matches second expectation
+                                            sendRequest("GET", "localhost", 1080, "/secondPath")
+                                                .then(function (response) {
+                                                    test.equal(response.statusCode, 200);
+                                                    test.equal(response.body, '{"name":"second_body"}');
+                                                }, function (error) {
+                                                    test.ok(false, "should match expectation");
+                                                }).then(function () {
+                                                    test.done();
+                                                });
+                                        });
+                                });
+                        });
+                });
+        },
+
+        'should match on query string parameters only': function (test) {
+            // given - a client
+            var client = mockServerClient("localhost", 1080);
+            // and - an expectation
+            client.mockAnyResponse(
+                {
+                    'httpRequest': {
+                        'queryStringParameters': [
+                            {
+                                'name': 'param',
+                                'values': ['first']
+                            }
+                        ]
+                    },
+                    'httpResponse': {
+                        'statusCode': 200,
+                        'body': JSON.stringify({ name: 'first_body' }),
+                        'delay': {
+                            'timeUnit': 'MILLISECONDS',
+                            'value': 250
+                        }
+                    },
+                    'times': {
+                        'remainingTimes': 1,
+                        'unlimited': false
+                    }
+                }
+            ).then(function () {
+                    // and - another expectation
+                    client.mockAnyResponse(
+                        {
+                            'httpRequest': {
+                                'queryStringParameters': [
+                                    {
+                                        'name': 'param',
+                                        'values': ['second']
+                                    }
+                                ]
+                            },
+                            'httpResponse': {
+                                'statusCode': 200,
+                                'body': JSON.stringify({ name: 'second_body' }),
+                                'delay': {
+                                    'timeUnit': 'MILLISECONDS',
+                                    'value': 250
+                                }
+                            },
+                            'times': {
+                                'remainingTimes': 1,
+                                'unlimited': false
+                            }
+                        }
+                    ).then(function () {
+
+                            // then - matching no expectation
+                            sendRequest("GET", "localhost", 1080, "/somePath?param=other")
+                                .then(function (response) {
+                                    test.ok(false, "should not match expectation");
+                                }, function (error) {
+                                    test.equal(error, 404);
+                                }).then(function () {
+
+                                    // then - matching first expectation
+                                    sendRequest("GET", "localhost", 1080, "/somePath?param=first")
+                                        .then(function (response) {
+                                            test.equal(response.statusCode, 200);
+                                            test.equal(response.body, '{"name":"first_body"}');
+                                        }, function () {
+                                            test.ok(false, "should match expectation");
+                                        }).then(function () {
+
+                                            // then - request that matches second expectation
+                                            sendRequest("GET", "localhost", 1080, "/somePath?param=second")
+                                                .then(function (response) {
+                                                    test.equal(response.statusCode, 200);
+                                                    test.equal(response.body, '{"name":"second_body"}');
+                                                }, function (error) {
+                                                    test.ok(false, "should match expectation");
+                                                }).then(function () {
+                                                    test.done();
+                                                });
+                                        });
+                                });
+                        });
+                });
+        },
+
         'should match on body only': function (test) {
             // given - a client
             var client = mockServerClient("localhost", 1080);
@@ -131,7 +372,6 @@
             client.mockAnyResponse(
                 {
                     'httpRequest': {
-                        'path': '/somePath',
                         'body': {
                             'type': "STRING",
                             'value': 'someBody'
@@ -155,7 +395,6 @@
                     client.mockAnyResponse(
                         {
                             'httpRequest': {
-                                'path': '/somePath',
                                 'body': {
                                     'type': "REGEX",
                                     'value': 'someOtherBody'
@@ -176,7 +415,7 @@
                         }
                     ).then(function () {
 
-                            // then - non matching request
+                            // then - matching no expectation
                             sendRequest("POST", "localhost", 1080, "/otherPath", "someIncorrectBody")
                                 .then(function (response) {
                                     test.ok(false, "should not match expectation");
@@ -184,7 +423,7 @@
                                     test.equal(error, 404);
                                 }).then(function () {
 
-                                    // then - request that matches first expectation
+                                    // then - matching first expectation
                                     sendRequest("POST", "localhost", 1080, "/somePath", "someBody")
                                         .then(function (response) {
                                             test.equal(response.statusCode, 200);
@@ -195,6 +434,180 @@
 
                                             // then - request that matches second expectation
                                             sendRequest("POST", "localhost", 1080, "/somePath", "someOtherBody")
+                                                .then(function (response) {
+                                                    test.equal(response.statusCode, 200);
+                                                    test.equal(response.body, '{"name":"second_body"}');
+                                                }, function (error) {
+                                                    test.ok(false, "should match expectation");
+                                                }).then(function () {
+                                                    test.done();
+                                                });
+                                        });
+                                });
+                        });
+                });
+        },
+
+        'should match on headers only': function (test) {
+            // given - a client
+            var client = mockServerClient("localhost", 1080);
+            // and - an expectation
+            client.mockAnyResponse(
+                {
+                    'httpRequest': {
+                        'headers': [
+                            {
+                                'name': 'header',
+                                'values': ['first']
+                            }
+                        ]
+                    },
+                    'httpResponse': {
+                        'statusCode': 200,
+                        'body': JSON.stringify({ name: 'first_body' }),
+                        'delay': {
+                            'timeUnit': 'MILLISECONDS',
+                            'value': 250
+                        }
+                    },
+                    'times': {
+                        'remainingTimes': 1,
+                        'unlimited': false
+                    }
+                }
+            ).then(function () {
+                    // and - another expectation
+                    client.mockAnyResponse(
+                        {
+                            'httpRequest': {
+                                'headers': [
+                                    {
+                                        'name': 'header',
+                                        'values': ['second']
+                                    }
+                                ]
+                            },
+                            'httpResponse': {
+                                'statusCode': 200,
+                                'body': JSON.stringify({ name: 'second_body' }),
+                                'delay': {
+                                    'timeUnit': 'MILLISECONDS',
+                                    'value': 250
+                                }
+                            },
+                            'times': {
+                                'remainingTimes': 1,
+                                'unlimited': false
+                            }
+                        }
+                    ).then(function () {
+
+                            // then - matching no expectation
+                            sendRequest("GET", "localhost", 1080, "/somePath", "", {'header': 'other'})
+                                .then(function (response) {
+                                    test.ok(false, "should not match expectation");
+                                }, function (error) {
+                                    test.equal(error, 404);
+                                }).then(function () {
+
+                                    // then - matching first expectation
+                                    sendRequest("GET", "localhost", 1080, "/somePath", "", {'header': 'first'})
+                                        .then(function (response) {
+                                            test.equal(response.statusCode, 200);
+                                            test.equal(response.body, '{"name":"first_body"}');
+                                        }, function () {
+                                            test.ok(false, "should match expectation");
+                                        }).then(function () {
+
+                                            // then - request that matches second expectation
+                                            sendRequest("GET", "localhost", 1080, "/somePath", "", {'header': 'second'})
+                                                .then(function (response) {
+                                                    test.equal(response.statusCode, 200);
+                                                    test.equal(response.body, '{"name":"second_body"}');
+                                                }, function (error) {
+                                                    test.ok(false, "should match expectation");
+                                                }).then(function () {
+                                                    test.done();
+                                                });
+                                        });
+                                });
+                        });
+                });
+        },
+
+        'should match on cookies only': function (test) {
+            // given - a client
+            var client = mockServerClient("localhost", 1080);
+            // and - an expectation
+            client.mockAnyResponse(
+                {
+                    'httpRequest': {
+                        'cookies': [
+                            {
+                                'name': 'cookie',
+                                'value': 'first'
+                            }
+                        ]
+                    },
+                    'httpResponse': {
+                        'statusCode': 200,
+                        'body': JSON.stringify({ name: 'first_body' }),
+                        'delay': {
+                            'timeUnit': 'MILLISECONDS',
+                            'value': 250
+                        }
+                    },
+                    'times': {
+                        'remainingTimes': 1,
+                        'unlimited': false
+                    }
+                }
+            ).then(function () {
+                    // and - another expectation
+                    client.mockAnyResponse(
+                        {
+                            'httpRequest': {
+                                'cookies': [
+                                    {
+                                        'name': 'cookie',
+                                        'value': 'second'
+                                    }
+                                ]
+                            },
+                            'httpResponse': {
+                                'statusCode': 200,
+                                'body': JSON.stringify({ name: 'second_body' }),
+                                'delay': {
+                                    'timeUnit': 'MILLISECONDS',
+                                    'value': 250
+                                }
+                            },
+                            'times': {
+                                'remainingTimes': 1,
+                                'unlimited': false
+                            }
+                        }
+                    ).then(function () {
+
+                            // then - matching no expectation
+                            sendRequest("GET", "localhost", 1080, "/somePath", "", {'Cookie': 'cookie=other'})
+                                .then(function (response) {
+                                    test.ok(false, "should not match expectation");
+                                }, function (error) {
+                                    test.equal(error, 404);
+                                }).then(function () {
+
+                                    // then - matching first expectation
+                                    sendRequest("GET", "localhost", 1080, "/somePath", "", {'Cookie': 'cookie=first'})
+                                        .then(function (response) {
+                                            test.equal(response.statusCode, 200);
+                                            test.equal(response.body, '{"name":"first_body"}');
+                                        }, function () {
+                                            test.ok(false, "should match expectation");
+                                        }).then(function () {
+
+                                            // then - request that matches second expectation
+                                            sendRequest("GET", "localhost", 1080, "/somePath", "", {'Cookie': 'cookie=second'})
                                                 .then(function (response) {
                                                     test.equal(response.statusCode, 200);
                                                     test.equal(response.body, '{"name":"second_body"}');
@@ -373,6 +786,8 @@
                                     "    \"name\" : \"Content-Length\",\n" +
                                     "    \"values\" : [ \"8\" ]\n" +
                                     "  } ],\n" +
+                                    "  \"keepAlive\" : true,\n" +
+                                    "  \"secure\" : false,\n" +
                                     "  \"body\" : \"someBody\"\n" +
                                     "}>");
                                 test.done();
@@ -419,6 +834,8 @@
                                     "    \"name\" : \"Content-Length\",\n" +
                                     "    \"values\" : [ \"8\" ]\n" +
                                     "  } ],\n" +
+                                    "  \"keepAlive\" : true,\n" +
+                                    "  \"secure\" : false,\n" +
                                     "  \"body\" : \"someBody\"\n" +
                                     "}>");
                                 test.done();
@@ -465,6 +882,8 @@
                                     "    \"name\" : \"Content-Length\",\n" +
                                     "    \"values\" : [ \"8\" ]\n" +
                                     "  } ],\n" +
+                                    "  \"keepAlive\" : true,\n" +
+                                    "  \"secure\" : false,\n" +
                                     "  \"body\" : \"someBody\"\n" +
                                     "}>");
                                 test.done();
