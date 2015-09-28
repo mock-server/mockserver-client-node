@@ -100,6 +100,7 @@ mockServerClient("localhost", 1080).verify(
  * 2015-06-02   v1.0.6   Improved clear and dumpToLog options
  * 2015-09-27   v1.0.7   Fixed error with query parameter handling
  * 2015-09-27   v1.0.8   Fixed documentation
+ * 2015-09-28   v1.0.9   Fixed documentation again
 
 ---
 
