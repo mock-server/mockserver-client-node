@@ -12,7 +12,7 @@
     var Q = require('q');
     var http = require('http');
 
-    function sendRequest(host, port, path, jsonBody) {
+    function sendRequest(host, port, path, jsonBody, resolveCallback) {
         var promise = (global.protractor ? protractor.promise : Q);
         var deferred = promise.defer();
 
@@ -46,10 +46,14 @@
             });
 
             response.on('end', function () {
-                deferred.resolve({
-                    statusCode: response.statusCode,
-                    body: data
-                });
+                if (resolveCallback) {
+                    deferred.resolve(resolveCallback(data));
+                } else {
+                    deferred.resolve({
+                        statusCode: response.statusCode,
+                        body: data
+                    });
+                }
             });
         });
 
@@ -261,21 +265,57 @@
                 }
             };
             /**
-             * Pretty-print the json for all expectations for the specified path.
-             * This is particularly helpful when debugging expectations. The expectation
-             * are printed into a dedicated log called mockserver_request.log
+             * Retrieve the recorded requests that match the parameter, as follows:
+             * - use a string value to match on path,
+             * - use a request matcher object to match on a full request,
+             * - or use null to retrieve all requests
              *
-             * @param pathOrRequestMatcher  if a string is passed in the value will be treated as the path to
-             *                              decide which expectations to cleared, however if an object is passed
-             *                              in the value will be treated as a full request matcher object
+             * @param pathOrRequestMatcher  if a string is passed in the value will be treated as the path, however
+             *                              if an object is passed in the value will be treated as a full request
+             *                              matcher object, if null is passed in it will be treated as match all
              */
-            var dumpToLogs = function (pathOrRequestMatcher) {
+            var retrieveRequests = function (pathOrRequestMatcher) {
+                var resolveCallback = function(responseText) {
+                    if (responseText) {
+                        return JSON.parse(responseText);
+                    } else {
+                        return undefined;
+                    }
+                };
                 if (typeof pathOrRequestMatcher === "string") {
-                    return sendRequest(host, port, "/dumpToLog", createResponseMatcher(pathOrRequestMatcher));
+                    return sendRequest(host, port, "/retrieve", createResponseMatcher(pathOrRequestMatcher), resolveCallback);
                 } else if (pathOrRequestMatcher) {
-                    return sendRequest(host, port, "/dumpToLog", pathOrRequestMatcher);
+                    return sendRequest(host, port, "/retrieve", pathOrRequestMatcher, resolveCallback);
                 } else {
-                    return sendRequest(host, port, "/dumpToLog", createResponseMatcher(".*"));
+                    return sendRequest(host, port, "/retrieve", createResponseMatcher(".*"), resolveCallback);
+                }
+            };
+            /**
+             * Retrieve the setup expectations that match the parameter,
+             * the expectation is retrieved by matching the parameter
+             * on the expectations own request matcher, as follows:
+             * - use a string value to match on path,
+             * - use a request matcher object to match on a full request,
+             * - or use null to retrieve all requests
+             *
+             * @param pathOrRequestMatcher  if a string is passed in the value will be treated as the path, however
+             *                              if an object is passed in the value will be treated as a full request
+             *                              matcher object, if null is passed in it will be treated as match all
+             */
+            var retrieveExpectations = function (pathOrRequestMatcher) {
+                var resolveCallback = function(responseText) {
+                    if (responseText) {
+                        return JSON.parse(responseText);
+                    } else {
+                        return undefined;
+                    }
+                };
+                if (typeof pathOrRequestMatcher === "string") {
+                    return sendRequest(host, port, "/retrieve?type=expectation", createResponseMatcher(pathOrRequestMatcher), resolveCallback);
+                } else if (pathOrRequestMatcher) {
+                    return sendRequest(host, port, "/retrieve?type=expectation", pathOrRequestMatcher, resolveCallback);
+                } else {
+                    return sendRequest(host, port, "/retrieve?type=expectation", createResponseMatcher(".*"), resolveCallback);
                 }
             };
 
@@ -287,7 +327,8 @@
                 verifySequence: verifySequence,
                 reset: reset,
                 clear: clear,
-                dumpToLogs: dumpToLogs
+                retrieveRequests: retrieveRequests,
+                retrieveExpectations: retrieveExpectations
             };
             return  _this;
         },
