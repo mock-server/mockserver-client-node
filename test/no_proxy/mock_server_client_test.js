@@ -786,7 +786,7 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
-                                "  \"keepAlive\" : true,\n" +
+                                "  \"keepAlive\" : false,\n" +
                                 "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
@@ -834,7 +834,7 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
-                                "  \"keepAlive\" : true,\n" +
+                                "  \"keepAlive\" : false,\n" +
                                 "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
@@ -882,7 +882,7 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
-                                "  \"keepAlive\" : true,\n" +
+                                "  \"keepAlive\" : false,\n" +
                                 "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
@@ -1017,7 +1017,7 @@
                                                     "  }, {\n" +
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"8\" ]\n  } ],\n" +
-                                                    "  \"keepAlive\" : true,\n" +
+                                                    "  \"keepAlive\" : false,\n" +
                                                     "  \"secure\" : false,\n" +
                                                     "  \"body\" : \"someBody\"\n" +
                                                     "}, {\n" +
@@ -1030,7 +1030,7 @@
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"0\" ]\n" +
                                                     "  } ],\n" +
-                                                    "  \"keepAlive\" : true,\n" +
+                                                    "  \"keepAlive\" : false,\n" +
                                                     "  \"secure\" : false\n" +
                                                     "}, {\n" +
                                                     "  \"method\" : \"GET\",\n" +
@@ -1042,7 +1042,7 @@
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"0\" ]\n" +
                                                     "  } ],\n" +
-                                                    "  \"keepAlive\" : true,\n" +
+                                                    "  \"keepAlive\" : false,\n" +
                                                     "  \"secure\" : false\n" +
                                                     "} ]>");
                                                     test.done();
@@ -1124,7 +1124,7 @@
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"8\" ]\n" +
                                                     "  } ],\n" +
-                                                    "  \"keepAlive\" : true,\n" +
+                                                    "  \"keepAlive\" : false,\n" +
                                                     "  \"secure\" : false,\n" +
                                                     "  \"body\" : \"someBody\"\n" +
                                                     "}, {\n" +
@@ -1136,7 +1136,7 @@
                                                     "  }, {\n    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"0\" ]\n" +
                                                     "  } ],\n" +
-                                                    "  \"keepAlive\" : true,\n" +
+                                                    "  \"keepAlive\" : false,\n" +
                                                     "  \"secure\" : false\n" +
                                                     "}, {\n  \"method\" : \"GET\",\n" +
                                                     "  \"path\" : \"/somePathTwo\",\n" +
@@ -1146,7 +1146,7 @@
                                                     "  }, {\n    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"0\" ]\n" +
                                                     "  } ],\n" +
-                                                    "  \"keepAlive\" : true,\n" +
+                                                    "  \"keepAlive\" : false,\n" +
                                                     "  \"secure\" : false\n" +
                                                     "} ]>");
                                                     test.done();
