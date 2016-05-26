@@ -28,17 +28,17 @@
         "test": "grunt"
     },
     "devDependencies": {
-        "grunt": "~0.4",
-        "grunt-contrib-clean": "~0.6",
-        "grunt-contrib-jshint": "~0.11",
-        "grunt-contrib-nodeunit": "~0.4",
+        "grunt": "~1.0",
+        "grunt-contrib-clean": "~1.0",
+        "grunt-contrib-jshint": "~1.0",
+        "grunt-contrib-nodeunit": "~1.0",
         "grunt-run-node": "~0.1",
         "grunt-exec": "~0.4",
         "mockserver-grunt": "~1",
         "nodeunit": "~0.9"
     },
     "peerDependencies": {
-        "grunt": ">=0.4.0"
+        "grunt": "~1.0"
     },
     "keywords": [
         "mockserver",
