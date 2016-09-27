@@ -17,8 +17,9 @@
             host: host,
             path: path,
             port: port,
-            headers: headers
+            headers: headers || {}
         };
+        options.headers.Connection = "keep-alive";
 
         var callback = function (response) {
             var body = '';
@@ -93,35 +94,35 @@
                 }
             ).then(function () {
 
-                    // then - non matching request
-                    sendRequest("GET", "localhost", 1080, "/otherPath")
+                // then - non matching request
+                sendRequest("GET", "localhost", 1080, "/otherPath")
+                    .then(function (response) {
+                        test.ok(false, "should not match expectation");
+                    }, function (error) {
+                        test.equal(error, 404);
+                    }).then(function () {
+
+                    // then - matching request
+                    sendRequest("POST", "localhost", 1080, "/somePath?test=true", "someBody")
                         .then(function (response) {
-                            test.ok(false, "should not match expectation");
+                            test.equal(response.statusCode, 200);
+                            test.equal(response.body, '{"name":"value"}');
                         }, function (error) {
-                            test.equal(error, 404);
+                            test.ok(false, "should match expectation");
                         }).then(function () {
 
-                            // then - matching request
-                            sendRequest("POST", "localhost", 1080, "/somePath?test=true", "someBody")
-                                .then(function (response) {
-                                    test.equal(response.statusCode, 200);
-                                    test.equal(response.body, '{"name":"value"}');
-                                }, function (error) {
-                                    test.ok(false, "should match expectation");
-                                }).then(function () {
-
-                                    // then - matching request, but no times remaining
-                                    sendRequest("POST", "localhost", 1080, "/somePath?test=true", "someBody")
-                                        .then(function (response) {
-                                            test.ok(false, "should match expectation but no times remaining");
-                                        }, function (error) {
-                                            test.equal(error, 404);
-                                        }).then(function () {
-                                            test.done();
-                                        });
-                                });
+                        // then - matching request, but no times remaining
+                        sendRequest("POST", "localhost", 1080, "/somePath?test=true", "someBody")
+                            .then(function (response) {
+                                test.ok(false, "should match expectation but no times remaining");
+                            }, function (error) {
+                                test.equal(error, 404);
+                            }).then(function () {
+                            test.done();
                         });
+                    });
                 });
+            });
         },
 
         'should match on method only': function (test) {
@@ -147,58 +148,58 @@
                     }
                 }
             ).then(function () {
-                    // and - another expectation
-                    client.mockAnyResponse(
-                        {
-                            'httpRequest': {
-                                'method': 'POST'
-                            },
-                            'httpResponse': {
-                                'statusCode': 200,
-                                'body': JSON.stringify({name: 'second_body'}),
-                                'delay': {
-                                    'timeUnit': 'MILLISECONDS',
-                                    'value': 250
-                                }
-                            },
-                            'times': {
-                                'remainingTimes': 1,
-                                'unlimited': false
+                // and - another expectation
+                client.mockAnyResponse(
+                    {
+                        'httpRequest': {
+                            'method': 'POST'
+                        },
+                        'httpResponse': {
+                            'statusCode': 200,
+                            'body': JSON.stringify({name: 'second_body'}),
+                            'delay': {
+                                'timeUnit': 'MILLISECONDS',
+                                'value': 250
                             }
+                        },
+                        'times': {
+                            'remainingTimes': 1,
+                            'unlimited': false
                         }
-                    ).then(function () {
+                    }
+                ).then(function () {
 
-                            // then - matching no expectation
-                            sendRequest("PUT", "localhost", 1080, "/somePath")
+                    // then - matching no expectation
+                    sendRequest("PUT", "localhost", 1080, "/somePath")
+                        .then(function (response) {
+                            test.ok(false, "should not match expectation");
+                        }, function (error) {
+                            test.equal(error, 404);
+                        }).then(function () {
+
+                        // then - matching first expectation
+                        sendRequest("GET", "localhost", 1080, "/somePath")
+                            .then(function (response) {
+                                test.equal(response.statusCode, 200);
+                                test.equal(response.body, '{"name":"first_body"}');
+                            }, function () {
+                                test.ok(false, "should match expectation");
+                            }).then(function () {
+
+                            // then - request that matches second expectation
+                            sendRequest("POST", "localhost", 1080, "/somePath")
                                 .then(function (response) {
-                                    test.ok(false, "should not match expectation");
+                                    test.equal(response.statusCode, 200);
+                                    test.equal(response.body, '{"name":"second_body"}');
                                 }, function (error) {
-                                    test.equal(error, 404);
+                                    test.ok(false, "should match expectation");
                                 }).then(function () {
-
-                                    // then - matching first expectation
-                                    sendRequest("GET", "localhost", 1080, "/somePath")
-                                        .then(function (response) {
-                                            test.equal(response.statusCode, 200);
-                                            test.equal(response.body, '{"name":"first_body"}');
-                                        }, function () {
-                                            test.ok(false, "should match expectation");
-                                        }).then(function () {
-
-                                            // then - request that matches second expectation
-                                            sendRequest("POST", "localhost", 1080, "/somePath")
-                                                .then(function (response) {
-                                                    test.equal(response.statusCode, 200);
-                                                    test.equal(response.body, '{"name":"second_body"}');
-                                                }, function (error) {
-                                                    test.ok(false, "should match expectation");
-                                                }).then(function () {
-                                                    test.done();
-                                                });
-                                        });
-                                });
+                                test.done();
+                            });
                         });
+                    });
                 });
+            });
         },
 
         'should match on path only': function (test) {
@@ -224,58 +225,58 @@
                     }
                 }
             ).then(function () {
-                    // and - another expectation
-                    client.mockAnyResponse(
-                        {
-                            'httpRequest': {
-                                'path': '/secondPath'
-                            },
-                            'httpResponse': {
-                                'statusCode': 200,
-                                'body': JSON.stringify({name: 'second_body'}),
-                                'delay': {
-                                    'timeUnit': 'MILLISECONDS',
-                                    'value': 250
-                                }
-                            },
-                            'times': {
-                                'remainingTimes': 1,
-                                'unlimited': false
+                // and - another expectation
+                client.mockAnyResponse(
+                    {
+                        'httpRequest': {
+                            'path': '/secondPath'
+                        },
+                        'httpResponse': {
+                            'statusCode': 200,
+                            'body': JSON.stringify({name: 'second_body'}),
+                            'delay': {
+                                'timeUnit': 'MILLISECONDS',
+                                'value': 250
                             }
+                        },
+                        'times': {
+                            'remainingTimes': 1,
+                            'unlimited': false
                         }
-                    ).then(function () {
+                    }
+                ).then(function () {
 
-                            // then - matching no expectation
-                            sendRequest("GET", "localhost", 1080, "/otherPath")
+                    // then - matching no expectation
+                    sendRequest("GET", "localhost", 1080, "/otherPath")
+                        .then(function (response) {
+                            test.ok(false, "should not match expectation");
+                        }, function (error) {
+                            test.equal(error, 404);
+                        }).then(function () {
+
+                        // then - matching first expectation
+                        sendRequest("GET", "localhost", 1080, "/firstPath")
+                            .then(function (response) {
+                                test.equal(response.statusCode, 200);
+                                test.equal(response.body, '{"name":"first_body"}');
+                            }, function () {
+                                test.ok(false, "should match expectation");
+                            }).then(function () {
+
+                            // then - request that matches second expectation
+                            sendRequest("GET", "localhost", 1080, "/secondPath")
                                 .then(function (response) {
-                                    test.ok(false, "should not match expectation");
+                                    test.equal(response.statusCode, 200);
+                                    test.equal(response.body, '{"name":"second_body"}');
                                 }, function (error) {
-                                    test.equal(error, 404);
+                                    test.ok(false, "should match expectation");
                                 }).then(function () {
-
-                                    // then - matching first expectation
-                                    sendRequest("GET", "localhost", 1080, "/firstPath")
-                                        .then(function (response) {
-                                            test.equal(response.statusCode, 200);
-                                            test.equal(response.body, '{"name":"first_body"}');
-                                        }, function () {
-                                            test.ok(false, "should match expectation");
-                                        }).then(function () {
-
-                                            // then - request that matches second expectation
-                                            sendRequest("GET", "localhost", 1080, "/secondPath")
-                                                .then(function (response) {
-                                                    test.equal(response.statusCode, 200);
-                                                    test.equal(response.body, '{"name":"second_body"}');
-                                                }, function (error) {
-                                                    test.ok(false, "should match expectation");
-                                                }).then(function () {
-                                                    test.done();
-                                                });
-                                        });
-                                });
+                                test.done();
+                            });
                         });
+                    });
                 });
+            });
         },
 
         'should match on query string parameters only': function (test) {
@@ -306,63 +307,63 @@
                     }
                 }
             ).then(function () {
-                    // and - another expectation
-                    client.mockAnyResponse(
-                        {
-                            'httpRequest': {
-                                'queryStringParameters': [
-                                    {
-                                        'name': 'param',
-                                        'values': ['second']
-                                    }
-                                ]
-                            },
-                            'httpResponse': {
-                                'statusCode': 200,
-                                'body': JSON.stringify({name: 'second_body'}),
-                                'delay': {
-                                    'timeUnit': 'MILLISECONDS',
-                                    'value': 250
+                // and - another expectation
+                client.mockAnyResponse(
+                    {
+                        'httpRequest': {
+                            'queryStringParameters': [
+                                {
+                                    'name': 'param',
+                                    'values': ['second']
                                 }
-                            },
-                            'times': {
-                                'remainingTimes': 1,
-                                'unlimited': false
+                            ]
+                        },
+                        'httpResponse': {
+                            'statusCode': 200,
+                            'body': JSON.stringify({name: 'second_body'}),
+                            'delay': {
+                                'timeUnit': 'MILLISECONDS',
+                                'value': 250
                             }
+                        },
+                        'times': {
+                            'remainingTimes': 1,
+                            'unlimited': false
                         }
-                    ).then(function () {
+                    }
+                ).then(function () {
 
-                            // then - matching no expectation
-                            sendRequest("GET", "localhost", 1080, "/somePath?param=other")
+                    // then - matching no expectation
+                    sendRequest("GET", "localhost", 1080, "/somePath?param=other")
+                        .then(function (response) {
+                            test.ok(false, "should not match expectation");
+                        }, function (error) {
+                            test.equal(error, 404);
+                        }).then(function () {
+
+                        // then - matching first expectation
+                        sendRequest("GET", "localhost", 1080, "/somePath?param=first")
+                            .then(function (response) {
+                                test.equal(response.statusCode, 200);
+                                test.equal(response.body, '{"name":"first_body"}');
+                            }, function () {
+                                test.ok(false, "should match expectation");
+                            }).then(function () {
+
+                            // then - request that matches second expectation
+                            sendRequest("GET", "localhost", 1080, "/somePath?param=second")
                                 .then(function (response) {
-                                    test.ok(false, "should not match expectation");
+                                    test.equal(response.statusCode, 200);
+                                    test.equal(response.body, '{"name":"second_body"}');
                                 }, function (error) {
-                                    test.equal(error, 404);
+                                    test.ok(false, "should match expectation");
                                 }).then(function () {
-
-                                    // then - matching first expectation
-                                    sendRequest("GET", "localhost", 1080, "/somePath?param=first")
-                                        .then(function (response) {
-                                            test.equal(response.statusCode, 200);
-                                            test.equal(response.body, '{"name":"first_body"}');
-                                        }, function () {
-                                            test.ok(false, "should match expectation");
-                                        }).then(function () {
-
-                                            // then - request that matches second expectation
-                                            sendRequest("GET", "localhost", 1080, "/somePath?param=second")
-                                                .then(function (response) {
-                                                    test.equal(response.statusCode, 200);
-                                                    test.equal(response.body, '{"name":"second_body"}');
-                                                }, function (error) {
-                                                    test.ok(false, "should match expectation");
-                                                }).then(function () {
-                                                    test.done();
-                                                });
-                                        });
-                                });
+                                test.done();
+                            });
                         });
+                    });
                 });
+            });
         },
 
         'should match on body only': function (test) {
@@ -391,61 +392,61 @@
                     }
                 }
             ).then(function () {
-                    // and - another expectation
-                    client.mockAnyResponse(
-                        {
-                            'httpRequest': {
-                                'body': {
-                                    'type': "REGEX",
-                                    'value': 'someOtherBody'
-                                }
-                            },
-                            'httpResponse': {
-                                'statusCode': 200,
-                                'body': JSON.stringify({name: 'second_body'}),
-                                'delay': {
-                                    'timeUnit': 'MILLISECONDS',
-                                    'value': 250
-                                }
-                            },
-                            'times': {
-                                'remainingTimes': 1,
-                                'unlimited': false
+                // and - another expectation
+                client.mockAnyResponse(
+                    {
+                        'httpRequest': {
+                            'body': {
+                                'type': "REGEX",
+                                'value': 'someOtherBody'
                             }
+                        },
+                        'httpResponse': {
+                            'statusCode': 200,
+                            'body': JSON.stringify({name: 'second_body'}),
+                            'delay': {
+                                'timeUnit': 'MILLISECONDS',
+                                'value': 250
+                            }
+                        },
+                        'times': {
+                            'remainingTimes': 1,
+                            'unlimited': false
                         }
-                    ).then(function () {
+                    }
+                ).then(function () {
 
-                            // then - matching no expectation
-                            sendRequest("POST", "localhost", 1080, "/otherPath", "someIncorrectBody")
+                    // then - matching no expectation
+                    sendRequest("POST", "localhost", 1080, "/otherPath", "someIncorrectBody")
+                        .then(function (response) {
+                            test.ok(false, "should not match expectation");
+                        }, function (error) {
+                            test.equal(error, 404);
+                        }).then(function () {
+
+                        // then - matching first expectation
+                        sendRequest("POST", "localhost", 1080, "/somePath", "someBody")
+                            .then(function (response) {
+                                test.equal(response.statusCode, 200);
+                                test.equal(response.body, '{"name":"first_body"}');
+                            }, function () {
+                                test.ok(false, "should match expectation");
+                            }).then(function () {
+
+                            // then - request that matches second expectation
+                            sendRequest("POST", "localhost", 1080, "/somePath", "someOtherBody")
                                 .then(function (response) {
-                                    test.ok(false, "should not match expectation");
+                                    test.equal(response.statusCode, 200);
+                                    test.equal(response.body, '{"name":"second_body"}');
                                 }, function (error) {
-                                    test.equal(error, 404);
+                                    test.ok(false, "should match expectation");
                                 }).then(function () {
-
-                                    // then - matching first expectation
-                                    sendRequest("POST", "localhost", 1080, "/somePath", "someBody")
-                                        .then(function (response) {
-                                            test.equal(response.statusCode, 200);
-                                            test.equal(response.body, '{"name":"first_body"}');
-                                        }, function () {
-                                            test.ok(false, "should match expectation");
-                                        }).then(function () {
-
-                                            // then - request that matches second expectation
-                                            sendRequest("POST", "localhost", 1080, "/somePath", "someOtherBody")
-                                                .then(function (response) {
-                                                    test.equal(response.statusCode, 200);
-                                                    test.equal(response.body, '{"name":"second_body"}');
-                                                }, function (error) {
-                                                    test.ok(false, "should match expectation");
-                                                }).then(function () {
-                                                    test.done();
-                                                });
-                                        });
-                                });
+                                test.done();
+                            });
                         });
+                    });
                 });
+            });
         },
 
         'should match on headers only': function (test) {
@@ -476,63 +477,63 @@
                     }
                 }
             ).then(function () {
-                    // and - another expectation
-                    client.mockAnyResponse(
-                        {
-                            'httpRequest': {
-                                'headers': [
-                                    {
-                                        'name': 'header',
-                                        'values': ['second']
-                                    }
-                                ]
-                            },
-                            'httpResponse': {
-                                'statusCode': 200,
-                                'body': JSON.stringify({name: 'second_body'}),
-                                'delay': {
-                                    'timeUnit': 'MILLISECONDS',
-                                    'value': 250
+                // and - another expectation
+                client.mockAnyResponse(
+                    {
+                        'httpRequest': {
+                            'headers': [
+                                {
+                                    'name': 'header',
+                                    'values': ['second']
                                 }
-                            },
-                            'times': {
-                                'remainingTimes': 1,
-                                'unlimited': false
+                            ]
+                        },
+                        'httpResponse': {
+                            'statusCode': 200,
+                            'body': JSON.stringify({name: 'second_body'}),
+                            'delay': {
+                                'timeUnit': 'MILLISECONDS',
+                                'value': 250
                             }
+                        },
+                        'times': {
+                            'remainingTimes': 1,
+                            'unlimited': false
                         }
-                    ).then(function () {
+                    }
+                ).then(function () {
 
-                            // then - matching no expectation
-                            sendRequest("GET", "localhost", 1080, "/somePath", "", {'header': 'other'})
+                    // then - matching no expectation
+                    sendRequest("GET", "localhost", 1080, "/somePath", "", {'header': 'other'})
+                        .then(function (response) {
+                            test.ok(false, "should not match expectation");
+                        }, function (error) {
+                            test.equal(error, 404);
+                        }).then(function () {
+
+                        // then - matching first expectation
+                        sendRequest("GET", "localhost", 1080, "/somePath", "", {'header': 'first'})
+                            .then(function (response) {
+                                test.equal(response.statusCode, 200);
+                                test.equal(response.body, '{"name":"first_body"}');
+                            }, function () {
+                                test.ok(false, "should match expectation");
+                            }).then(function () {
+
+                            // then - request that matches second expectation
+                            sendRequest("GET", "localhost", 1080, "/somePath", "", {'header': 'second'})
                                 .then(function (response) {
-                                    test.ok(false, "should not match expectation");
+                                    test.equal(response.statusCode, 200);
+                                    test.equal(response.body, '{"name":"second_body"}');
                                 }, function (error) {
-                                    test.equal(error, 404);
+                                    test.ok(false, "should match expectation");
                                 }).then(function () {
-
-                                    // then - matching first expectation
-                                    sendRequest("GET", "localhost", 1080, "/somePath", "", {'header': 'first'})
-                                        .then(function (response) {
-                                            test.equal(response.statusCode, 200);
-                                            test.equal(response.body, '{"name":"first_body"}');
-                                        }, function () {
-                                            test.ok(false, "should match expectation");
-                                        }).then(function () {
-
-                                            // then - request that matches second expectation
-                                            sendRequest("GET", "localhost", 1080, "/somePath", "", {'header': 'second'})
-                                                .then(function (response) {
-                                                    test.equal(response.statusCode, 200);
-                                                    test.equal(response.body, '{"name":"second_body"}');
-                                                }, function (error) {
-                                                    test.ok(false, "should match expectation");
-                                                }).then(function () {
-                                                    test.done();
-                                                });
-                                        });
-                                });
+                                test.done();
+                            });
                         });
+                    });
                 });
+            });
         },
 
         'should match on cookies only': function (test) {
@@ -563,63 +564,63 @@
                     }
                 }
             ).then(function () {
-                    // and - another expectation
-                    client.mockAnyResponse(
-                        {
-                            'httpRequest': {
-                                'cookies': [
-                                    {
-                                        'name': 'cookie',
-                                        'value': 'second'
-                                    }
-                                ]
-                            },
-                            'httpResponse': {
-                                'statusCode': 200,
-                                'body': JSON.stringify({name: 'second_body'}),
-                                'delay': {
-                                    'timeUnit': 'MILLISECONDS',
-                                    'value': 250
+                // and - another expectation
+                client.mockAnyResponse(
+                    {
+                        'httpRequest': {
+                            'cookies': [
+                                {
+                                    'name': 'cookie',
+                                    'value': 'second'
                                 }
-                            },
-                            'times': {
-                                'remainingTimes': 1,
-                                'unlimited': false
+                            ]
+                        },
+                        'httpResponse': {
+                            'statusCode': 200,
+                            'body': JSON.stringify({name: 'second_body'}),
+                            'delay': {
+                                'timeUnit': 'MILLISECONDS',
+                                'value': 250
                             }
+                        },
+                        'times': {
+                            'remainingTimes': 1,
+                            'unlimited': false
                         }
-                    ).then(function () {
+                    }
+                ).then(function () {
 
-                            // then - matching no expectation
-                            sendRequest("GET", "localhost", 1080, "/somePath", "", {'Cookie': 'cookie=other'})
+                    // then - matching no expectation
+                    sendRequest("GET", "localhost", 1080, "/somePath", "", {'Cookie': 'cookie=other'})
+                        .then(function (response) {
+                            test.ok(false, "should not match expectation");
+                        }, function (error) {
+                            test.equal(error, 404);
+                        }).then(function () {
+
+                        // then - matching first expectation
+                        sendRequest("GET", "localhost", 1080, "/somePath", "", {'Cookie': 'cookie=first'})
+                            .then(function (response) {
+                                test.equal(response.statusCode, 200);
+                                test.equal(response.body, '{"name":"first_body"}');
+                            }, function () {
+                                test.ok(false, "should match expectation");
+                            }).then(function () {
+
+                            // then - request that matches second expectation
+                            sendRequest("GET", "localhost", 1080, "/somePath", "", {'Cookie': 'cookie=second'})
                                 .then(function (response) {
-                                    test.ok(false, "should not match expectation");
+                                    test.equal(response.statusCode, 200);
+                                    test.equal(response.body, '{"name":"second_body"}');
                                 }, function (error) {
-                                    test.equal(error, 404);
+                                    test.ok(false, "should match expectation");
                                 }).then(function () {
-
-                                    // then - matching first expectation
-                                    sendRequest("GET", "localhost", 1080, "/somePath", "", {'Cookie': 'cookie=first'})
-                                        .then(function (response) {
-                                            test.equal(response.statusCode, 200);
-                                            test.equal(response.body, '{"name":"first_body"}');
-                                        }, function () {
-                                            test.ok(false, "should match expectation");
-                                        }).then(function () {
-
-                                            // then - request that matches second expectation
-                                            sendRequest("GET", "localhost", 1080, "/somePath", "", {'Cookie': 'cookie=second'})
-                                                .then(function (response) {
-                                                    test.equal(response.statusCode, 200);
-                                                    test.equal(response.body, '{"name":"second_body"}');
-                                                }, function (error) {
-                                                    test.ok(false, "should match expectation");
-                                                }).then(function () {
-                                                    test.done();
-                                                });
-                                        });
-                                });
+                                test.done();
+                            });
                         });
+                    });
                 });
+            });
         },
 
         'should create simple response expectation': function (test) {
@@ -634,26 +635,26 @@
                         test.equal(error, 404);
                     }).then(function () {
 
-                        // then - matching request
+                    // then - matching request
+                    sendRequest("POST", "localhost", 1080, "/somePath?test=true", "someBody")
+                        .then(function (response) {
+                            test.equal(response.statusCode, 203);
+                            test.equal(response.body, '{"name":"value"}');
+                        }, function () {
+                            test.ok(false, "should match expectation");
+                        }).then(function () {
+
+                        // then - matching request, but no times remaining
                         sendRequest("POST", "localhost", 1080, "/somePath?test=true", "someBody")
                             .then(function (response) {
-                                test.equal(response.statusCode, 203);
-                                test.equal(response.body, '{"name":"value"}');
-                            }, function () {
-                                test.ok(false, "should match expectation");
+                                test.ok(false, "should match expectation but no times remaining");
+                            }, function (error) {
+                                test.equal(error, 404);
                             }).then(function () {
-
-                                // then - matching request, but no times remaining
-                                sendRequest("POST", "localhost", 1080, "/somePath?test=true", "someBody")
-                                    .then(function (response) {
-                                        test.ok(false, "should match expectation but no times remaining");
-                                    }, function (error) {
-                                        test.equal(error, 404);
-                                    }).then(function () {
-                                        test.done();
-                                    });
-                            });
+                            test.done();
+                        });
                     });
+                });
             });
         },
 
@@ -696,19 +697,19 @@
                         test.ok(false, error);
                     }).then(function () {
 
-                        // when - verify at least one request
-                        client.verify(
-                            {
-                                'method': 'POST',
-                                'path': '/somePath',
-                                'body': 'someBody'
-                            }, 1, true).then(function () {
-                                test.done();
-                            }, function () {
-                                test.ok(false, "verification should pass");
-                                test.done();
-                            });
+                    // when - verify at least one request
+                    client.verify(
+                        {
+                            'method': 'POST',
+                            'path': '/somePath',
+                            'body': 'someBody'
+                        }, 1, true).then(function () {
+                        test.done();
+                    }, function () {
+                        test.ok(false, "verification should pass");
+                        test.done();
                     });
+                });
             });
         },
 
@@ -726,28 +727,28 @@
                         }, function (error) {
                             test.ok(false, error);
                         }).then(function () {
-                            // and - another request
-                            sendRequest("POST", "localhost", 1080, "/somePath", "someBody")
-                                .then(function (response) {
-                                    test.equal(response.statusCode, 203);
-                                }, function (error) {
-                                    test.ok(false, error);
-                                }).then(function () {
+                        // and - another request
+                        sendRequest("POST", "localhost", 1080, "/somePath", "someBody")
+                            .then(function (response) {
+                                test.equal(response.statusCode, 203);
+                            }, function (error) {
+                                test.ok(false, error);
+                            }).then(function () {
 
-                                    // when - verify at least one request
-                                    client.verify(
-                                        {
-                                            'method': 'POST',
-                                            'path': '/somePath',
-                                            'body': 'someBody'
-                                        }, 1).then(function () {
-                                            test.done();
-                                        }, function () {
-                                            test.ok(false, "verification should pass");
-                                            test.done();
-                                        });
-                                });
+                            // when - verify at least one request
+                            client.verify(
+                                {
+                                    'method': 'POST',
+                                    'path': '/somePath',
+                                    'body': 'someBody'
+                                }, 1).then(function () {
+                                test.done();
+                            }, function () {
+                                test.ok(false, "verification should pass");
+                                test.done();
+                            });
                         });
+                    });
                 });
             });
         },
@@ -765,16 +766,16 @@
                         test.ok(false, error);
                     }).then(function () {
 
-                        // when - verify at least one request (should fail)
-                        client.verify(
-                            {
-                                'path': '/someOtherPath'
-                            }, 1)
-                            .then(function () {
-                                test.ok(false, "verification should have failed");
-                                test.done();
-                            }, function (message) {
-                                test.equals(message, "Request not found at least once, expected:<{\n" +
+                    // when - verify at least one request (should fail)
+                    client.verify(
+                        {
+                            'path': '/someOtherPath'
+                        }, 1)
+                        .then(function () {
+                            test.ok(false, "verification should have failed");
+                            test.done();
+                        }, function (message) {
+                            test.equals(message, "Request not found at least once, expected:<{\n" +
                                 "  \"path\" : \"/someOtherPath\"\n" +
                                 "}> but was:<{\n" +
                                 "  \"method\" : \"POST\",\n" +
@@ -786,13 +787,13 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
-                                "  \"keepAlive\" : false,\n" +
+                                "  \"keepAlive\" : true,\n" +
                                 "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
-                                test.done();
-                            });
-                    });
+                            test.done();
+                        });
+                });
             });
         },
 
@@ -809,18 +810,18 @@
                         test.ok(false, error);
                     }).then(function () {
 
-                        // when - verify exact two requests (should fail)
-                        client.verify(
-                            {
-                                'method': 'POST',
-                                'path': '/somePath',
-                                'body': 'someBody'
-                            }, 2, true)
-                            .then(function () {
-                                test.ok(false, "verification should have failed");
-                                test.done();
-                            }, function (message) {
-                                test.equals(message, "Request not found exactly 2 times, expected:<{\n" +
+                    // when - verify exact two requests (should fail)
+                    client.verify(
+                        {
+                            'method': 'POST',
+                            'path': '/somePath',
+                            'body': 'someBody'
+                        }, 2, true)
+                        .then(function () {
+                            test.ok(false, "verification should have failed");
+                            test.done();
+                        }, function (message) {
+                            test.equals(message, "Request not found exactly 2 times, expected:<{\n" +
                                 "  \"method\" : \"POST\",\n" +
                                 "  \"path\" : \"/somePath\",\n" +
                                 "  \"body\" : \"someBody\"\n" +
@@ -834,13 +835,13 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
-                                "  \"keepAlive\" : false,\n" +
+                                "  \"keepAlive\" : true,\n" +
                                 "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
-                                test.done();
-                            });
-                    });
+                            test.done();
+                        });
+                });
             });
         },
 
@@ -857,18 +858,18 @@
                         test.ok(false, error);
                     }).then(function () {
 
-                        // when - verify at least two requests (should fail)
-                        client.verify(
-                            {
-                                'method': 'POST',
-                                'path': '/somePath',
-                                'body': 'someBody'
-                            }, 2)
-                            .then(function () {
-                                test.ok(false, "verification should have failed");
-                                test.done();
-                            }, function (message) {
-                                test.equals(message, "Request not found at least 2 times, expected:<{\n" +
+                    // when - verify at least two requests (should fail)
+                    client.verify(
+                        {
+                            'method': 'POST',
+                            'path': '/somePath',
+                            'body': 'someBody'
+                        }, 2)
+                        .then(function () {
+                            test.ok(false, "verification should have failed");
+                            test.done();
+                        }, function (message) {
+                            test.equals(message, "Request not found at least 2 times, expected:<{\n" +
                                 "  \"method\" : \"POST\",\n" +
                                 "  \"path\" : \"/somePath\",\n" +
                                 "  \"body\" : \"someBody\"\n" +
@@ -882,13 +883,13 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
-                                "  \"keepAlive\" : false,\n" +
+                                "  \"keepAlive\" : true,\n" +
                                 "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
-                                test.done();
-                            });
-                    });
+                            test.done();
+                        });
+                });
             });
         },
 
@@ -907,44 +908,44 @@
                             test.ok(false, error);
                         }).then(function () {
 
-                            sendRequest("GET", "localhost", 1080, "/notFound")
+                        sendRequest("GET", "localhost", 1080, "/notFound")
+                            .then(function (response) {
+                                test.ok(false, "should not match expectation");
+                            }, function (error) {
+                                test.equal(error, 404);
+                            }).then(function () {
+
+                            sendRequest("GET", "localhost", 1080, "/somePathTwo")
                                 .then(function (response) {
-                                    test.ok(false, "should not match expectation");
+                                    test.equal(response.statusCode, 202);
                                 }, function (error) {
-                                    test.equal(error, 404);
+                                    test.ok(false, error);
                                 }).then(function () {
 
-                                    sendRequest("GET", "localhost", 1080, "/somePathTwo")
-                                        .then(function (response) {
-                                            test.equal(response.statusCode, 202);
-                                        }, function (error) {
-                                            test.ok(false, error);
-                                        }).then(function () {
-
-                                            // when
-                                            client.verifySequence(
-                                                {
-                                                    'method': 'POST',
-                                                    'path': '/somePathOne',
-                                                    'body': 'someBody'
-                                                },
-                                                {
-                                                    'method': 'GET',
-                                                    'path': '/notFound'
-                                                },
-                                                {
-                                                    'method': 'GET',
-                                                    'path': '/somePathTwo'
-                                                }
-                                            ).then(function () {
-                                                    test.done();
-                                                }, function () {
-                                                    test.ok(false, "verification should pass");
-                                                    test.done();
-                                                });
-                                        });
+                                // when
+                                client.verifySequence(
+                                    {
+                                        'method': 'POST',
+                                        'path': '/somePathOne',
+                                        'body': 'someBody'
+                                    },
+                                    {
+                                        'method': 'GET',
+                                        'path': '/notFound'
+                                    },
+                                    {
+                                        'method': 'GET',
+                                        'path': '/somePathTwo'
+                                    }
+                                ).then(function () {
+                                    test.done();
+                                }, function () {
+                                    test.ok(false, "verification should pass");
+                                    test.done();
                                 });
+                            });
                         });
+                    });
                 });
             });
         },
@@ -964,93 +965,93 @@
                             test.ok(false, error);
                         }).then(function () {
 
-                            sendRequest("GET", "localhost", 1080, "/notFound")
+                        sendRequest("GET", "localhost", 1080, "/notFound")
+                            .then(function (response) {
+                                test.ok(false, "should not match expectation");
+                            }, function (error) {
+                                test.equal(error, 404);
+                            }).then(function () {
+
+                            sendRequest("GET", "localhost", 1080, "/somePathTwo")
                                 .then(function (response) {
-                                    test.ok(false, "should not match expectation");
+                                    test.equal(response.statusCode, 202);
                                 }, function (error) {
-                                    test.equal(error, 404);
+                                    test.ok(false, error);
                                 }).then(function () {
 
-                                    sendRequest("GET", "localhost", 1080, "/somePathTwo")
-                                        .then(function (response) {
-                                            test.equal(response.statusCode, 202);
-                                        }, function (error) {
-                                            test.ok(false, error);
-                                        }).then(function () {
+                                // when - wrong order
+                                client.verifySequence(
+                                    {
+                                        'method': 'POST',
+                                        'path': '/somePathOne',
+                                        'body': 'someBody'
+                                    },
+                                    {
+                                        'method': 'GET',
+                                        'path': '/somePathTwo'
+                                    },
+                                    {
+                                        'method': 'GET',
+                                        'path': '/notFound'
+                                    }
+                                )
+                                    .then(function () {
+                                        test.ok(false, "verification should have failed");
+                                        test.done();
+                                    }, function (message) {
+                                        test.equals(message, "Request sequence not found, expected:<[ {\n" +
+                                            "  \"method\" : \"POST\",\n" +
+                                            "  \"path\" : \"/somePathOne\",\n" +
+                                            "  \"body\" : \"someBody\"\n" +
+                                            "}, {\n" +
+                                            "  \"method\" : \"GET\",\n" +
+                                            "  \"path\" : \"/somePathTwo\"\n" +
+                                            "}, {\n" +
+                                            "  \"method\" : \"GET\",\n" +
+                                            "  \"path\" : \"/notFound\"\n" +
+                                            "} ]> but was:<[ {\n" +
+                                            "  \"method\" : \"POST\",\n" +
+                                            "  \"path\" : \"/somePathOne\",\n" +
+                                            "  \"headers\" : [ {\n" +
+                                            "    \"name\" : \"Host\",\n" +
+                                            "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                            "  }, {\n" +
+                                            "    \"name\" : \"Content-Length\",\n" +
+                                            "    \"values\" : [ \"8\" ]\n  } ],\n" +
+                                            "  \"keepAlive\" : true,\n" +
+                                            "  \"secure\" : false,\n" +
+                                            "  \"body\" : \"someBody\"\n" +
+                                            "}, {\n" +
+                                            "  \"method\" : \"GET\",\n" +
+                                            "  \"path\" : \"/notFound\",\n" +
+                                            "  \"headers\" : [ {\n" +
+                                            "    \"name\" : \"Host\",\n" +
+                                            "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                            "  }, {\n" +
+                                            "    \"name\" : \"Content-Length\",\n" +
+                                            "    \"values\" : [ \"0\" ]\n" +
+                                            "  } ],\n" +
+                                            "  \"keepAlive\" : true,\n" +
+                                            "  \"secure\" : false\n" +
+                                            "}, {\n" +
+                                            "  \"method\" : \"GET\",\n" +
+                                            "  \"path\" : \"/somePathTwo\",\n" +
+                                            "  \"headers\" : [ {\n" +
+                                            "    \"name\" : \"Host\",\n" +
+                                            "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                            "  }, {\n" +
+                                            "    \"name\" : \"Content-Length\",\n" +
+                                            "    \"values\" : [ \"0\" ]\n" +
+                                            "  } ],\n" +
+                                            "  \"keepAlive\" : true,\n" +
+                                            "  \"secure\" : false\n" +
+                                            "} ]>");
+                                        test.done();
+                                    });
 
-                                            // when - wrong order
-                                            client.verifySequence(
-                                                {
-                                                    'method': 'POST',
-                                                    'path': '/somePathOne',
-                                                    'body': 'someBody'
-                                                },
-                                                {
-                                                    'method': 'GET',
-                                                    'path': '/somePathTwo'
-                                                },
-                                                {
-                                                    'method': 'GET',
-                                                    'path': '/notFound'
-                                                }
-                                            )
-                                                .then(function () {
-                                                    test.ok(false, "verification should have failed");
-                                                    test.done();
-                                                }, function (message) {
-                                                    test.equals(message, "Request sequence not found, expected:<[ {\n" +
-                                                    "  \"method\" : \"POST\",\n" +
-                                                    "  \"path\" : \"/somePathOne\",\n" +
-                                                    "  \"body\" : \"someBody\"\n" +
-                                                    "}, {\n" +
-                                                    "  \"method\" : \"GET\",\n" +
-                                                    "  \"path\" : \"/somePathTwo\"\n" +
-                                                    "}, {\n" +
-                                                    "  \"method\" : \"GET\",\n" +
-                                                    "  \"path\" : \"/notFound\"\n" +
-                                                    "} ]> but was:<[ {\n" +
-                                                    "  \"method\" : \"POST\",\n" +
-                                                    "  \"path\" : \"/somePathOne\",\n" +
-                                                    "  \"headers\" : [ {\n" +
-                                                    "    \"name\" : \"Host\",\n" +
-                                                    "    \"values\" : [ \"localhost:1080\" ]\n" +
-                                                    "  }, {\n" +
-                                                    "    \"name\" : \"Content-Length\",\n" +
-                                                    "    \"values\" : [ \"8\" ]\n  } ],\n" +
-                                                    "  \"keepAlive\" : false,\n" +
-                                                    "  \"secure\" : false,\n" +
-                                                    "  \"body\" : \"someBody\"\n" +
-                                                    "}, {\n" +
-                                                    "  \"method\" : \"GET\",\n" +
-                                                    "  \"path\" : \"/notFound\",\n" +
-                                                    "  \"headers\" : [ {\n" +
-                                                    "    \"name\" : \"Host\",\n" +
-                                                    "    \"values\" : [ \"localhost:1080\" ]\n" +
-                                                    "  }, {\n" +
-                                                    "    \"name\" : \"Content-Length\",\n" +
-                                                    "    \"values\" : [ \"0\" ]\n" +
-                                                    "  } ],\n" +
-                                                    "  \"keepAlive\" : false,\n" +
-                                                    "  \"secure\" : false\n" +
-                                                    "}, {\n" +
-                                                    "  \"method\" : \"GET\",\n" +
-                                                    "  \"path\" : \"/somePathTwo\",\n" +
-                                                    "  \"headers\" : [ {\n" +
-                                                    "    \"name\" : \"Host\",\n" +
-                                                    "    \"values\" : [ \"localhost:1080\" ]\n" +
-                                                    "  }, {\n" +
-                                                    "    \"name\" : \"Content-Length\",\n" +
-                                                    "    \"values\" : [ \"0\" ]\n" +
-                                                    "  } ],\n" +
-                                                    "  \"keepAlive\" : false,\n" +
-                                                    "  \"secure\" : false\n" +
-                                                    "} ]>");
-                                                    test.done();
-                                                });
-
-                                        });
-                                });
+                            });
                         });
+                    });
                 });
             });
         },
@@ -1070,90 +1071,90 @@
                             test.ok(false, error);
                         }).then(function () {
 
-                            sendRequest("GET", "localhost", 1080, "/notFound")
+                        sendRequest("GET", "localhost", 1080, "/notFound")
+                            .then(function (response) {
+                                test.ok(false, "should not match expectation");
+                            }, function (error) {
+                                test.equal(error, 404);
+                            }).then(function () {
+
+                            sendRequest("GET", "localhost", 1080, "/somePathTwo")
                                 .then(function (response) {
-                                    test.ok(false, "should not match expectation");
+                                    test.equal(response.statusCode, 202);
                                 }, function (error) {
-                                    test.equal(error, 404);
+                                    test.ok(false, error);
                                 }).then(function () {
 
-                                    sendRequest("GET", "localhost", 1080, "/somePathTwo")
-                                        .then(function (response) {
-                                            test.equal(response.statusCode, 202);
-                                        }, function (error) {
-                                            test.ok(false, error);
-                                        }).then(function () {
-
-                                            // when - first request incorrect body
-                                            client.verifySequence(
-                                                {
-                                                    'method': 'POST',
-                                                    'path': '/somePathOne',
-                                                    'body': 'some_incorrect_body'
-                                                },
-                                                {
-                                                    'method': 'GET',
-                                                    'path': '/notFound'
-                                                },
-                                                {
-                                                    'method': 'GET',
-                                                    'path': '/somePathTwo'
-                                                }
-                                            )
-                                                .then(function () {
-                                                    test.ok(false, "verification should have failed");
-                                                    test.done();
-                                                }, function (message) {
-                                                    test.equals(message, "Request sequence not found, expected:<[ {\n" +
-                                                    "  \"method\" : \"POST\",\n" +
-                                                    "  \"path\" : \"/somePathOne\",\n" +
-                                                    "  \"body\" : \"some_incorrect_body\"\n" +
-                                                    "}, {\n" +
-                                                    "  \"method\" : \"GET\",\n" +
-                                                    "  \"path\" : \"/notFound\"\n" +
-                                                    "}, {\n" +
-                                                    "  \"method\" : \"GET\",\n" +
-                                                    "  \"path\" : \"/somePathTwo\"\n" +
-                                                    "} ]> but was:<[ {\n" +
-                                                    "  \"method\" : \"POST\",\n" +
-                                                    "  \"path\" : \"/somePathOne\",\n" +
-                                                    "  \"headers\" : [ {\n" +
-                                                    "    \"name\" : \"Host\",\n" +
-                                                    "    \"values\" : [ \"localhost:1080\" ]\n" +
-                                                    "  }, {\n" +
-                                                    "    \"name\" : \"Content-Length\",\n" +
-                                                    "    \"values\" : [ \"8\" ]\n" +
-                                                    "  } ],\n" +
-                                                    "  \"keepAlive\" : false,\n" +
-                                                    "  \"secure\" : false,\n" +
-                                                    "  \"body\" : \"someBody\"\n" +
-                                                    "}, {\n" +
-                                                    "  \"method\" : \"GET\",\n" +
-                                                    "  \"path\" : \"/notFound\",\n" +
-                                                    "  \"headers\" : [ {\n" +
-                                                    "    \"name\" : \"Host\",\n" +
-                                                    "    \"values\" : [ \"localhost:1080\" ]\n" +
-                                                    "  }, {\n    \"name\" : \"Content-Length\",\n" +
-                                                    "    \"values\" : [ \"0\" ]\n" +
-                                                    "  } ],\n" +
-                                                    "  \"keepAlive\" : false,\n" +
-                                                    "  \"secure\" : false\n" +
-                                                    "}, {\n  \"method\" : \"GET\",\n" +
-                                                    "  \"path\" : \"/somePathTwo\",\n" +
-                                                    "  \"headers\" : [ {\n" +
-                                                    "    \"name\" : \"Host\",\n" +
-                                                    "    \"values\" : [ \"localhost:1080\" ]\n" +
-                                                    "  }, {\n    \"name\" : \"Content-Length\",\n" +
-                                                    "    \"values\" : [ \"0\" ]\n" +
-                                                    "  } ],\n" +
-                                                    "  \"keepAlive\" : false,\n" +
-                                                    "  \"secure\" : false\n" +
-                                                    "} ]>");
-                                                    test.done();
-                                                });
-                                        });
-                                });
+                                // when - first request incorrect body
+                                client.verifySequence(
+                                    {
+                                        'method': 'POST',
+                                        'path': '/somePathOne',
+                                        'body': 'some_incorrect_body'
+                                    },
+                                    {
+                                        'method': 'GET',
+                                        'path': '/notFound'
+                                    },
+                                    {
+                                        'method': 'GET',
+                                        'path': '/somePathTwo'
+                                    }
+                                )
+                                    .then(function () {
+                                        test.ok(false, "verification should have failed");
+                                        test.done();
+                                    }, function (message) {
+                                        test.equals(message, "Request sequence not found, expected:<[ {\n" +
+                                            "  \"method\" : \"POST\",\n" +
+                                            "  \"path\" : \"/somePathOne\",\n" +
+                                            "  \"body\" : \"some_incorrect_body\"\n" +
+                                            "}, {\n" +
+                                            "  \"method\" : \"GET\",\n" +
+                                            "  \"path\" : \"/notFound\"\n" +
+                                            "}, {\n" +
+                                            "  \"method\" : \"GET\",\n" +
+                                            "  \"path\" : \"/somePathTwo\"\n" +
+                                            "} ]> but was:<[ {\n" +
+                                            "  \"method\" : \"POST\",\n" +
+                                            "  \"path\" : \"/somePathOne\",\n" +
+                                            "  \"headers\" : [ {\n" +
+                                            "    \"name\" : \"Host\",\n" +
+                                            "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                            "  }, {\n" +
+                                            "    \"name\" : \"Content-Length\",\n" +
+                                            "    \"values\" : [ \"8\" ]\n" +
+                                            "  } ],\n" +
+                                            "  \"keepAlive\" : true,\n" +
+                                            "  \"secure\" : false,\n" +
+                                            "  \"body\" : \"someBody\"\n" +
+                                            "}, {\n" +
+                                            "  \"method\" : \"GET\",\n" +
+                                            "  \"path\" : \"/notFound\",\n" +
+                                            "  \"headers\" : [ {\n" +
+                                            "    \"name\" : \"Host\",\n" +
+                                            "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                            "  }, {\n    \"name\" : \"Content-Length\",\n" +
+                                            "    \"values\" : [ \"0\" ]\n" +
+                                            "  } ],\n" +
+                                            "  \"keepAlive\" : true,\n" +
+                                            "  \"secure\" : false\n" +
+                                            "}, {\n  \"method\" : \"GET\",\n" +
+                                            "  \"path\" : \"/somePathTwo\",\n" +
+                                            "  \"headers\" : [ {\n" +
+                                            "    \"name\" : \"Host\",\n" +
+                                            "    \"values\" : [ \"localhost:1080\" ]\n" +
+                                            "  }, {\n    \"name\" : \"Content-Length\",\n" +
+                                            "    \"values\" : [ \"0\" ]\n" +
+                                            "  } ],\n" +
+                                            "  \"keepAlive\" : true,\n" +
+                                            "  \"secure\" : false\n" +
+                                            "} ]>");
+                                        test.done();
+                                    });
+                            });
                         });
+                    });
                 });
             });
         },
@@ -1176,30 +1177,30 @@
                                 test.ok(false, error);
                             }).then(function () {
 
-                                // when - some expectations cleared
-                                client.clear('/somePathOne').then(function () {
+                            // when - some expectations cleared
+                            client.clear('/somePathOne').then(function () {
 
-                                    // then - request matching cleared expectation should return 404
-                                    sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                // then - request matching cleared expectation should return 404
+                                sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                    .then(function (response) {
+                                        test.ok(false, "should clear matching expectations");
+                                    }, function (error) {
+                                        test.equals(404, error);
+                                    }).then(function () {
+
+                                    // and - request matching non-cleared expectation should return 200
+                                    sendRequest("GET", "localhost", 1080, "/somePathTwo")
                                         .then(function (response) {
-                                            test.ok(false, "should clear matching expectations");
+                                            test.equal(response.statusCode, 200);
+                                            test.equal(response.body, '{"name":"value"}');
+                                            test.done();
                                         }, function (error) {
-                                            test.equals(404, error);
-                                        }).then(function () {
-
-                                            // and - request matching non-cleared expectation should return 200
-                                            sendRequest("GET", "localhost", 1080, "/somePathTwo")
-                                                .then(function (response) {
-                                                    test.equal(response.statusCode, 200);
-                                                    test.equal(response.body, '{"name":"value"}');
-                                                    test.done();
-                                                }, function (error) {
-                                                    test.ok(false, "should not clear non-matching expectations");
-                                                    test.done();
-                                                });
+                                            test.ok(false, "should not clear non-matching expectations");
+                                            test.done();
                                         });
                                 });
                             });
+                        });
                     });
                 });
             });
@@ -1223,32 +1224,32 @@
                                 test.ok(false, error);
                             }).then(function () {
 
-                                // when - some expectations cleared
-                                client.clear({
-                                    "path": "/somePathOne"
-                                }).then(function () {
+                            // when - some expectations cleared
+                            client.clear({
+                                "path": "/somePathOne"
+                            }).then(function () {
 
-                                    // then - request matching cleared expectation should return 404
-                                    sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                // then - request matching cleared expectation should return 404
+                                sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                    .then(function (response) {
+                                        test.ok(false, "should clear matching expectations");
+                                    }, function (error) {
+                                        test.equals(404, error);
+                                    }).then(function () {
+
+                                    // and - request matching non-cleared expectation should return 200
+                                    sendRequest("GET", "localhost", 1080, "/somePathTwo")
                                         .then(function (response) {
-                                            test.ok(false, "should clear matching expectations");
+                                            test.equal(response.statusCode, 200);
+                                            test.equal(response.body, '{"name":"value"}');
+                                            test.done();
                                         }, function (error) {
-                                            test.equals(404, error);
-                                        }).then(function () {
-
-                                            // and - request matching non-cleared expectation should return 200
-                                            sendRequest("GET", "localhost", 1080, "/somePathTwo")
-                                                .then(function (response) {
-                                                    test.equal(response.statusCode, 200);
-                                                    test.equal(response.body, '{"name":"value"}');
-                                                    test.done();
-                                                }, function (error) {
-                                                    test.ok(false, "should not clear non-matching expectations");
-                                                    test.done();
-                                                });
+                                            test.ok(false, "should not clear non-matching expectations");
+                                            test.done();
                                         });
                                 });
                             });
+                        });
                     });
                 });
             });
@@ -1272,34 +1273,34 @@
                                 test.ok(false, error);
                             }).then(function () {
 
-                                // when - some expectations cleared
-                                client.clear({
-                                    "httpRequest": {
-                                        "path": "/somePathOne"
-                                    }
-                                }).then(function () {
+                            // when - some expectations cleared
+                            client.clear({
+                                "httpRequest": {
+                                    "path": "/somePathOne"
+                                }
+                            }).then(function () {
 
-                                    // then - request matching cleared expectation should return 404
-                                    sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                // then - request matching cleared expectation should return 404
+                                sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                    .then(function (response) {
+                                        test.ok(false, "should clear matching expectations");
+                                    }, function (error) {
+                                        test.equals(404, error);
+                                    }).then(function () {
+
+                                    // and - request matching non-cleared expectation should return 200
+                                    sendRequest("GET", "localhost", 1080, "/somePathTwo")
                                         .then(function (response) {
-                                            test.ok(false, "should clear matching expectations");
+                                            test.equal(response.statusCode, 200);
+                                            test.equal(response.body, '{"name":"value"}');
+                                            test.done();
                                         }, function (error) {
-                                            test.equals(404, error);
-                                        }).then(function () {
-
-                                            // and - request matching non-cleared expectation should return 200
-                                            sendRequest("GET", "localhost", 1080, "/somePathTwo")
-                                                .then(function (response) {
-                                                    test.equal(response.statusCode, 200);
-                                                    test.equal(response.body, '{"name":"value"}');
-                                                    test.done();
-                                                }, function (error) {
-                                                    test.ok(false, "should not clear non-matching expectations");
-                                                    test.done();
-                                                });
+                                            test.ok(false, "should not clear non-matching expectations");
+                                            test.done();
                                         });
                                 });
                             });
+                        });
                     });
                 });
             });
@@ -1323,30 +1324,30 @@
                                 test.ok(false, "should match expectation");
                             }).then(function () {
 
-                                // when - all expectations reset
-                                client.reset().then(function () {
+                            // when - all expectations reset
+                            client.reset().then(function () {
 
-                                    // then - request matching one reset expectation should return 404
-                                    sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                // then - request matching one reset expectation should return 404
+                                sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                    .then(function () {
+                                        test.ok(false, "should clear all expectations");
+                                    }, function (error) {
+                                        test.equals(404, error);
+                                    }).then(function () {
+
+                                    // then - request matching other reset expectation should return 404
+                                    sendRequest("GET", "localhost", 1080, "/somePathTwo")
                                         .then(function () {
                                             test.ok(false, "should clear all expectations");
+                                            test.done();
                                         }, function (error) {
                                             test.equals(404, error);
-                                        }).then(function () {
-
-                                            // then - request matching other reset expectation should return 404
-                                            sendRequest("GET", "localhost", 1080, "/somePathTwo")
-                                                .then(function () {
-                                                    test.ok(false, "should clear all expectations");
-                                                    test.done();
-                                                }, function (error) {
-                                                    test.equals(404, error);
-                                                    test.done();
-                                                });
-
+                                            test.done();
                                         });
+
                                 });
                             });
+                        });
                     });
                 });
             });
@@ -1521,51 +1522,51 @@
                                 test.ok(false, error);
                             }).then(function () {
 
-                                sendRequest("GET", "localhost", 1080, "/somePathOne")
+                            sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                .then(function (response) {
+                                    test.equal(response.statusCode, 201);
+                                }, function (error) {
+                                    test.ok(false, error);
+                                }).then(function () {
+
+                                sendRequest("GET", "localhost", 1080, "/notFound")
                                     .then(function (response) {
-                                        test.equal(response.statusCode, 201);
+                                        test.ok(false, "should not match expectation");
                                     }, function (error) {
-                                        test.ok(false, error);
+                                        test.equal(error, 404);
                                     }).then(function () {
 
-                                        sendRequest("GET", "localhost", 1080, "/notFound")
-                                            .then(function (response) {
-                                                test.ok(false, "should not match expectation");
-                                            }, function (error) {
-                                                test.equal(error, 404);
-                                            }).then(function () {
+                                    sendRequest("GET", "localhost", 1080, "/somePathTwo")
+                                        .then(function (response) {
+                                            test.equal(response.statusCode, 202);
+                                        }, function (error) {
+                                            test.ok(false, error);
+                                        }).then(function () {
 
-                                                sendRequest("GET", "localhost", 1080, "/somePathTwo")
-                                                    .then(function (response) {
-                                                        test.equal(response.statusCode, 202);
-                                                    }, function (error) {
-                                                        test.ok(false, error);
-                                                    }).then(function () {
-
-                                                        // when
-                                                        client.retrieveRequests({
-                                                            "httpRequest": {
-                                                                "path": "/somePathOne"
-                                                            }
-                                                        }).then(function (requests) {
-                                                            // then
-                                                            test.equals(requests.length, 2);
-                                                            // first request
-                                                            test.equals(requests[0].path, '/somePathOne');
-                                                            test.equals(requests[0].method, 'POST');
-                                                            test.equals(requests[0].body, 'someBody');
-                                                            // second request
-                                                            test.equals(requests[1].path, '/somePathOne');
-                                                            test.equals(requests[1].method, 'GET');
-                                                            test.done();
-                                                        }, function () {
-                                                            test.ok(false, "should return correct expectations");
-                                                            test.done();
-                                                        });
-                                                    });
-                                            });
+                                        // when
+                                        client.retrieveRequests({
+                                            "httpRequest": {
+                                                "path": "/somePathOne"
+                                            }
+                                        }).then(function (requests) {
+                                            // then
+                                            test.equals(requests.length, 2);
+                                            // first request
+                                            test.equals(requests[0].path, '/somePathOne');
+                                            test.equals(requests[0].method, 'POST');
+                                            test.equals(requests[0].body, 'someBody');
+                                            // second request
+                                            test.equals(requests[1].path, '/somePathOne');
+                                            test.equals(requests[1].method, 'GET');
+                                            test.done();
+                                        }, function () {
+                                            test.ok(false, "should return correct expectations");
+                                            test.done();
+                                        });
                                     });
+                                });
                             });
+                        });
                     });
                 });
             });
@@ -1588,47 +1589,47 @@
                                 test.ok(false, error);
                             }).then(function () {
 
-                                sendRequest("GET", "localhost", 1080, "/somePathOne")
+                            sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                .then(function (response) {
+                                    test.equal(response.statusCode, 201);
+                                }, function (error) {
+                                    test.ok(false, error);
+                                }).then(function () {
+
+                                sendRequest("GET", "localhost", 1080, "/notFound")
                                     .then(function (response) {
-                                        test.equal(response.statusCode, 201);
+                                        test.ok(false, "should not match expectation");
                                     }, function (error) {
-                                        test.ok(false, error);
+                                        test.equal(error, 404);
                                     }).then(function () {
 
-                                        sendRequest("GET", "localhost", 1080, "/notFound")
-                                            .then(function (response) {
-                                                test.ok(false, "should not match expectation");
-                                            }, function (error) {
-                                                test.equal(error, 404);
-                                            }).then(function () {
+                                    sendRequest("GET", "localhost", 1080, "/somePathTwo")
+                                        .then(function (response) {
+                                            test.equal(response.statusCode, 202);
+                                        }, function (error) {
+                                            test.ok(false, error);
+                                        }).then(function () {
 
-                                                sendRequest("GET", "localhost", 1080, "/somePathTwo")
-                                                    .then(function (response) {
-                                                        test.equal(response.statusCode, 202);
-                                                    }, function (error) {
-                                                        test.ok(false, error);
-                                                    }).then(function () {
-
-                                                        // when
-                                                        client.retrieveRequests("/somePathOne").then(function (requests) {
-                                                            // then
-                                                            test.equals(requests.length, 2);
-                                                            // first request
-                                                            test.equals(requests[0].path, '/somePathOne');
-                                                            test.equals(requests[0].method, 'POST');
-                                                            test.equals(requests[0].body, 'someBody');
-                                                            // second request
-                                                            test.equals(requests[1].path, '/somePathOne');
-                                                            test.equals(requests[1].method, 'GET');
-                                                            test.done();
-                                                        }, function () {
-                                                            test.ok(false, "should return correct expectations");
-                                                            test.done();
-                                                        });
-                                                    });
-                                            });
+                                        // when
+                                        client.retrieveRequests("/somePathOne").then(function (requests) {
+                                            // then
+                                            test.equals(requests.length, 2);
+                                            // first request
+                                            test.equals(requests[0].path, '/somePathOne');
+                                            test.equals(requests[0].method, 'POST');
+                                            test.equals(requests[0].body, 'someBody');
+                                            // second request
+                                            test.equals(requests[1].path, '/somePathOne');
+                                            test.equals(requests[1].method, 'GET');
+                                            test.done();
+                                        }, function () {
+                                            test.ok(false, "should return correct expectations");
+                                            test.done();
+                                        });
                                     });
+                                });
                             });
+                        });
                     });
                 });
             });
@@ -1651,57 +1652,57 @@
                                 test.ok(false, error);
                             }).then(function () {
 
-                                sendRequest("GET", "localhost", 1080, "/somePathOne")
+                            sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                .then(function (response) {
+                                    test.equal(response.statusCode, 201);
+                                }, function (error) {
+                                    test.ok(false, error);
+                                }).then(function () {
+
+                                sendRequest("GET", "localhost", 1080, "/notFound")
                                     .then(function (response) {
-                                        test.equal(response.statusCode, 201);
+                                        test.ok(false, "should not match expectation");
                                     }, function (error) {
-                                        test.ok(false, error);
+                                        test.equal(error, 404);
                                     }).then(function () {
 
-                                        sendRequest("GET", "localhost", 1080, "/notFound")
-                                            .then(function (response) {
-                                                test.ok(false, "should not match expectation");
-                                            }, function (error) {
-                                                test.equal(error, 404);
-                                            }).then(function () {
+                                    sendRequest("GET", "localhost", 1080, "/somePathTwo")
+                                        .then(function (response) {
+                                            test.equal(response.statusCode, 202);
+                                        }, function (error) {
+                                            test.ok(false, error);
+                                        }).then(function () {
 
-                                                sendRequest("GET", "localhost", 1080, "/somePathTwo")
-                                                    .then(function (response) {
-                                                        test.equal(response.statusCode, 202);
-                                                    }, function (error) {
-                                                        test.ok(false, error);
-                                                    }).then(function () {
-
-                                                        // when
-                                                        client.retrieveRequests({
-                                                            "httpRequest": {
-                                                                "path": "/.*"
-                                                            }
-                                                        }).then(function (requests) {
-                                                            // then
-                                                            test.equals(requests.length, 4);
-                                                            // first request
-                                                            test.equals(requests[0].path, '/somePathOne');
-                                                            test.equals(requests[0].method, 'POST');
-                                                            test.equals(requests[0].body, 'someBody');
-                                                            // second request
-                                                            test.equals(requests[1].path, '/somePathOne');
-                                                            test.equals(requests[1].method, 'GET');
-                                                            // third request
-                                                            test.equals(requests[2].path, '/notFound');
-                                                            test.equals(requests[2].method, 'GET');
-                                                            // fourth request
-                                                            test.equals(requests[3].path, '/somePathTwo');
-                                                            test.equals(requests[3].method, 'GET');
-                                                            test.done();
-                                                        }, function () {
-                                                            test.ok(false, "should return correct requests");
-                                                            test.done();
-                                                        });
-                                                    });
-                                            });
+                                        // when
+                                        client.retrieveRequests({
+                                            "httpRequest": {
+                                                "path": "/.*"
+                                            }
+                                        }).then(function (requests) {
+                                            // then
+                                            test.equals(requests.length, 4);
+                                            // first request
+                                            test.equals(requests[0].path, '/somePathOne');
+                                            test.equals(requests[0].method, 'POST');
+                                            test.equals(requests[0].body, 'someBody');
+                                            // second request
+                                            test.equals(requests[1].path, '/somePathOne');
+                                            test.equals(requests[1].method, 'GET');
+                                            // third request
+                                            test.equals(requests[2].path, '/notFound');
+                                            test.equals(requests[2].method, 'GET');
+                                            // fourth request
+                                            test.equals(requests[3].path, '/somePathTwo');
+                                            test.equals(requests[3].method, 'GET');
+                                            test.done();
+                                        }, function () {
+                                            test.ok(false, "should return correct requests");
+                                            test.done();
+                                        });
                                     });
+                                });
                             });
+                        });
                     });
                 });
             });
@@ -1724,53 +1725,53 @@
                                 test.ok(false, error);
                             }).then(function () {
 
-                                sendRequest("GET", "localhost", 1080, "/somePathOne")
+                            sendRequest("GET", "localhost", 1080, "/somePathOne")
+                                .then(function (response) {
+                                    test.equal(response.statusCode, 201);
+                                }, function (error) {
+                                    test.ok(false, error);
+                                }).then(function () {
+
+                                sendRequest("GET", "localhost", 1080, "/notFound")
                                     .then(function (response) {
-                                        test.equal(response.statusCode, 201);
+                                        test.ok(false, "should not match expectation");
                                     }, function (error) {
-                                        test.ok(false, error);
+                                        test.equal(error, 404);
                                     }).then(function () {
 
-                                        sendRequest("GET", "localhost", 1080, "/notFound")
-                                            .then(function (response) {
-                                                test.ok(false, "should not match expectation");
-                                            }, function (error) {
-                                                test.equal(error, 404);
-                                            }).then(function () {
+                                    sendRequest("GET", "localhost", 1080, "/somePathTwo")
+                                        .then(function (response) {
+                                            test.equal(response.statusCode, 202);
+                                        }, function (error) {
+                                            test.ok(false, error);
+                                        }).then(function () {
 
-                                                sendRequest("GET", "localhost", 1080, "/somePathTwo")
-                                                    .then(function (response) {
-                                                        test.equal(response.statusCode, 202);
-                                                    }, function (error) {
-                                                        test.ok(false, error);
-                                                    }).then(function () {
-
-                                                        // when
-                                                        client.retrieveRequests("/.*").then(function (requests) {
-                                                            // then
-                                                            test.equals(requests.length, 4);
-                                                            // first request
-                                                            test.equals(requests[0].path, '/somePathOne');
-                                                            test.equals(requests[0].method, 'POST');
-                                                            test.equals(requests[0].body, 'someBody');
-                                                            // second request
-                                                            test.equals(requests[1].path, '/somePathOne');
-                                                            test.equals(requests[1].method, 'GET');
-                                                            // third request
-                                                            test.equals(requests[2].path, '/notFound');
-                                                            test.equals(requests[2].method, 'GET');
-                                                            // fourth request
-                                                            test.equals(requests[3].path, '/somePathTwo');
-                                                            test.equals(requests[3].method, 'GET');
-                                                            test.done();
-                                                        }, function () {
-                                                            test.ok(false, "should return correct requests");
-                                                            test.done();
-                                                        });
-                                                    });
-                                            });
+                                        // when
+                                        client.retrieveRequests("/.*").then(function (requests) {
+                                            // then
+                                            test.equals(requests.length, 4);
+                                            // first request
+                                            test.equals(requests[0].path, '/somePathOne');
+                                            test.equals(requests[0].method, 'POST');
+                                            test.equals(requests[0].body, 'someBody');
+                                            // second request
+                                            test.equals(requests[1].path, '/somePathOne');
+                                            test.equals(requests[1].method, 'GET');
+                                            // third request
+                                            test.equals(requests[2].path, '/notFound');
+                                            test.equals(requests[2].method, 'GET');
+                                            // fourth request
+                                            test.equals(requests[3].path, '/somePathTwo');
+                                            test.equals(requests[3].method, 'GET');
+                                            test.done();
+                                        }, function () {
+                                            test.ok(false, "should return correct requests");
+                                            test.done();
+                                        });
                                     });
+                                });
                             });
+                        });
                     });
                 });
             });

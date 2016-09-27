@@ -17,7 +17,8 @@
             host: "localhost",
             port: 1090,
             headers: {
-                Host: "localhost:1080"
+                Host: "localhost:1080",
+                Connection: "keep-alive"
             },
             path: destinationUrl
         };
@@ -162,7 +163,7 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
-                                "  \"keepAlive\" : false,\n" +
+                                "  \"keepAlive\" : true,\n" +
                                 "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
@@ -206,7 +207,7 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
-                                "  \"keepAlive\" : false,\n" +
+                                "  \"keepAlive\" : true,\n" +
                                 "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
@@ -250,7 +251,7 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
-                                "  \"keepAlive\" : false,\n" +
+                                "  \"keepAlive\" : true,\n" +
                                 "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
@@ -312,7 +313,7 @@
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"8\" ]\n" +
                                                     "  } ],\n" +
-                                                    "  \"keepAlive\" : false,\n" +
+                                                    "  \"keepAlive\" : true,\n" +
                                                     "  \"secure\" : false,\n" +
                                                     "  \"body\" : \"someBody\"\n" +
                                                     "}>");
@@ -395,7 +396,7 @@
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"8\" ]\n" +
                                                     "  } ],\n" +
-                                                    "  \"keepAlive\" : false,\n" +
+                                                    "  \"keepAlive\" : true,\n" +
                                                     "  \"secure\" : false,\n" +
                                                     "  \"body\" : \"someBody\"\n" +
                                                     "}>");
@@ -480,7 +481,7 @@
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"8\" ]\n" +
                                                     "  } ],\n" +
-                                                    "  \"keepAlive\" : false,\n" +
+                                                    "  \"keepAlive\" : true,\n" +
                                                     "  \"secure\" : false,\n" +
                                                     "  \"body\" : \"someBody\"\n" +
                                                     "}>");
