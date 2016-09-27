@@ -3,10 +3,10 @@
 > Communicate with [MockServer](http://mock-server.com/) from any node or grunt build
 
 [![Build Status](https://drone.io/github.com/jamesdbloom/mockserver-client-node/status.png)](https://drone.io/github.com/jamesdbloom/mockserver-client-node/latest) [![Dependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node.png)](https://david-dm.org/jamesdbloom/mockserver-client-node) [![devDependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node/dev-status.png)](https://david-dm.org/jamesdbloom/mockserver-client-node#info=devDependencies)
-[![Still Maintained](http://stillmaintained.com/jamesdbloom/mockserver.png)](http://stillmaintained.com/jamesdbloom/mockserver)
 
+<!-- [![NPM](https://nodei.co/npm/mockserver-client.png?downloads=true&stars=true)](https://nodei.co/npm/mockserver-client/)  -->
 
-[![NPM](https://nodei.co/npm/mockserver-client.png?downloads=true&stars=true)](https://nodei.co/npm/mockserver-client/) [![wercker status](https://app.wercker.com/status/7b78f11513b3dc5379f510a7ac82d0d6/m "wercker status")](https://app.wercker.com/project/bykey/7b78f11513b3dc5379f510a7ac82d0d6)
+[![wercker status](https://app.wercker.com/status/7b78f11513b3dc5379f510a7ac82d0d6/m "wercker status")](https://app.wercker.com/project/bykey/7b78f11513b3dc5379f510a7ac82d0d6)
 
 
 For chat room: [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jamesdbloom/mockserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -102,6 +102,7 @@ mockServerClient("localhost", 1080).verify(
  * 2015-09-27   v1.0.8   Fixed documentation
  * 2015-09-28   v1.0.9   Fixed documentation again
  * 2015-10-11   v1.0.10  Added retrieve requests or expectations
+ * 2016-09-27   v1.0.11  Updated dependencies
 
 ---
 
