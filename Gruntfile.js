@@ -27,18 +27,17 @@ module.exports = function (grunt) {
             ]
         },
         start_mockserver: {
-            start: {
-                options: {
-                    serverPort: 1080,
-                    serverSecurePort: 1082,
-                    proxyPort: 1090,
-                    proxySecurePort: 1092
-                }
+            options: {
+                serverPort: 1080,
+                serverSecurePort: 1082,
+                proxyPort: 1090,
+                proxySecurePort: 1092
             }
         },
         stop_mockserver: {
-            stop: {
-
+            options: {
+                serverPort: 1080,
+                proxyPort: 1090
             }
         },
         nodeunit: {
@@ -60,7 +59,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
 
-    grunt.registerTask('test', ['start_mockserver:start', 'nodeunit', 'stop_mockserver:stop']);
+    grunt.registerTask('test', ['start_mockserver', 'nodeunit', 'stop_mockserver']);
 
     grunt.registerTask('wrecker', ['jshint', 'test']);
     grunt.registerTask('default', ['exec', 'wrecker']);
