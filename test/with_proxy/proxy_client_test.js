@@ -162,7 +162,7 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
-                                "  \"keepAlive\" : true,\n" +
+                                "  \"keepAlive\" : false,\n" +
                                 "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
@@ -206,7 +206,7 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
-                                "  \"keepAlive\" : true,\n" +
+                                "  \"keepAlive\" : false,\n" +
                                 "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
@@ -250,7 +250,7 @@
                                 "    \"name\" : \"Content-Length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
-                                "  \"keepAlive\" : true,\n" +
+                                "  \"keepAlive\" : false,\n" +
                                 "  \"secure\" : false,\n" +
                                 "  \"body\" : \"someBody\"\n" +
                                 "}>");
@@ -312,7 +312,7 @@
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"8\" ]\n" +
                                                     "  } ],\n" +
-                                                    "  \"keepAlive\" : true,\n" +
+                                                    "  \"keepAlive\" : false,\n" +
                                                     "  \"secure\" : false,\n" +
                                                     "  \"body\" : \"someBody\"\n" +
                                                     "}>");
@@ -395,7 +395,7 @@
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"8\" ]\n" +
                                                     "  } ],\n" +
-                                                    "  \"keepAlive\" : true,\n" +
+                                                    "  \"keepAlive\" : false,\n" +
                                                     "  \"secure\" : false,\n" +
                                                     "  \"body\" : \"someBody\"\n" +
                                                     "}>");
@@ -480,7 +480,7 @@
                                                     "    \"name\" : \"Content-Length\",\n" +
                                                     "    \"values\" : [ \"8\" ]\n" +
                                                     "  } ],\n" +
-                                                    "  \"keepAlive\" : true,\n" +
+                                                    "  \"keepAlive\" : false,\n" +
                                                     "  \"secure\" : false,\n" +
                                                     "  \"body\" : \"someBody\"\n" +
                                                     "}>");
