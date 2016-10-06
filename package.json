@@ -32,9 +32,6 @@
         "mockserver-grunt": "~1",
         "nodeunit": "~0.10"
     },
-    "peerDependencies": {
-        "grunt": "~1.0"
-    },
     "keywords": [
         "mockserver",
         "client",
