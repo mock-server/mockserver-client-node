@@ -2,7 +2,7 @@
 
 > Communicate with [MockServer](http://mock-server.com/) from any node or grunt build
 
-[![Build Status](https://drone.io/github.com/jamesdbloom/mockserver-client-node/status.png)](https://drone.io/github.com/jamesdbloom/mockserver-client-node/latest) [![Dependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node.png)](https://david-dm.org/jamesdbloom/mockserver-client-node) [![devDependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node/dev-status.png)](https://david-dm.org/jamesdbloom/mockserver-client-node#info=devDependencies)
+[![Build Status](https://snap-ci.com/jamesdbloom/mockserver-client-node/branch/master/build_image)](https://snap-ci.com/jamesdbloom/mockserver-client-node/branch/master) [![Build Status](https://drone.io/github.com/jamesdbloom/mockserver-client-node/status.png)](https://drone.io/github.com/jamesdbloom/mockserver-client-node/latest) [![Dependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node.png)](https://david-dm.org/jamesdbloom/mockserver-client-node) [![devDependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node/dev-status.png)](https://david-dm.org/jamesdbloom/mockserver-client-node#info=devDependencies)
 
 <!-- [![NPM](https://nodei.co/npm/mockserver-client.png?downloads=true&stars=true)](https://nodei.co/npm/mockserver-client/)  -->
 
