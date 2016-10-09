@@ -103,6 +103,7 @@ mockServerClient("localhost", 1080).verify(
  * 2015-09-28   v1.0.9   Fixed documentation again
  * 2015-10-11   v1.0.10  Added retrieve requests or expectations
  * 2016-09-27   v1.0.11  Updated dependencies
+ * 2016-10-09   v1.0.12  Resolved issues with dependencies
 
 ---
 
