@@ -1,45 +1,54 @@
 {
-    "name": "mockserver-client",
-    "description": "A node client for the MockServer",
-    "version": "1.0.12",
-    "homepage": "https://github.com/jamesdbloom/mockserver",
-    "author": {
-        "name": "James Bloom",
-        "email": "jamesdbloom@gmail.com",
-        "url": "http://mock-server.com"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/jamesdbloom/mockserver-client-node.git"
-    },
-    "bugs": {
-        "url": "https://github.com/jamesdbloom/mockserver-client-node/issues"
-    },
-    "license": "Apache-2.0",
-    "engines": {
-        "node": ">= 0.8.0"
-    },
-    "scripts": {
-        "test": "grunt"
-    },
-    "devDependencies": {
-        "grunt": ">=0.4",
-        "grunt-contrib-clean": "~1.0",
-        "grunt-contrib-jshint": "~1.0",
-        "grunt-contrib-nodeunit": "~1.0",
-        "grunt-exec": "~1.0",
-        "mockserver-grunt": "~1",
-        "nodeunit": "~0.10"
-    },
-    "peerDependencies": {
-        "grunt": ">=0.4"
-    },
-    "keywords": [
-        "mockserver",
-        "client",
-        "gruntplugin"
-    ],
-    "dependencies": {
-        "q": "~2.0"
-    }
+  "name": "mockserver-client",
+  "description": "A node client for the MockServer",
+  "version": "1.0.12",
+  "homepage": "https://github.com/jamesdbloom/mockserver",
+  "author": {
+    "name": "James Bloom",
+    "email": "jamesdbloom@gmail.com",
+    "url": "http://mock-server.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamesdbloom/mockserver-client-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jamesdbloom/mockserver-client-node/issues"
+  },
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "devDependencies": {
+    "grunt": ">=0.4",
+    "grunt-contrib-clean": "~1.1",
+    "grunt-contrib-jshint": "~1.1",
+    "grunt-contrib-nodeunit": "~1.0",
+    "grunt-exec": "~2.0",
+    "grunt-jasmine-runner": "^0.6.0",
+    "grunt-karma": "^2.0.0",
+    "grunt-webdriver-jasmine-runner": "^0.3.9",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.3.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-jasmine": "^1.0.2",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-spec-reporter": "0.0.26",
+    "mockserver-grunt": "~1.0",
+    "nodeunit": "~0.11"
+  },
+  "peerDependencies": {
+    "grunt": ">=0.4"
+  },
+  "keywords": [
+    "mockserver",
+    "client",
+    "gruntplugin"
+  ],
+  "dependencies": {
+    "q": "~2.0",
+    "websocket": "~1.0"
+  }
 }

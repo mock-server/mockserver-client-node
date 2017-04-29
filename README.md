@@ -1,14 +1,15 @@
 # mockserver-client-node 
 
-> Communicate with [MockServer](http://mock-server.com/) from javascript running in a browser, in node or in a grunt build
+> Communicate with [MockServer](http://mock-server.com/) from any node or grunt build
 
-[![Build Status](https://app.snap-ci.com/jamesdbloom/mockserver-client-node/branch/master/build_image)](https://app.snap-ci.com/jamesdbloom/mockserver-client-node/branch/master) [![wercker status](https://app.wercker.com/status/7b78f11513b3dc5379f510a7ac82d0d6/m "wercker status")](https://app.wercker.com/project/bykey/7b78f11513b3dc5379f510a7ac82d0d6) [![Dependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node.png)](https://david-dm.org/jamesdbloom/mockserver-client-node) [![devDependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node/dev-status.png)](https://david-dm.org/jamesdbloom/mockserver-client-node#info=devDependencies)
+[![Build Status](https://secure.travis-ci.org/jamesdbloom/mockserver-client-node.png?branch=master)](http://travis-ci.org/jamesdbloom/mockserver-client-node)  [![Dependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node.png)](https://david-dm.org/jamesdbloom/mockserver-client-node) [![devDependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node/dev-status.png)](https://david-dm.org/jamesdbloom/mockserver-client-node#info=devDependencies) [![Code Climate](https://codeclimate.com/github/jamesdbloom/mockserver-client-node.png)](https://codeclimate.com/github/jamesdbloom/mockserver-client-node)
 
-[![NPM](https://nodei.co/npm/mockserver-client.png?downloads=true&stars=true)](https://nodei.co/npm/mockserver-client/)
+[![NPM](https://nodei.co/npm/mockserver-client.png?downloads=true&stars=true)](https://nodei.co/npm/mockserver-client/) 
 
 For chat room: [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jamesdbloom/mockserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Getting Started
+
 MockServer is for mocking of any system you integrate with via HTTP or HTTPS (i.e. services, web sites, etc).
 
 This npm modules is allows any grunt of node project to easily communicate with the [MockServer](http://mock-server.com/).
@@ -25,6 +26,7 @@ var mockServer = require('mockserver-client'),
 **Note:** this assumes you have an instance of MockServer running on port 1080 for more information on how to do this see [mockserver-grunt](https://www.npmjs.org/package/mockserver-grunt).
 
 ## Setup Expectation
+
 Then an simple expectation can be setup as follows:
 
 ```js
@@ -35,7 +37,7 @@ mockServerClient("localhost", 1080).
 Or a more complex expectation can be setup as follows:
 
 ```js
-mockServerClient("localhost", 1080).mockAnyResponse(
+mockServerClient("localhost", 1080).mockAnyExpectation(
     {
         'httpRequest': {
             'method': 'POST',
@@ -70,6 +72,7 @@ mockServerClient("localhost", 1080).mockAnyResponse(
 For the full syntax support see [MockServer - Creating JavaScript Expectations](http://mock-server.com/#create-expectations-javascript).
 
 ## Verify Requests
+
 It is also possible to verify that request were made as follows:
 
 ```js
@@ -80,16 +83,6 @@ mockServerClient("localhost", 1080).verify(
         'body': 'someBody'
     }, 1, true);
 ```
-
-# Issues
-If you have any problems, please [check the project issues](https://github.com/jamesdbloom/mockserver/issues?state=open).
-
-# Contributions
-Pull requests are, of course, very welcome! Please read our [contributing to the project](https://github.com/jamesdbloom/mockserver/wiki/Contributing-to-the-project) guide first. Then head over to the [open issues](https://github.com/jamesdbloom/mockserver/issues?state=open) to see what we need help with. Make sure you let us know if you intend to work on something. Also, check out the [milestones](https://github.com/jamesdbloom/mockserver/milestones) to see what is planned for future releases.
-
-# Maintainers
-* [James D Bloom](http://blog.jamesdbloom.com)
-
 ## Release History
  * 2014-28-10   v0.0.1   Initial release
  * 2014-28-10   v0.0.2   Fixed module naming
@@ -109,3 +102,6 @@ Pull requests are, of course, very welcome! Please read our [contributing to the
  * 2016-09-27   v1.0.11  Updated dependencies
  * 2016-10-09   v1.0.12  Resolved issues with dependencies
 
+---
+
+Task submitted by [James D Bloom](http://blog.jamesdbloom.com)
