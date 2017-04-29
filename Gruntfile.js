@@ -29,7 +29,8 @@ module.exports = function (grunt) {
         start_mockserver: {
             options: {
                 serverPort: 1080,
-                proxyPort: 1090
+                proxyPort: 1090,
+                systemProperties: "-Dmockserver.enableCORSForAllResponses=true"
             }
         },
         stop_mockserver: {
@@ -90,18 +91,6 @@ module.exports = function (grunt) {
                 browsers: ['Chrome'],
                 mode: 'no_proxy'
             },
-            no_proxy_firefox: {
-                browsers: ['Firefox'],
-                mode: 'no_proxy'
-            },
-            no_proxy_safari: {
-                browsers: ['Safari'],
-                mode: 'no_proxy'
-            },
-            no_proxy_all: {
-                browsers: ['Chrome', 'Firefox', 'Safari'],
-                mode: 'no_proxy'
-            },
             with_proxy_chrome: {
                 browsers: ['Chrome_with_proxy'],
                 // browsers: ['Chrome'],
@@ -126,8 +115,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-webdriver-jasmine-runner');
 
     grunt.registerTask('test_node', ['start_mockserver', 'nodeunit', 'stop_mockserver']);
-    grunt.registerTask('test_browser', ['start_mockserver', /*'karma:with_proxy_chrome',*/ 'karma:no_proxy_phantom', 'stop_mockserver']);
-    grunt.registerTask('test', ['start_mockserver', 'nodeunit', 'karma:with_proxy_chrome', 'karma:no_proxy_chrome', 'stop_mockserver']);
+    grunt.registerTask('test_browser', ['start_mockserver', 'karma:no_proxy_chrome', 'karma:with_proxy_chrome', 'stop_mockserver']);
+    grunt.registerTask('test', ['start_mockserver', 'nodeunit', 'karma:no_proxy_chrome', /*'karma:with_proxy_chrome', */'stop_mockserver']);
 
     grunt.registerTask('default', ['exec:stop_existing_mockservers', 'jshint', 'test_node']);
 };
