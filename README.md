@@ -83,6 +83,9 @@ mockServerClient("localhost", 1080).verify(
         'body': 'someBody'
     }, 1, true);
 ```
+## Contributing
+In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
+
 ## Release History
  * 2014-28-10   v0.0.1   Initial release
  * 2014-28-10   v0.0.2   Fixed module naming
