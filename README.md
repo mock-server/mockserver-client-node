@@ -2,7 +2,7 @@
 
 > Communicate with [MockServer](http://mock-server.com/) from any node or grunt build
 
-[![Build Status](https://secure.travis-ci.org/jamesdbloom/mockserver-client-node.png?branch=master)](http://travis-ci.org/jamesdbloom/mockserver-client-node)  [![Dependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node.png)](https://david-dm.org/jamesdbloom/mockserver-client-node) [![devDependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node/dev-status.png)](https://david-dm.org/jamesdbloom/mockserver-client-node#info=devDependencies) [![Code Climate](https://codeclimate.com/github/jamesdbloom/mockserver-client-node.png)](https://codeclimate.com/github/jamesdbloom/mockserver-client-node)
+[![Build status](https://badge.buildkite.com/368c3b69e959f29725d8ab582f8d75dedddceee196d39b6d28.svg)](https://buildkite.com/mockserver/mockserver-client-node) [![Dependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node.png)](https://david-dm.org/jamesdbloom/mockserver-client-node) [![devDependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node/dev-status.png)](https://david-dm.org/jamesdbloom/mockserver-client-node#info=devDependencies) [![Code Climate](https://codeclimate.com/github/jamesdbloom/mockserver-client-node.png)](https://codeclimate.com/github/jamesdbloom/mockserver-client-node)
 
 [![NPM](https://nodei.co/npm/mockserver-client.png?downloads=true&stars=true)](https://nodei.co/npm/mockserver-client/) 
 
