@@ -104,6 +104,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
  * 2015-10-11   v1.0.10  Added retrieve requests or expectations
  * 2016-09-27   v1.0.11  Updated dependencies
  * 2016-10-09   v1.0.12  Resolved issues with dependencies
+ * 2017-04-30   v1.0.13  Added websocket (i.e. method callbacks)
 
 ---
 
