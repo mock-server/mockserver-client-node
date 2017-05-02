@@ -11,7 +11,8 @@ npm install -g grunt-cli
 
 # install project npm modules
 
-npm install
+npm cache clear
+npm install --no-optional
 
 # run project build
 
