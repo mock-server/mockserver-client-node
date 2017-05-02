@@ -36,6 +36,7 @@
     "karma-phantomjs-launcher": "~1.0",
     "karma-safari-launcher": "~1.0",
     "karma-spec-reporter": "~0.0",
+    "karma-xvfb-chrome-launcher": "0.0.1",
     "mockserver-grunt": "~1.0",
     "nodeunit": "~0.11"
   },
