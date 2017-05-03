@@ -16,7 +16,7 @@
             var promise = (global.protractor ? protractor.promise : Q);
             var deferred = promise.defer();
 
-            if (global.protractor) {
+            if (deferred.fulfill && !deferred.resolve) {
                 deferred.resolve = deferred.fulfill;
             }
             return deferred;
