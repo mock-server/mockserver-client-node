@@ -7,7 +7,7 @@ trap finish ERR
 
 # install grunt cli
 
-npm install -g grunt-cli
+npm install grunt-cli
 
 # install project npm modules
 
