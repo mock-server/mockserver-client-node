@@ -107,6 +107,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
  * 2017-04-30   v1.0.13  Added websocket (i.e. method callbacks)
  * 2017-05-03   v1.0.14  Backward compatibility for mockAnyResponse
  * 2017-05-03   v1.0.15  Improving promise logic for protractor
+ * 2017-05-04   v1.0.16  Removed grunt peer dependencies
 
 ---
 
