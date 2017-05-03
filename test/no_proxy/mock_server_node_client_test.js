@@ -86,7 +86,7 @@
 
         'should create full expectation with string body': function (test) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'method': 'POST',
@@ -159,7 +159,7 @@
 
         'should match on method only': function (test) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'method': 'GET'
@@ -179,7 +179,7 @@
                 }
             ).then(function () {
                 // and - another expectation
-                client.mockAnyExpectation(
+                client.mockAnyResponse(
                     {
                         'httpRequest': {
                             'method': 'POST'
@@ -245,7 +245,7 @@
 
         'should match on path only': function (test) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'path': '/firstPath'
@@ -265,7 +265,7 @@
                 }
             ).then(function () {
                 // and - another expectation
-                client.mockAnyExpectation(
+                client.mockAnyResponse(
                     {
                         'httpRequest': {
                             'path': '/secondPath'
@@ -331,7 +331,7 @@
 
         'should match on query string parameters only': function (test) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'queryStringParameters': [
@@ -356,7 +356,7 @@
                 }
             ).then(function () {
                 // and - another expectation
-                client.mockAnyExpectation(
+                client.mockAnyResponse(
                     {
                         'httpRequest': {
                             'queryStringParameters': [
@@ -427,7 +427,7 @@
 
         'should match on body only': function (test) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'body': {
@@ -450,7 +450,7 @@
                 }
             ).then(function () {
                 // and - another expectation
-                client.mockAnyExpectation(
+                client.mockAnyResponse(
                     {
                         'httpRequest': {
                             'body': {
@@ -519,7 +519,7 @@
 
         'should match on headers only': function (test) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'headers': [
@@ -544,7 +544,7 @@
                 }
             ).then(function () {
                 // and - another expectation
-                client.mockAnyExpectation(
+                client.mockAnyResponse(
                     {
                         'httpRequest': {
                             'headers': [
@@ -615,7 +615,7 @@
 
         'should match on cookies only': function (test) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'cookies': [
@@ -640,7 +640,7 @@
                 }
             ).then(function () {
                 // and - another expectation
-                client.mockAnyExpectation(
+                client.mockAnyResponse(
                     {
                         'httpRequest': {
                             'cookies': [

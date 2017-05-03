@@ -37,7 +37,7 @@ mockServerClient("localhost", 1080).
 Or a more complex expectation can be setup as follows:
 
 ```js
-mockServerClient("localhost", 1080).mockAnyExpectation(
+mockServerClient("localhost", 1080).mockAnyResponse(
     {
         'httpRequest': {
             'method': 'POST',
@@ -105,6 +105,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
  * 2016-09-27   v1.0.11  Updated dependencies
  * 2016-10-09   v1.0.12  Resolved issues with dependencies
  * 2017-04-30   v1.0.13  Added websocket (i.e. method callbacks)
+ * 2017-05-03   v1.0.14  Backward compatibility for mockAnyResponse
 
 ---
 

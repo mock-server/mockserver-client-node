@@ -58,7 +58,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
 
         it("should create full expectation with string body", function (done) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'method': 'POST',
@@ -123,7 +123,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
 
         it("should match on method only", function (done) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'method': 'GET'
@@ -143,7 +143,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                 }
             ).then(function () {
                 // and - another expectation
-                client.mockAnyExpectation(
+                client.mockAnyResponse(
                     {
                         'httpRequest': {
                             'method': 'POST'
@@ -198,7 +198,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
 
         it("should match on path only", function (done) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'path': '/firstPath'
@@ -218,7 +218,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                 }
             ).then(function () {
                 // and - another expectation
-                client.mockAnyExpectation(
+                client.mockAnyResponse(
                     {
                         'httpRequest': {
                             'path': '/secondPath'
@@ -273,7 +273,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
 
         it("should match on query string parameters only", function (done) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'queryStringParameters': [
@@ -298,7 +298,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                 }
             ).then(function () {
                 // and - another expectation
-                client.mockAnyExpectation(
+                client.mockAnyResponse(
                     {
                         'httpRequest': {
                             'queryStringParameters': [
@@ -358,7 +358,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
 
         it("should match on body only", function (done) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'body': {
@@ -381,7 +381,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                 }
             ).then(function () {
                 // and - another expectation
-                client.mockAnyExpectation(
+                client.mockAnyResponse(
                     {
                         'httpRequest': {
                             'body': {
@@ -439,7 +439,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
 
         it("should match on headers only", function (done) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'headers': [
@@ -464,7 +464,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                 }
             ).then(function () {
                 // and - another expectation
-                client.mockAnyExpectation(
+                client.mockAnyResponse(
                     {
                         'httpRequest': {
                             'headers': [
@@ -531,7 +531,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
         // need to add extra support for CORS to enable this
         xit("should match on cookies only", function (done) {
             // when
-            client.mockAnyExpectation(
+            client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'cookies': [
@@ -556,7 +556,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                 }
             ).then(function () {
                 // and - another expectation
-                client.mockAnyExpectation(
+                client.mockAnyResponse(
                     {
                         'httpRequest': {
                             'cookies': [

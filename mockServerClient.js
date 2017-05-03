@@ -213,7 +213,7 @@ var mockServerClient;
          * Setup an expectation in the MockServer by specifying an expectation object
          * for example:
          *
-         *   mockServerClient("localhost", 1080).mockAnyExpectation(
+         *   mockServerClient("localhost", 1080).mockAnyResponse(
          *       {
          *           'httpRequest': {
          *               'path': '/somePath',
@@ -239,7 +239,7 @@ var mockServerClient;
          *
          * @param expectation the expectation to setup on the MockServer
          */
-        var mockAnyExpectation = function (expectation) {
+        var mockAnyResponse = function (expectation) {
             if (expectation.httpRequest.headers) {
                 expectation.httpRequest.headers = arrayUniqueConcatenate(expectation.httpRequest.headers, defaultRequestHeaders);
             } else if (expectation.httpRequest) {
@@ -314,13 +314,13 @@ var mockServerClient;
          * @param statusCode the response code to return if a request matches
          */
         var mockSimpleResponse = function (path, responseBody, statusCode) {
-            return mockAnyExpectation(createExpectation(path, responseBody, statusCode));
+            return mockAnyResponse(createExpectation(path, responseBody, statusCode));
         };
         /**
          * Override:
          *
          * - default headers that are used to specify the response headers in mockSimpleResponse(...)
-         *   (note: if you use mockAnyExpectation(...) the default headers are not used)
+         *   (note: if you use mockAnyResponse(...) the default headers are not used)
          *
          * - headers added to every request matcher, this is particularly useful for running tests in parallel
          *
@@ -507,7 +507,7 @@ var mockServerClient;
         };
 
         var _this = {
-            mockAnyExpectation: mockAnyExpectation,
+            mockAnyResponse: mockAnyResponse,
             mockWithCallback: mockWithCallback,
             mockSimpleResponse: mockSimpleResponse,
             setDefaultHeaders: setDefaultHeaders,
