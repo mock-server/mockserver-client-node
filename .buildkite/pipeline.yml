@@ -5,4 +5,4 @@ steps:
   - wait
 
   - label: "build"
-    command: "docker run -v /var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/mockserver/mockserver-client-node:/build -w /build/mockserver-client-node -a stdout -a stderr jamesdbloom/mockserver:grunt /build/mockserver-client-node/scripts/local_quick_build.sh"
+    command: "docker run -v /var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/mockserver:/build -w /build/mockserver-client-node -a stdout -a stderr jamesdbloom/mockserver:grunt /build/mockserver-client-node/scripts/local_quick_build.sh"
