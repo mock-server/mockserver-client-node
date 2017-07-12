@@ -107,7 +107,7 @@ module.exports = function (grunt) {
     });
 
     grunt.loadNpmTasks('grunt-exec');
-    grunt.loadNpmTasks('mockserver-grunt');
+    grunt.loadNpmTasks('mockserver-node');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
