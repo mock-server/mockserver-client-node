@@ -87,27 +87,30 @@ mockServerClient("localhost", 1080).verify(
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
- * 2014-28-10   v0.0.1   Initial release
- * 2014-28-10   v0.0.2   Fixed module naming
- * 2014-28-10   v0.0.3   Fixing module loading
- * 2014-28-10   v0.0.4   Fixing badges
- * 2014-01-11   v1.0.0   Cleaned code & removed duplication
- * 2014-02-11   v1.0.1   Added wercker build process
- * 2014-21-11   v1.0.2   Fixed asynchronous errors
- * 2014-04-12   v1.0.3   Improved connection error handling
- * 2014-04-12   v1.0.4   Supporting protractor based promises
- * 2015-04-06   v1.0.5   Upgrading dependencies
- * 2015-06-02   v1.0.6   Improved clear and dumpToLog options
- * 2015-09-27   v1.0.7   Fixed error with query parameter handling
- * 2015-09-27   v1.0.8   Fixed documentation
- * 2015-09-28   v1.0.9   Fixed documentation again
- * 2015-10-11   v1.0.10  Added retrieve requests or expectations
- * 2016-09-27   v1.0.11  Updated dependencies
- * 2016-10-09   v1.0.12  Resolved issues with dependencies
- * 2017-04-30   v1.0.13  Added websocket (i.e. method callbacks)
- * 2017-05-03   v1.0.14  Backward compatibility for mockAnyResponse
- * 2017-05-03   v1.0.15  Improving promise logic for protractor
- * 2017-05-04   v1.0.16  Removed grunt peer dependencies
+
+Date       | Version | Description
+:--------- |:------- |:----------------------------------------------------
+2014-28-10 | v0.0.1  | Initial release
+2014-28-10 | v0.0.2  | Fixed module naming
+2014-28-10 | v0.0.3  | Fixing module loading
+2014-28-10 | v0.0.4  | Fixing badges
+2014-01-11 | v1.0.0  | Cleaned code & removed duplication
+2014-02-11 | v1.0.1  | Added wercker build process
+2014-21-11 | v1.0.2  | Fixed asynchronous errors
+2014-04-12 | v1.0.3  | Improved connection error handling
+2014-04-12 | v1.0.4  | Supporting protractor based promises
+2015-04-06 | v1.0.5  | Upgrading dependencies
+2015-06-02 | v1.0.6  | Improved clear and dumpToLog options
+2015-09-27 | v1.0.7  | Fixed error with query parameter handling
+2015-09-27 | v1.0.8  | Fixed documentation
+2015-09-28 | v1.0.9  | Fixed documentation again
+2015-10-11 | v1.0.10 | Added retrieve requests or expectations
+2016-09-27 | v1.0.11 | Updated dependencies
+2016-10-09 | v1.0.12 | Resolved issues with dependencies
+2017-04-30 | v1.0.13 | Added websocket (i.e. method callbacks)
+2017-05-03 | v1.0.14 | Backward compatibility for mockAnyResponse
+2017-05-03 | v1.0.15 | Improving promise logic for protractor
+2017-05-04 | v1.0.16 | Removed grunt peer dependencies
 
 ---
 
