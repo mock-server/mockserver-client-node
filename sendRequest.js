@@ -41,10 +41,6 @@
             req.once('response', function (response) {
                 var data = '';
 
-                if (response.statusCode === 400 || response.statusCode === 404) {
-                    deferred.reject(response.statusCode);
-                }
-
                 response.on('data', function (chunk) {
                     data += chunk;
                 });
@@ -53,10 +49,17 @@
                     if (resolveCallback) {
                         deferred.resolve(resolveCallback(data));
                     } else {
-                        deferred.resolve({
-                            statusCode: response.statusCode,
-                            body: data
-                        });
+                        if (response.statusCode >= 400 && response.statusCode < 600) {
+                            deferred.reject({
+                                statusCode: response.statusCode,
+                                body: data
+                            });
+                        } else {
+                            deferred.resolve({
+                                statusCode: response.statusCode,
+                                body: data
+                            });
+                        }
                     }
                 });
             });

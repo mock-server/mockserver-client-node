@@ -20,11 +20,17 @@ var proxyClient;
                     var xmlhttp = new XMLHttpRequest();
                     xmlhttp.addEventListener("load", (function (sucess, error) {
                         return function () {
-                            sucess && sucess({
-                                statusCode: this.status,
-                                description: this.status + " " + this.statusText,
-                                body: this.responseText
-                            });
+                            if (error && this.status >= 400 && this.status < 600) {
+                                error({
+                                    statusCode: this.status,
+                                    body: this.responseText
+                                });
+                            } else {
+                                sucess && sucess({
+                                    statusCode: this.status,
+                                    body: this.responseText
+                                });
+                            }
                         };
                     })(sucess, error));
                     xmlhttp.open('PUT', url);
@@ -84,13 +90,18 @@ var proxyClient;
                             "count": count,
                             "exact": exact
                         }
-                    }).then(function (result) {
-                        if (result.statusCode !== 202) {
-                            error && error(result.body);
-                        } else {
+                    }).then(
+                        function () {
                             sucess && sucess();
+                        },
+                        function (result) {
+                            if (result.statusCode !== 202) {
+                                error && error(result.body);
+                            } else {
+                                error && sucess(result);
+                            }
                         }
-                    });
+                    );
                 }
             };
         };
@@ -123,13 +134,18 @@ var proxyClient;
                 then: function (sucess, error) {
                     return makeRequest(host, port, "/verifySequence", {
                         "httpRequests": requestSequence
-                    }).then(function (result) {
-                        if (result.statusCode !== 202) {
-                            error && error(result.body);
-                        } else {
+                    }).then(
+                        function () {
                             sucess && sucess();
+                        },
+                        function (result) {
+                            if (result.statusCode !== 202) {
+                                error && error(result.body);
+                            } else {
+                                error && sucess(result);
+                            }
                         }
-                    });
+                    );
                 }
             };
         };

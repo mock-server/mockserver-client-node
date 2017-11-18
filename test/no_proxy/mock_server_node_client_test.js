@@ -45,25 +45,31 @@
         var callback = function (response) {
             var body = '';
 
-            if (response.statusCode === 400 || response.statusCode === 404) {
-                deferred.reject(response.statusCode);
-            }
-
             response.on('data', function (chunk) {
                 body += chunk;
             });
 
             response.on('end', function () {
-                deferred.resolve({
-                    statusCode: response.statusCode,
-                    headers: response.headers,
-                    body: body
-                });
+                if (response.statusCode >= 400 && response.statusCode < 600) {
+                    deferred.reject({
+                        statusCode: response.statusCode,
+                        headers: response.headers,
+                        body: body
+                    });
+                } else {
+                    deferred.resolve({
+                        statusCode: response.statusCode,
+                        headers: response.headers,
+                        body: body
+                    });
+                }
             });
         };
 
         var req = http.request(options, callback);
-        req.write(body);
+        if (options.method === "POST") {
+            req.write(body);
+        }
         req.end();
 
         return deferred.promise;
@@ -123,7 +129,7 @@
                         test.ok(false, "should not match expectation");
                         test.done();
                     }, function (error) {
-                        test.equal(error, 404);
+                        test.equal(error.statusCode, 404);
                     })
                     .then(function () {
 
@@ -144,7 +150,7 @@
                                         test.ok(false, "should match expectation but no times remaining");
                                         test.done();
                                     }, function (error) {
-                                        test.equal(error, 404);
+                                        test.equal(error.statusCode, 404);
                                     })
                                     .then(function () {
                                         test.done();
@@ -153,6 +159,80 @@
                     });
             }, function (error) {
                 test.ok(false, "failed while mocking request \n" + error);
+                test.done();
+            });
+        },
+
+        'should expose server validation failure': function (test) {
+            // when
+            client.mockAnyResponse(
+                {
+                    'httpRequest': {
+                        'paths': '/somePath',
+                        'body': {
+                            'type': "STRING",
+                            'vaue': 'someBody'
+                        }
+                    },
+                    'httpResponse': { }
+                }
+            ).then(function () {
+                test.ok(false, "client should have failed promise for server validation error");
+                test.done();
+            }, function (error) {
+                test.equal(error.statusCode, 400);
+                test.equal(error.body, "2 errors:\n" +
+                    " - object instance has properties which are not allowed by the schema: [\"paths\"] for field \"/httpRequest\"\n" +
+                    " - for field \"/httpRequest/body\" a plain string or one of the following example bodies must be specified \n" +
+                    "   {\n" +
+                    "     \"not\": false,\n" +
+                    "     \"type\": \"BINARY\",\n" +
+                    "     \"base64Bytes\": \"\",\n" +
+                    "     \"contentType\": \"\"\n" +
+                    "   }, \n" +
+                    "   {\n" +
+                    "     \"not\": false,\n" +
+                    "     \"type\": \"JSON\",\n" +
+                    "     \"json\": \"\",\n" +
+                    "     \"contentType\": \"\",\n" +
+                    "     \"matchType\": \"ONLY_MATCHING_FIELDS\"\n" +
+                    "   },\n" +
+                    "   {\n" +
+                    "     \"not\": false,\n" +
+                    "     \"type\": \"JSON_SCHEMA\",\n" +
+                    "     \"jsonSchema\": \"\"\n" +
+                    "   },\n" +
+                    "   {\n" +
+                    "     \"not\": false,\n" +
+                    "     \"type\": \"PARAMETERS\",\n" +
+                    "     \"parameters\": \"TO DO\"\n" +
+                    "   },\n" +
+                    "   {\n" +
+                    "     \"not\": false,\n" +
+                    "     \"type\": \"REGEX\",\n" +
+                    "     \"regex\": \"\"\n" +
+                    "   },\n" +
+                    "   {\n" +
+                    "     \"not\": false,\n" +
+                    "     \"type\": \"STRING\",\n" +
+                    "     \"string\": \"\"\n" +
+                    "   },\n" +
+                    "   {\n" +
+                    "     \"not\": false,\n" +
+                    "     \"type\": \"XML\",\n" +
+                    "     \"xml\": \"\",\n" +
+                    "     \"contentType\": \"\"\n" +
+                    "   },\n" +
+                    "   {\n" +
+                    "     \"not\": false,\n" +
+                    "     \"type\": \"XML_SCHEMA\",\n" +
+                    "     \"xmlSchema\": \"\"\n" +
+                    "   },\n" +
+                    "   {\n" +
+                    "     \"not\": false,\n" +
+                    "     \"type\": \"XPATH\",\n" +
+                    "     \"xpath\": \"\"\n" +
+                    "   }");
                 test.done();
             });
         },
@@ -204,7 +284,7 @@
                             test.ok(false, "should not match expectation");
                             test.done();
                         }, function (error) {
-                            test.equal(error, 404);
+                            test.equal(error.statusCode, 404);
                         })
                         .then(function () {
 
@@ -290,7 +370,7 @@
                             test.ok(false, "should not match expectation");
                             test.done();
                         }, function (error) {
-                            test.equal(error, 404);
+                            test.equal(error.statusCode, 404);
                         })
                         .then(function () {
 
@@ -386,7 +466,7 @@
                             test.ok(false, "should not match expectation");
                             test.done();
                         }, function (error) {
-                            test.equal(error, 404);
+                            test.equal(error.statusCode, 404);
                         })
                         .then(function () {
 
@@ -478,7 +558,7 @@
                             test.ok(false, "should not match expectation");
                             test.done();
                         }, function (error) {
-                            test.equal(error, 404);
+                            test.equal(error.statusCode, 404);
                         })
                         .then(function () {
 
@@ -574,7 +654,7 @@
                             test.ok(false, "should not match expectation");
                             test.done();
                         }, function (error) {
-                            test.equal(error, 404);
+                            test.equal(error.statusCode, 404);
                         })
                         .then(function () {
 
@@ -670,7 +750,7 @@
                             test.ok(false, "should not match expectation");
                             test.done();
                         }, function (error) {
-                            test.equal(error, 404);
+                            test.equal(error.statusCode, 404);
                         })
                         .then(function () {
 
@@ -719,7 +799,7 @@
                             test.ok(false, "should not match expectation");
                             test.done();
                         }, function (error) {
-                            test.equal(error, 404);
+                            test.equal(error.statusCode, 404);
                         })
                         .then(function () {
 
@@ -740,7 +820,7 @@
                                             test.ok(false, "should match expectation but no times remaining");
                                             test.done();
                                         }, function (error) {
-                                            test.equal(error, 404);
+                                            test.equal(error.statusCode, 404);
                                         })
                                         .then(function () {
                                             test.done();
@@ -786,7 +866,7 @@
                             test.ok(false, "should not match expectation");
                             test.done();
                         }, function (error) {
-                            test.equal(error, 404);
+                            test.equal(error.statusCode, 404);
                         })
                         .then(function () {
 
@@ -803,7 +883,7 @@
                                             test.ok(false, "should not match expectation");
                                             test.done();
                                         }, function (error) {
-                                            test.equal(error, 404);
+                                            test.equal(error.statusCode, 404);
                                             test.done();
                                         });
                                 }, function (error) {
@@ -936,7 +1016,7 @@
                                         test.ok(false, "should not match expectation");
                                         test.done();
                                     }, function (error) {
-                                        test.equal(error, 404);
+                                        test.equal(error.statusCode, 404);
                                         test.done();
                                     });
                             }, function (error) {
@@ -1223,7 +1303,7 @@
                                     test.ok(false, "should not match expectation");
                                     test.done();
                                 }, function (error) {
-                                    test.equal(error, 404);
+                                    test.equal(error.statusCode, 404);
                                 })
                                 .then(function () {
 
@@ -1288,7 +1368,7 @@
                                     test.ok(false, "should not match expectation");
                                     test.done();
                                 }, function (error) {
-                                    test.equal(error, 404);
+                                    test.equal(error.statusCode, 404);
                                 })
                                 .then(function () {
 
@@ -1402,7 +1482,7 @@
                                     test.ok(false, "should not match expectation");
                                     test.done();
                                 }, function (error) {
-                                    test.equal(error, 404);
+                                    test.equal(error.statusCode, 404);
                                 })
                                 .then(function () {
 
@@ -1521,7 +1601,7 @@
                                             test.ok(false, "should clear matching expectations");
                                             test.done();
                                         }, function (error) {
-                                            test.strictEqual(404, error);
+                                            test.strictEqual(error.statusCode, 404);
                                         })
                                         .then(function () {
 
@@ -1613,7 +1693,7 @@
                                                 test.ok(false, "should clear matching expectations");
                                                 test.done();
                                             }, function (error) {
-                                                test.strictEqual(404, error);
+                                                test.strictEqual(error.statusCode, 404);
                                             })
                                             .then(function () {
 
@@ -1678,7 +1758,7 @@
                                                 test.ok(false, "should clear matching expectations");
                                                 test.done();
                                             }, function (error) {
-                                                test.strictEqual(404, error);
+                                                test.strictEqual(error.statusCode, 404);
                                             })
                                             .then(function () {
 
@@ -1738,7 +1818,7 @@
                                             test.ok(false, "should clear matching expectations");
                                             test.done();
                                         }, function (error) {
-                                            test.strictEqual(404, error);
+                                            test.strictEqual(error.statusCode, 404);
                                         })
                                         .then(function () {
 
@@ -1814,7 +1894,7 @@
                                             test.ok(false, "should clear matching expectations");
                                             test.done();
                                         }, function (error) {
-                                            test.strictEqual(404, error);
+                                            test.strictEqual(error.statusCode, 404);
                                         })
                                         .then(function () {
 
@@ -1906,7 +1986,7 @@
                                             test.ok(false, "should clear all expectations");
                                             test.done();
                                         }, function (error) {
-                                            test.strictEqual(404, error);
+                                            test.strictEqual(error.statusCode, 404);
                                         })
                                         .then(function () {
 
@@ -1916,7 +1996,7 @@
                                                     test.ok(false, "should clear all expectations");
                                                     test.done();
                                                 }, function (error) {
-                                                    test.strictEqual(404, error);
+                                                    test.strictEqual(error.statusCode, 404);
                                                     test.done();
                                                 });
 
@@ -2150,7 +2230,7 @@
                                                 test.ok(false, "should not match expectation");
                                                 test.done();
                                             }, function (error) {
-                                                test.strictEqual(error, 404);
+                                                test.strictEqual(error.statusCode, 404);
                                             })
                                             .then(function () {
 
@@ -2230,7 +2310,7 @@
                                                 test.ok(false, "should not match expectation");
                                                 test.done();
                                             }, function (error) {
-                                                test.strictEqual(error, 404);
+                                                test.strictEqual(error.statusCode, 404);
                                             })
                                             .then(function () {
 
@@ -2305,7 +2385,7 @@
                                                 test.ok(false, "should not match expectation");
                                                 test.done();
                                             }, function (error) {
-                                                test.strictEqual(error, 404);
+                                                test.strictEqual(error.statusCode, 404);
                                             })
                                             .then(function () {
 
@@ -2393,7 +2473,7 @@
                                                 test.ok(false, "should not match expectation");
                                                 test.done();
                                             }, function (error) {
-                                                test.strictEqual(error, 404);
+                                                test.strictEqual(error.statusCode, 404);
                                             })
                                             .then(function () {
 
