@@ -170,6 +170,9 @@
                                 "    \"name\" : \"Host\",\n" +
                                 "    \"values\" : [ \"localhost:" + mockServerPort + "\" ]\n" +
                                 "  }, {\n" +
+                                "    \"name\" : \"Connection\",\n" +
+                                "    \"values\" : [ \"keep-alive\" ]\n" +
+                                "  }, {\n" +
                                 "    \"name\" : \"content-length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
@@ -216,6 +219,9 @@
                                 "    \"name\" : \"Host\",\n" +
                                 "    \"values\" : [ \"localhost:" + mockServerPort + "\" ]\n" +
                                 "  }, {\n" +
+                                "    \"name\" : \"Connection\",\n" +
+                                "    \"values\" : [ \"keep-alive\" ]\n" +
+                                "  }, {\n" +
                                 "    \"name\" : \"content-length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
                                 "  } ],\n" +
@@ -260,6 +266,9 @@
                                 "  \"headers\" : [ {\n" +
                                 "    \"name\" : \"Host\",\n" +
                                 "    \"values\" : [ \"localhost:" + mockServerPort + "\" ]\n" +
+                                "  }, {\n" +
+                                "    \"name\" : \"Connection\",\n" +
+                                "    \"values\" : [ \"keep-alive\" ]\n" +
                                 "  }, {\n" +
                                 "    \"name\" : \"content-length\",\n" +
                                 "    \"values\" : [ \"8\" ]\n" +
@@ -446,6 +455,9 @@
                                                         "    \"name\" : \"Host\",\n" +
                                                         "    \"values\" : [ \"localhost:" + mockServerPort + "\" ]\n" +
                                                         "  }, {\n" +
+                                                        "    \"name\" : \"Connection\",\n" +
+                                                        "    \"values\" : [ \"keep-alive\" ]\n" +
+                                                        "  }, {\n" +
                                                         "    \"name\" : \"content-length\",\n" +
                                                         "    \"values\" : [ \"8\" ]\n" +
                                                         "  } ],\n" +
@@ -532,6 +544,9 @@
                                                         "  \"headers\" : [ {\n" +
                                                         "    \"name\" : \"Host\",\n" +
                                                         "    \"values\" : [ \"localhost:" + mockServerPort + "\" ]\n" +
+                                                        "  }, {\n" +
+                                                        "    \"name\" : \"Connection\",\n" +
+                                                        "    \"values\" : [ \"keep-alive\" ]\n" +
                                                         "  }, {\n" +
                                                         "    \"name\" : \"content-length\",\n" +
                                                         "    \"values\" : [ \"8\" ]\n" +
@@ -620,6 +635,9 @@
                                                         "  \"headers\" : [ {\n" +
                                                         "    \"name\" : \"Host\",\n" +
                                                         "    \"values\" : [ \"localhost:" + mockServerPort + "\" ]\n" +
+                                                        "  }, {\n" +
+                                                        "    \"name\" : \"Connection\",\n" +
+                                                        "    \"values\" : [ \"keep-alive\" ]\n" +
                                                         "  }, {\n" +
                                                         "    \"name\" : \"content-length\",\n" +
                                                         "    \"values\" : [ \"8\" ]\n" +

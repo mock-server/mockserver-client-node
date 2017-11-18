@@ -99,7 +99,7 @@
                         ],
                         'body': {
                             'type': "STRING",
-                            'value': 'someBody'
+                            'string': 'someBody'
                         }
                     },
                     'httpResponse': {
@@ -432,7 +432,7 @@
                     'httpRequest': {
                         'body': {
                             'type': "STRING",
-                            'value': 'someBody'
+                            'string': 'someBody'
                         }
                     },
                     'httpResponse': {
@@ -455,7 +455,7 @@
                         'httpRequest': {
                             'body': {
                                 'type': "REGEX",
-                                'value': 'someOtherBody'
+                                'regex': 'someOtherBody'
                             }
                         },
                         'httpResponse': {
@@ -764,7 +764,7 @@
                 ],
                 'body': {
                     'type': "STRING",
-                    'value': 'someBody'
+                    'string': 'someBody'
                 }
             }, function (request) {
                 if (request.method === 'POST' && request.path === '/somePath') {

@@ -71,7 +71,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                         ],
                         'body': {
                             'type': "STRING",
-                            'value': 'someBody'
+                            'string': 'someBody'
                         }
                     },
                     'httpResponse': {
@@ -363,7 +363,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                     'httpRequest': {
                         'body': {
                             'type': "STRING",
-                            'value': 'someBody'
+                            'string': 'someBody'
                         }
                     },
                     'httpResponse': {
@@ -386,7 +386,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                         'httpRequest': {
                             'body': {
                                 'type': "REGEX",
-                                'value': 'someOtherBody'
+                                'regex': 'someOtherBody'
                             }
                         },
                         'httpResponse': {
@@ -666,7 +666,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                 ],
                 'body': {
                     'type': "STRING",
-                    'value': 'someBody'
+                    'string': 'someBody'
                 }
             }, function (request) {
                 if (request.method === 'POST' && request.path === '/somePath') {

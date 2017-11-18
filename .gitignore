@@ -71,4 +71,3 @@ node_modules
 npm-debug.log
 tmp
 custom_tmp
-package-lock.json
