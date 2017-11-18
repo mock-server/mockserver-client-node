@@ -30,43 +30,60 @@ var mockServer = require('mockserver-client'),
 Then an simple expectation can be setup as follows:
 
 ```js
-mockServerClient("localhost", 1080).
-    mockSimpleResponse('/somePath', { name: 'value' }, 203);
+mockServerClient("localhost", 1080)
+    .mockSimpleResponse('/somePath', { name: 'value' }, 203)
+    .then(
+        function(result) {
+            // do something next
+        }, 
+        function(error) {
+            // handle error
+        }
+    );
 ```
 
 Or a more complex expectation can be setup as follows:
 
 ```js
-mockServerClient("localhost", 1080).mockAnyResponse(
-    {
-        'httpRequest': {
-            'method': 'POST',
-            'path': '/somePath',
-            'queryStringParameters': [
-                {
-                    'name': 'test',
-                    'values': [ 'true' ]
+mockServerClient("localhost", 1080)
+    .mockAnyResponse(
+        {
+            'httpRequest': {
+                'method': 'POST',
+                'path': '/somePath',
+                'queryStringParameters': [
+                    {
+                        'name': 'test',
+                        'values': [ 'true' ]
+                    }
+                ],
+                'body': {
+                    'type': "STRING",
+                    'value': 'someBody'
                 }
-            ],
-            'body': {
-                'type': "STRING",
-                'value': 'someBody'
+            },
+            'httpResponse': {
+                'statusCode': 200,
+                'body': JSON.stringify({ name: 'value' }),
+                'delay': {
+                    'timeUnit': 'MILLISECONDS',
+                    'value': 250
+                }
+            },
+            'times': {
+                'remainingTimes': 1,
+                'unlimited': false
             }
-        },
-        'httpResponse': {
-            'statusCode': 200,
-            'body': JSON.stringify({ name: 'value' }),
-            'delay': {
-                'timeUnit': 'MILLISECONDS',
-                'value': 250
-            }
-        },
-        'times': {
-            'remainingTimes': 1,
-            'unlimited': false
         }
-    }
-);
+    )
+    .then(
+        function(result) {
+            // do something next
+        }, 
+        function(error) {
+            // handle error
+        }
+    );
 ```
 
 For the full syntax support see [MockServer - Creating JavaScript Expectations](http://mock-server.com/#create-expectations-javascript).
@@ -76,13 +93,53 @@ For the full syntax support see [MockServer - Creating JavaScript Expectations](
 It is also possible to verify that request were made as follows:
 
 ```js
-mockServerClient("localhost", 1080).verify(
-    {
-        'method': 'POST',
-        'path': '/somePath',
-        'body': 'someBody'
-    }, 1, true);
+mockServerClient("localhost", 1080)
+    .verify(
+        {
+            'method': 'POST',
+            'path': '/somePath',
+            'body': 'someBody'
+        }, 
+        1, true
+    )
+    .then(
+        function() {
+            // do something next
+        }, 
+        function(failure) {
+            // handle verification failure
+        }
+    );
 ```
+It is also possible to verify that sequences of requests were made in a specific order as follows:
+
+```js
+mockServerClient("localhost", 1080)
+    .verifySequence(
+        {
+            'method': 'POST',
+            'path': '/somePathOne',
+            'body': 'someBody'
+        },
+        {
+            'method': 'GET',
+            'path': '/somePathTwo'
+        },
+        {
+            'method': 'GET',
+            'path': '/somePathThree'
+        }
+    )
+    .then(
+        function() {
+            // do something next
+        }, 
+        function(failure) {
+            // handle verification failure
+        }
+    );
+```
+
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
@@ -111,6 +168,7 @@ Date       | Version | Description
 2017-05-03 | v1.0.14 | Backward compatibility for mockAnyResponse
 2017-05-03 | v1.0.15 | Improving promise logic for protractor
 2017-05-04 | v1.0.16 | Removed grunt peer dependencies
+2017-18-11 | v2.0.0  | Improved error handling for server validation 
 
 ---
 
