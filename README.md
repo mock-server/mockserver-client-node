@@ -173,3 +173,5 @@ Date       | Version | Description
 ---
 
 Task submitted by [James D Bloom](http://blog.jamesdbloom.com)
+
+[![Analytics](https://ga-beacon.appspot.com/UA-32687194-4/mockserver-client-node/README.md)](https://github.com/igrigorik/ga-beacon)
