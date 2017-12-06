@@ -119,9 +119,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'with_proxy' :
                 client.verify({
                     'path': '/someOtherPath'
                 }, 1)
-                    .then(function () {
-                        throw "verification should fail";
-                    }, function (error) {
+                    .then(fail, function (error) {
                         expect(error).toContain("Request not found at least once, expected:<{\n" +
                             "  \"path\" : \"/someOtherPath\"\n" +
                             "}> but was:<{\n");
@@ -145,9 +143,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'with_proxy' :
                     'path': '/somePath',
                     'body': 'someBody'
                 }, 2, true)
-                    .then(function () {
-                        throw "verification should fail";
-                    }, function (error) {
+                    .then(fail, function (error) {
                         expect(error).toContain("Request not found exactly 2 times, expected:<{\n" +
                             "  \"method\" : \"POST\",\n" +
                             "  \"path\" : \"/somePath\",\n" +
@@ -173,9 +169,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'with_proxy' :
                     'path': '/somePath',
                     'body': 'someBody'
                 }, 2)
-                    .then(function () {
-                        throw "verification should fail";
-                    }, function (error) {
+                    .then(fail, function (error) {
                         expect(error).toContain("Request not found at least 2 times, expected:<{\n" +
                             "  \"method\" : \"POST\",\n" +
                             "  \"path\" : \"/somePath\",\n" +
@@ -260,9 +254,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'with_proxy' :
                                 'path': '/two'
                             }
                         )
-                            .then(function () {
-                                throw "verification should fail";
-                            }, function () {
+                            .then(fail, function () {
 
                                 // when - first request incorrect body
                                 client.verifySequence(
@@ -280,9 +272,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'with_proxy' :
                                         'path': '/three'
                                     }
                                 )
-                                    .then(function () {
-                                        throw "verification should fail";
-                                    }, function () {
+                                    .then(fail, function () {
                                         done();
                                     });
 
@@ -328,9 +318,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'with_proxy' :
                                         'path': '/somePath',
                                         'body': 'someBody'
                                     }, 1)
-                                        .then(function () {
-                                            throw "verification should fail";
-                                        }, function () {
+                                        .then(fail, function () {
                                             done();
                                         });
                                 }, fail);
@@ -373,9 +361,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'with_proxy' :
                                         'path': '/somePath',
                                         'body': 'someBody'
                                     }, 1)
-                                        .then(function () {
-                                            throw "verification should fail";
-                                        }, function () {
+                                        .then(fail, function () {
                                             done();
                                         });
                                 }, fail);
@@ -421,9 +407,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'with_proxy' :
                                         'path': '/somePath',
                                         'body': 'someBody'
                                     }, 1)
-                                        .then(function () {
-                                            throw "verification should fail";
-                                        }, function () {
+                                        .then(fail, function () {
                                             done();
                                         });
                                 }, fail);
@@ -465,9 +449,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'with_proxy' :
                                         'path': '/somePath',
                                         'body': 'someBody'
                                     }, 1)
-                                        .then(function () {
-                                            throw "verification should fail";
-                                        }, function () {
+                                        .then(fail, function () {
                                             done();
                                         });
                                 }, fail);

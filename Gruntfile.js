@@ -116,7 +116,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('test_node', ['start_mockserver', 'nodeunit', 'stop_mockserver']);
     grunt.registerTask('test_browser', ['start_mockserver', 'karma:no_proxy_chrome', 'karma:with_proxy_chrome', 'stop_mockserver']);
-    grunt.registerTask('test', ['start_mockserver', 'nodeunit', 'karma:no_proxy_chrome', /*'karma:with_proxy_chrome', */'stop_mockserver']);
+    grunt.registerTask('test', ['start_mockserver', 'nodeunit', 'karma:no_proxy_chrome'/*, 'karma:with_proxy_chrome'*/, 'stop_mockserver']);
 
     grunt.registerTask('default', ['exec:stop_existing_mockservers', 'jshint', 'test']);
 };

@@ -168,7 +168,9 @@ Date       | Version | Description
 2017-05-03 | v1.0.14 | Backward compatibility for mockAnyResponse
 2017-05-03 | v1.0.15 | Improving promise logic for protractor
 2017-05-04 | v1.0.16 | Removed grunt peer dependencies
-2017-18-11 | v2.0.0  | Improved error handling for server validation 
+2017-11-18 | v2.0.0  | Improved error handling for server validation 
+2017-12-06 | v5.1.0  | Upgrading MockServer to 5.1.0 
+2017-12-07 | v5.1.1  | Upgrading MockServer to 5.1.1
 
 ---
 
