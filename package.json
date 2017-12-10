@@ -1,7 +1,7 @@
 {
   "name": "mockserver-client",
   "description": "A node client for the MockServer",
-  "version": "5.1.1",
+  "version": "5.2.0",
   "homepage": "https://github.com/jamesdbloom/mockserver",
   "author": {
     "name": "James Bloom",
@@ -37,7 +37,7 @@
     "karma-safari-launcher": "~1.0",
     "karma-spec-reporter": "~0.0",
     "karma-xvfb-chrome-launcher": "0.0.1",
-    "mockserver-node": "5.1.1",
+    "mockserver-node": "5.2.0",
     "nodeunit": "~0.11"
   },
   "keywords": [
