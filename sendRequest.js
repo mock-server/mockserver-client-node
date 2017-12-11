@@ -23,6 +23,7 @@
         };
 
         var sendRequest = function (host, port, path, jsonBody, resolveCallback) {
+
             var deferred = defer();
 
             var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
@@ -50,10 +51,7 @@
                         deferred.resolve(resolveCallback(data));
                     } else {
                         if (response.statusCode >= 400 && response.statusCode < 600) {
-                            deferred.reject({
-                                statusCode: response.statusCode,
-                                body: data
-                            });
+                            deferred.reject(data);
                         } else {
                             deferred.resolve({
                                 statusCode: response.statusCode,
@@ -65,7 +63,11 @@
             });
 
             req.once('error', function (error) {
-                deferred.reject(error);
+                if (error.code && error.code === "ECONNREFUSED") {
+                    deferred.reject("Can't connect to MockServer running on host: \"" + host + "\" and port: \"" + port + "\"");
+                } else {
+                    deferred.reject(JSON.stringify(error));
+                }
             });
 
             req.write(body);
