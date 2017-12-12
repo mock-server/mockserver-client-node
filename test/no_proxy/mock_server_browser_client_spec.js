@@ -135,8 +135,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                     'httpResponse': {}
                 }
             ).then(fail, function (error) {
-                expect(error.statusCode).toEqual(400);
-                expect(error.body).toEqual("2 errors:\n" +
+                expect(error).toEqual("2 errors:\n" +
                     " - object instance has properties which are not allowed by the schema: [\"paths\"] for field \"/httpRequest\"\n" +
                     " - for field \"/httpRequest/body\" a plain string or one of the following example bodies must be specified \n" +
                     "   {\n" +
@@ -1314,7 +1313,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                                                     client.clear('/somePathOne')
                                                         .then(function () {
                                                             // then - return no logs for clear requests
-                                                            client.retrieveRequests({
+                                                            client.retrieveRecordedRequests({
                                                                 "httpRequest": {
                                                                     "path": "/somePathOne"
                                                                 }
@@ -1330,7 +1329,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
 
 
                                                                     // then - return logs for not cleared requests
-                                                                    client.retrieveRequests({
+                                                                    client.retrieveRecordedRequests({
                                                                         "httpRequest": {
                                                                             "path": "/somePathTwo"
                                                                         }
@@ -1489,7 +1488,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                                                     client.clear("/somePathOne", "EXPECTATIONS")
                                                         .then(function () {
                                                             // then - return no logs for clear requests
-                                                            var requests = client.retrieveRequests({
+                                                            var requests = client.retrieveRecordedRequests({
                                                                 "httpRequest": {
                                                                     "path": "/somePathOne"
                                                                 }
@@ -1543,7 +1542,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                                                     client.clear("/somePathOne", "LOG")
                                                         .then(function () {
                                                             // then - return no logs for clear requests
-                                                            client.retrieveRequests({
+                                                            client.retrieveRecordedRequests({
                                                                 "httpRequest": {
                                                                     "path": "/somePathOne"
                                                                 }
@@ -1623,7 +1622,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                             client.mockSimpleResponse('/somePathTwo', {name: 'two'}, 303)
                                 .then(function () {
                                     // when
-                                    var expectations = client.retrieveExpectations({
+                                    var expectations = client.retrieveActiveExpectations({
                                         "httpRequest": {
                                             "path": "/somePathOne"
                                         }
@@ -1656,7 +1655,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                             client.mockSimpleResponse('/somePathTwo', {name: 'two'}, 202)
                                 .then(function () {
                                     // when
-                                    var expectations = client.retrieveExpectations("/somePathOne")
+                                    var expectations = client.retrieveActiveExpectations("/somePathOne")
                                         .then(function (expectations) {
                                             // then
                                             expect(expectations.length).toEqual(2);
@@ -1685,7 +1684,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                             client.mockSimpleResponse('/somePathTwo', {name: 'two'}, 202)
                                 .then(function () {
                                     // when
-                                    var expectations = client.retrieveExpectations({
+                                    var expectations = client.retrieveActiveExpectations({
                                         "httpRequest": {
                                             "path": "/somePath.*"
                                         }
@@ -1722,7 +1721,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                             client.mockSimpleResponse('/somePathTwo', {name: 'two'}, 202)
                                 .then(function () {
                                     // when
-                                    var expectations = client.retrieveExpectations()
+                                    var expectations = client.retrieveActiveExpectations()
                                         .then(function (expectations) {
 
                                             // then
@@ -1772,7 +1771,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                                                     expect(this.status).toEqual(202);
 
                                                     // when
-                                                    var requests = client.retrieveRequests({
+                                                    var requests = client.retrieveRecordedRequests({
                                                         "httpRequest": {
                                                             "path": "/somePathOne"
                                                         }
@@ -1845,7 +1844,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                                                     expect(this.status).toEqual(202);
 
                                                     // when
-                                                    var requests = client.retrieveRequests("/somePathOne")
+                                                    var requests = client.retrieveRecordedRequests("/somePathOne")
                                                         .then(function (requests) {
 
                                                             // then
@@ -1915,7 +1914,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                                                     expect(this.status).toEqual(202);
 
                                                     // when
-                                                    var requests = client.retrieveRequests({
+                                                    var requests = client.retrieveRecordedRequests({
                                                         "httpRequest": {
                                                             "path": "/.*"
                                                         }
@@ -1994,7 +1993,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'no_proxy' : w
                                                     expect(this.status).toEqual(202);
 
                                                     // when
-                                                    client.retrieveRequests()
+                                                    client.retrieveRecordedRequests()
                                                         .then(function (requests) {
                                                             // then
                                                             expect(requests.length).toEqual(4);

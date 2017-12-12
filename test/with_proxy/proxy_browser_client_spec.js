@@ -488,7 +488,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'with_proxy' :
                                                     expect(this.status).toEqual(202);
 
                                                     // when
-                                                    var requests = client.retrieveRequests({
+                                                    var requests = client.retrieveRecordedRequests({
                                                         "httpRequest": {
                                                             "path": "/somePathOne"
                                                         }
@@ -554,7 +554,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'with_proxy' :
                                                     expect(this.status).toEqual(202);
 
                                                     // when
-                                                    var requests = proxyClient("localhost", proxyPort).retrieveRequests("/somePathOne")
+                                                    var requests = proxyClient("localhost", proxyPort).retrieveRecordedRequests("/somePathOne")
                                                         .then(function (requests) {
 
                                                             // then

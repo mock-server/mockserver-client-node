@@ -42,24 +42,24 @@
         options.headers.Connection = "keep-alive";
 
         var callback = function (response) {
-            var body = '';
+            var data = '';
 
             response.on('data', function (chunk) {
-                body += chunk;
+                data += chunk;
             });
 
             response.on('end', function () {
                 if (response.statusCode >= 400 && response.statusCode < 600) {
-                    deferred.reject({
-                        statusCode: response.statusCode,
-                        headers: response.headers,
-                        body: body
-                    });
+                    if (response.statusCode === 404) {
+                        deferred.reject("404 Not Found");
+                    } else {
+                        deferred.reject(data);
+                    }
                 } else {
                     deferred.resolve({
                         statusCode: response.statusCode,
                         headers: response.headers,
-                        body: body
+                        body: data
                     });
                 }
             });
@@ -91,7 +91,7 @@
 
         'should create full expectation with string body': function (test) {
             // when
-            client.mockAnyResponse(
+            var mockAnyResponse = client.mockAnyResponse(
                 {
                     'httpRequest': {
                         'method': 'POST',
@@ -120,12 +120,13 @@
                         'unlimited': false
                     }
                 }
-            ).then(function () {
+            );
+            mockAnyResponse.then(function () {
 
                 // then - non matching request
                 sendRequest("GET", "localhost", mockServerPort, "/otherPath")
                     .then(fail(test), function (error) {
-                        test.equal(error.statusCode, 404);
+                        test.equal(error, "404 Not Found");
                     })
                     .then(function () {
 
@@ -140,7 +141,7 @@
                                 // then - matching request, but no times remaining
                                 sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "someBody")
                                     .then(fail(test), function (error) {
-                                        test.equal(error.statusCode, 404);
+                                        test.equal(error, "404 Not Found");
                                     })
                                     .then(function () {
                                         test.done();
@@ -280,8 +281,7 @@
                     'httpResponse': {}
                 }
             ).then(fail(test), function (error) {
-                test.equal(error.statusCode, 400);
-                test.equal(error.body, "2 errors:\n" +
+                test.equal(error, "2 errors:\n" +
                     " - object instance has properties which are not allowed by the schema: [\"paths\"] for field \"/httpRequest\"\n" +
                     " - for field \"/httpRequest/body\" a plain string or one of the following example bodies must be specified \n" +
                     "   {\n" +
@@ -381,7 +381,7 @@
                     // then - matching no expectation
                     sendRequest("PUT", "localhost", mockServerPort, "/somePath")
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
                         })
                         .then(function () {
 
@@ -452,7 +452,7 @@
                     // then - matching no expectation
                     sendRequest("GET", "localhost", mockServerPort, "/otherPath")
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
                         })
                         .then(function () {
 
@@ -533,7 +533,7 @@
                     // then - matching no expectation
                     sendRequest("GET", "localhost", mockServerPort, "/somePath?param=other")
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
                         })
                         .then(function () {
 
@@ -610,7 +610,7 @@
                     // then - matching no expectation
                     sendRequest("POST", "localhost", mockServerPort, "/otherPath", "someIncorrectBody")
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
                         })
                         .then(function () {
 
@@ -691,7 +691,7 @@
                     // then - matching no expectation
                     sendRequest("GET", "localhost", mockServerPort, "/somePath", "", {'Allow': 'other'})
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
                         })
                         .then(function () {
 
@@ -772,7 +772,7 @@
                     // then - matching no expectation
                     sendRequest("GET", "localhost", mockServerPort, "/somePath", "", {'Cookie': 'cookie=other'})
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
                         })
                         .then(function () {
 
@@ -806,7 +806,7 @@
                     // then - non matching request
                     sendRequest("POST", "localhost", mockServerPort, "/otherPath")
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
                         })
                         .then(function () {
 
@@ -821,7 +821,7 @@
                                     // then - matching request, but no times remaining
                                     sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "someBody")
                                         .then(fail(test), function (error) {
-                                            test.equal(error.statusCode, 404);
+                                            test.equal(error, "404 Not Found");
                                         })
                                         .then(function () {
                                             test.done();
@@ -863,7 +863,7 @@
                     // then - non matching request
                     sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "", {'Vary': uuid})
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
                         })
                         .then(function () {
 
@@ -877,7 +877,7 @@
                                     // then - matching request, but no times remaining
                                     sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "someBody", {'Vary': uuid})
                                         .then(fail(test), function (error) {
-                                            test.equal(error.statusCode, 404);
+                                            test.equal(error, "404 Not Found");
                                             test.done();
                                         });
                                 }, fail(test));
@@ -986,7 +986,7 @@
                                 // then - should no match request again
                                 sendRequest("GET", "localhost", mockServerPort, "/one", "", {'Vary': uuid})
                                     .then(fail(test), function (error) {
-                                        test.equal(error.statusCode, 404);
+                                        test.equal(error, "404 Not Found");
                                         test.done();
                                     });
                             }, fail(test));
@@ -1168,7 +1168,7 @@
 
                             sendRequest("GET", "localhost", mockServerPort, "/notFound")
                                 .then(fail(test), function (error) {
-                                    test.equal(error.statusCode, 404);
+                                    test.equal(error, "404 Not Found");
                                 })
                                 .then(function () {
 
@@ -1217,7 +1217,7 @@
 
                             sendRequest("GET", "localhost", mockServerPort, "/notFound")
                                 .then(fail(test), function (error) {
-                                    test.equal(error.statusCode, 404);
+                                    test.equal(error, "404 Not Found");
                                 })
                                 .then(function () {
 
@@ -1279,7 +1279,7 @@
 
                             sendRequest("GET", "localhost", mockServerPort, "/notFound")
                                 .then(fail(test), function (error) {
-                                    test.equal(error.statusCode, 404);
+                                    test.equal(error, "404 Not Found");
                                 })
                                 .then(function () {
 
@@ -1346,7 +1346,7 @@
                                     // then - request matching cleared expectation should return 404
                                     sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
                                         .then(fail(test), function (error) {
-                                            test.strictEqual(error.statusCode, 404);
+                                            test.strictEqual(error, "404 Not Found");
                                         })
                                         .then(function () {
 
@@ -1357,13 +1357,13 @@
                                                     test.equal(response.body, '{"name":"value"}');
                                                     // then - return no logs for clear requests
                                                     client.clear('/somePathOne').then(function () {
-                                                        client.retrieveRequests({
+                                                        client.retrieveRecordedRequests({
                                                             "path": "/somePathOne"
                                                         })
                                                             .then(function (requests) {
                                                                 test.equal(requests.length, 0);
                                                                 // then - return logs for not cleared requests
-                                                                client.retrieveRequests({
+                                                                client.retrieveRecordedRequests({
                                                                     "httpRequest": {
                                                                         "path": "/somePathTwo"
                                                                     }
@@ -1409,7 +1409,7 @@
                                         // then - request matching cleared expectation should return 404
                                         sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
                                             .then(fail(test), function (error) {
-                                                test.strictEqual(error.statusCode, 404);
+                                                test.strictEqual(error, "404 Not Found");
                                             })
                                             .then(function () {
 
@@ -1454,7 +1454,7 @@
                                         // then - request matching cleared expectation should return 404
                                         sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
                                             .then(fail(test), function (error) {
-                                                test.strictEqual(error.statusCode, 404);
+                                                test.strictEqual(error, "404 Not Found");
                                             })
                                             .then(function () {
 
@@ -1494,7 +1494,7 @@
                                     // then - request matching cleared expectation should return 404
                                     sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
                                         .then(fail(test), function (error) {
-                                            test.strictEqual(error.statusCode, 404);
+                                            test.strictEqual(error, "404 Not Found");
                                         })
                                         .then(function () {
 
@@ -1506,7 +1506,7 @@
 
                                                     // then - return no logs for clear requests
                                                     client.clear('/somePathOne', 'LOG').then(function () {
-                                                        client.retrieveRequests({
+                                                        client.retrieveRecordedRequests({
                                                             "path": "/somePathOne"
                                                         })
                                                             .then(function (requests) {
@@ -1544,7 +1544,7 @@
                                     // then - request matching cleared expectation should return 404
                                     sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
                                         .then(fail(test), function (error) {
-                                            test.strictEqual(error.statusCode, 404);
+                                            test.strictEqual(error, "404 Not Found");
                                         })
                                         .then(function () {
 
@@ -1555,13 +1555,13 @@
                                                     test.strictEqual(response.body, '{"name":"value"}');
                                                     // then - return no logs for clear requests
                                                     client.clear('/somePathOne', 'LOG').then(function () {
-                                                        client.retrieveRequests({
+                                                        client.retrieveRecordedRequests({
                                                             "path": "/somePathOne"
                                                         })
                                                             .then(function (requests) {
                                                                 test.strictEqual(requests.length, 0);
                                                                 // then - return logs for not cleared requests
-                                                                client.retrieveRequests({
+                                                                client.retrieveRecordedRequests({
                                                                     "httpRequest": {
                                                                         "path": "/somePathTwo"
                                                                     }
@@ -1606,14 +1606,14 @@
                                     // then - request matching one reset expectation should return 404
                                     sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
                                         .then(fail(test), function (error) {
-                                            test.strictEqual(error.statusCode, 404);
+                                            test.strictEqual(error, "404 Not Found");
                                         })
                                         .then(function () {
 
                                             // then - request matching other reset expectation should return 404
                                             sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
                                                 .then(fail(test), function (error) {
-                                                    test.strictEqual(error.statusCode, 404);
+                                                    test.strictEqual(error, "404 Not Found");
                                                     test.done();
                                                 });
 
@@ -1633,7 +1633,7 @@
                     // and - third expectation
                     client.mockSimpleResponse('/somePathTwo', {name: 'two'}, 202).then(function () {
                         // when
-                        client.retrieveExpectations({
+                        client.retrieveActiveExpectations({
                             "httpRequest": {
                                 "path": "/somePathOne"
                             }
@@ -1665,7 +1665,7 @@
                     client.mockSimpleResponse('/somePathTwo', {name: 'two'}, 202).then(function () {
 
                         // when
-                        client.retrieveExpectations("/somePathOne").then(function (expectations) {
+                        client.retrieveActiveExpectations("/somePathOne").then(function (expectations) {
                             // then
                             test.strictEqual(expectations.length, 2);
                             // first expectation
@@ -1693,7 +1693,7 @@
                     client.mockSimpleResponse('/somePathTwo', {name: 'two'}, 202).then(function () {
 
                         // when
-                        client.retrieveExpectations({
+                        client.retrieveActiveExpectations({
                             "httpRequest": {
                                 "path": "/somePath.*"
                             }
@@ -1731,7 +1731,7 @@
                     client.mockSimpleResponse('/somePathTwo', {name: 'two'}, 202).then(function () {
 
                         // when
-                        client.retrieveExpectations().then(function (expectations) {
+                        client.retrieveActiveExpectations().then(function (expectations) {
                             // then
                             test.strictEqual(expectations.length, 3);
                             // first expectation
@@ -1775,7 +1775,7 @@
 
                                         sendRequest("GET", "localhost", mockServerPort, "/notFound")
                                             .then(fail(test), function (error) {
-                                                test.strictEqual(error.statusCode, 404);
+                                                test.strictEqual(error, "404 Not Found");
                                             })
                                             .then(function () {
 
@@ -1786,7 +1786,7 @@
                                                     .then(function () {
 
                                                         // when
-                                                        client.retrieveRequests({
+                                                        client.retrieveRecordedRequests({
                                                             "httpRequest": {
                                                                 "path": "/somePathOne"
                                                             }
@@ -1834,7 +1834,7 @@
 
                                         sendRequest("GET", "localhost", mockServerPort, "/notFound")
                                             .then(fail(test), function (error) {
-                                                test.strictEqual(error.statusCode, 404);
+                                                test.strictEqual(error, "404 Not Found");
                                             })
                                             .then(function () {
 
@@ -1845,7 +1845,7 @@
                                                     .then(function () {
 
                                                         // when
-                                                        client.retrieveRequests("/somePathOne").then(function (requests) {
+                                                        client.retrieveRecordedRequests("/somePathOne").then(function (requests) {
                                                             // then
                                                             test.strictEqual(requests.length, 2);
                                                             // first request
@@ -1888,7 +1888,7 @@
 
                                         sendRequest("GET", "localhost", mockServerPort, "/notFound")
                                             .then(fail(test), function (error) {
-                                                test.strictEqual(error.statusCode, 404);
+                                                test.strictEqual(error, "404 Not Found");
                                             })
                                             .then(function () {
 
@@ -1899,7 +1899,7 @@
                                                     .then(function () {
 
                                                         // when
-                                                        client.retrieveRequests({
+                                                        client.retrieveRecordedRequests({
                                                             "httpRequest": {
                                                                 "path": "/.*"
                                                             }
@@ -1955,7 +1955,7 @@
 
                                         sendRequest("GET", "localhost", mockServerPort, "/notFound")
                                             .then(fail(test), function (error) {
-                                                test.strictEqual(error.statusCode, 404);
+                                                test.strictEqual(error, "404 Not Found");
                                             })
                                             .then(function () {
 
@@ -1966,7 +1966,7 @@
                                                     .then(function () {
 
                                                         // when
-                                                        client.retrieveRequests("/.*").then(function (requests) {
+                                                        client.retrieveRecordedRequests("/.*").then(function (requests) {
                                                             // then
                                                             test.strictEqual(requests.length, 4);
                                                             // first request

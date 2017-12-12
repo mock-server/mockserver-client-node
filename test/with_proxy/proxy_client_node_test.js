@@ -26,24 +26,24 @@
         };
 
         var callback = function (response) {
-            var body = '';
+            var data = '';
 
             response.on('data', function (chunk) {
-                body += chunk;
+                data += chunk;
             });
 
             response.on('end', function () {
                 if (response.statusCode >= 400 && response.statusCode < 600) {
-                    deferred.reject({
-                        statusCode: response.statusCode,
-                        headers: response.headers,
-                        body: body
-                    });
+                    if (response.statusCode === 404) {
+                        deferred.reject("404 Not Found");
+                    } else {
+                        deferred.reject(data);
+                    }
                 } else {
                     deferred.resolve({
                         statusCode: response.statusCode,
                         headers: response.headers,
-                        body: body
+                        body: data
                     });
                 }
             });
@@ -84,12 +84,12 @@
             // and - a request
             sendRequestViaProxy("http://localhost:" + mockServerPort + "/somePath", "someBody")
                 .then(fail(test), function (error) {
-                    test.equal(error.statusCode, 404);
+                    test.equal(error, "404 Not Found");
 
                     // and - another request
                     sendRequestViaProxy("http://localhost:" + mockServerPort + "/somePath", "someBody")
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
 
                             // and - a verification that passes
                             client.verify(
@@ -110,12 +110,12 @@
             // and - a request
             sendRequestViaProxy("http://localhost:" + mockServerPort + "/somePath", "someBody")
                 .then(fail(test), function (error) {
-                    test.equal(error.statusCode, 404);
+                    test.equal(error, "404 Not Found");
 
                     // and - another request
                     sendRequestViaProxy("http://localhost:" + mockServerPort + "/someOtherPath", "someBody")
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
 
                             // and - a verification that passes
                             client.verify(
@@ -136,7 +136,7 @@
             // and - a request
             sendRequestViaProxy("http://localhost:" + mockServerPort + "/somePath", "someBody")
                 .then(fail(test), function (error) {
-                    test.equal(error.statusCode, 404);
+                    test.equal(error, "404 Not Found");
 
                     // when - a verification that should fail
                     client.verify(
@@ -158,7 +158,7 @@
             // and - a request
             sendRequestViaProxy("http://localhost:" + mockServerPort + "/somePath", "someBody")
                 .then(fail(test), function (error) {
-                    test.equal(error.statusCode, 404);
+                    test.equal(error, "404 Not Found");
 
                     // when - a verification that should fail
                     client.verify(
@@ -184,7 +184,7 @@
             // and - a request
             sendRequestViaProxy("http://localhost:" + mockServerPort + "/somePath", "someBody")
                 .then(fail(test), function (error) {
-                    test.equal(error.statusCode, 404);
+                    test.equal(error, "404 Not Found");
 
                     // when - a verification that should fail
                     client.verify(
@@ -209,13 +209,13 @@
             var client = proxyClient("localhost", mockServerPort);
             sendRequestViaProxy("http://localhost:" + mockServerPort + "/one", "someBody")
                 .then(fail(test), function (error) {
-                    test.equal(error.statusCode, 404);
+                    test.equal(error, "404 Not Found");
                     sendRequestViaProxy("http://localhost:" + mockServerPort + "/two", undefined, "GET")
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
                             sendRequestViaProxy("http://localhost:" + mockServerPort + "/three", undefined, "GET")
                                 .then(fail(test), function (error) {
-                                    test.equal(error.statusCode, 404);
+                                    test.equal(error, "404 Not Found");
 
                                     // when
                                     client.verifySequence(
@@ -247,15 +247,15 @@
 
             sendRequestViaProxy("http://localhost:" + mockServerPort + "/one", "someBody")
                 .then(fail(test), function (error) {
-                    test.equal(error.statusCode, 404);
+                    test.equal(error, "404 Not Found");
 
                     sendRequestViaProxy("http://localhost:" + mockServerPort + "/two", undefined, "GET")
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
 
                             sendRequestViaProxy("http://localhost:" + mockServerPort + "/three", undefined, "GET")
                                 .then(fail(test), function (error) {
-                                    test.equal(error.statusCode, 404);
+                                    test.equal(error, "404 Not Found");
 
                                     // when - wrong order
                                     client.verifySequence({
@@ -305,12 +305,12 @@
             // and - a request
             sendRequestViaProxy("http://localhost:" + mockServerPort + "/somePath", "someBody")
                 .then(fail(test), function (error) {
-                    test.equal(error.statusCode, 404);
+                    test.equal(error, "404 Not Found");
 
                     // and - another request
                     sendRequestViaProxy("http://localhost:" + mockServerPort + "/someOtherPath", "someBody")
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
 
                             // and - a verification that passes
                             client.verify({
@@ -358,12 +358,12 @@
             // and - a request
             sendRequestViaProxy("http://localhost:" + mockServerPort + "/somePath", "someBody")
                 .then(fail(test), function (error) {
-                    test.equal(error.statusCode, 404);
+                    test.equal(error, "404 Not Found");
 
                     // and - another request
                     sendRequestViaProxy("http://localhost:" + mockServerPort + "/someOtherPath", "someBody")
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
 
                             // and - a verification that passes
                             client.verify({
@@ -412,12 +412,12 @@
             // and - a request
             sendRequestViaProxy("http://localhost:" + mockServerPort + "/somePath", "someBody")
                 .then(fail(test), function (error) {
-                    test.equal(error.statusCode, 404);
+                    test.equal(error, "404 Not Found");
 
                     // and - another request
                     sendRequestViaProxy("http://localhost:" + mockServerPort + "/someOtherPath", "someBody")
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
 
                             // and - a verification that passes
                             client.verify({
@@ -468,12 +468,12 @@
             // and - a request
             sendRequestViaProxy("http://localhost:" + mockServerPort + "/somePath", "someBody")
                 .then(fail(test), function (error) {
-                    test.equal(error.statusCode, 404);
+                    test.equal(error, "404 Not Found");
 
                     // and - another request
                     sendRequestViaProxy("http://localhost:" + mockServerPort + "/somePath", "someBody")
                         .then(fail(test), function (error) {
-                            test.equal(error.statusCode, 404);
+                            test.equal(error, "404 Not Found");
 
                             // and - a verification that passes
                             client.verify({
@@ -525,14 +525,14 @@
 
                                                     sendRequestViaProxy("http://localhost:" + mockServerPort + "/notFound", undefined, "GET")
                                                         .then(fail(test), function (error) {
-                                                            test.equal(error.statusCode, 404);
+                                                            test.equal(error, "404 Not Found");
 
                                                             sendRequestViaProxy("http://localhost:" + mockServerPort + "/somePathTwo", undefined, "GET")
                                                                 .then(function (response) {
                                                                     test.equal(response.statusCode, 202);
 
                                                                     // when
-                                                                    client.retrieveRequests({
+                                                                    client.retrieveRecordedRequests({
                                                                         "httpRequest": {
                                                                             "path": "/somePathOne"
                                                                         }
@@ -579,14 +579,14 @@
 
                                                     sendRequestViaProxy("http://localhost:" + mockServerPort + "/notFound", undefined, "GET")
                                                         .then(fail(test), function (error) {
-                                                            test.equal(error.statusCode, 404);
+                                                            test.equal(error, "404 Not Found");
 
                                                             sendRequestViaProxy("http://localhost:" + mockServerPort + "/somePathTwo", undefined, "GET")
                                                                 .then(function (response) {
                                                                     test.equal(response.statusCode, 202);
 
                                                                     // when
-                                                                    proxyClient("localhost", proxyPort).retrieveRequests("/somePathOne")
+                                                                    proxyClient("localhost", proxyPort).retrieveRecordedRequests("/somePathOne")
                                                                         .then(function (requests) {
 
                                                                             // then

@@ -12,7 +12,7 @@
         var Q = require('q');
         var http = require('http');
 
-        var defer = function() {
+        var defer = function () {
             var promise = (global.protractor ? protractor.promise : Q);
             var deferred = promise.defer();
 
@@ -51,7 +51,11 @@
                         deferred.resolve(resolveCallback(data));
                     } else {
                         if (response.statusCode >= 400 && response.statusCode < 600) {
-                            deferred.reject(data);
+                            if (response.statusCode === 404) {
+                                deferred.reject("404 Not Found");
+                            } else {
+                                deferred.reject(data);
+                            }
                         } else {
                             deferred.resolve({
                                 statusCode: response.statusCode,
