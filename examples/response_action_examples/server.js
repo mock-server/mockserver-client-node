@@ -109,71 +109,71 @@ function responseLiteralWith10SecondDelay() {
 }
 
 function responseLiteralWithConnectionOptionsToSuppressHeaders() {
-var mockServerClient = require('mockserver-client').mockServerClient;
-mockServerClient("localhost", 1080).mockAnyResponse({
-    "httpRequest" : {
-        "path" : "/some/path"
-    },
-    "httpResponse" : {
-        "body" : "some_response_body",
-        "connectionOptions" : {
-            "suppressContentLengthHeader" : true,
-            "suppressConnectionHeader" : true
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        "httpRequest": {
+            "path": "/some/path"
+        },
+        "httpResponse": {
+            "body": "some_response_body",
+            "connectionOptions": {
+                "suppressContentLengthHeader": true,
+                "suppressConnectionHeader": true
+            }
         }
-    }
-}).then(
-    function () {
-        console.log("expectation created");
-    },
-    function (error) {
-        console.log(error);
-    }
-);
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function responseLiteralWithConnectionOptionsToOverrideHeaders() {
-var mockServerClient = require('mockserver-client').mockServerClient;
-mockServerClient("localhost", 1080).mockAnyResponse({
-    "httpRequest" : {
-        "path" : "/some/path"
-    },
-    "httpResponse" : {
-        "body" : "some_response_body",
-        "connectionOptions" : {
-            "contentLengthHeaderOverride" : 10,
-            "keepAliveOverride" : false
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        "httpRequest": {
+            "path": "/some/path"
+        },
+        "httpResponse": {
+            "body": "some_response_body",
+            "connectionOptions": {
+                "contentLengthHeaderOverride": 10,
+                "keepAliveOverride": false
+            }
         }
-    }
-}).then(
-    function () {
-        console.log("expectation created");
-    },
-    function (error) {
-        console.log(error);
-    }
-);
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function responseLiteralWithConnectionOptionsToCloseSocket() {
-var mockServerClient = require('mockserver-client').mockServerClient;
-mockServerClient("localhost", 1080).mockAnyResponse({
-    "httpRequest" : {
-        "path" : "/some/path"
-    },
-    "httpResponse" : {
-        "body" : "some_response_body",
-        "connectionOptions" : {
-            "closeSocket" : true
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        "httpRequest": {
+            "path": "/some/path"
+        },
+        "httpResponse": {
+            "body": "some_response_body",
+            "connectionOptions": {
+                "closeSocket": true
+            }
         }
-    }
-}).then(
-    function () {
-        console.log("expectation created");
-    },
-    function (error) {
-        console.log(error);
-    }
-);
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function javascriptTemplatedResponse() {
@@ -241,7 +241,8 @@ function javascriptTemplatedResponseWithDelay() {
 }
 
 function velocityTemplatedResponse() {
-    var mockServerClient = require('mockserver-client').mockServerClient; mockServerClient("localhost", 1080).mockAnyResponse({
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
         "httpRequest": {"path": "/some/path"},
         "httpResponseTemplate": {
             "template": "{\n" +
