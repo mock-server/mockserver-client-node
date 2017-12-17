@@ -9,7 +9,14 @@ function forwardRequestInHTTP() {
             "port": 80,
             "scheme": "HTTP"
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function forwardRequestInHTTPS() {
@@ -23,7 +30,14 @@ function forwardRequestInHTTPS() {
             "port": 443,
             "scheme": "HTTPS"
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function javascriptTemplatedForward() {
@@ -45,7 +59,14 @@ function javascriptTemplatedForward() {
             "};",
             "templateType": "JAVASCRIPT"
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function javascriptTemplatedForwardWithDelay() {
@@ -70,7 +91,14 @@ function javascriptTemplatedForwardWithDelay() {
             "templateType": "JAVASCRIPT",
             "delay": {"timeUnit": "SECONDS", "value": 20}
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function velocityTemplatedForward() {
@@ -95,5 +123,12 @@ function velocityTemplatedForward() {
             "}",
             "templateType": "VELOCITY"
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }

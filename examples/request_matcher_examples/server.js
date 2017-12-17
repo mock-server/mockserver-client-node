@@ -14,7 +14,14 @@ function matchRequestByPath() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByPathExactlyTwice() {
@@ -33,7 +40,14 @@ function matchRequestByPathExactlyTwice() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByPathExactlyOnceInTheNext60Seconds() {
@@ -54,7 +68,14 @@ function matchRequestByPathExactlyOnceInTheNext60Seconds() {
             "timeToLive": 60,
             "unlimited": false
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByRegexPath() {
@@ -74,7 +95,14 @@ function matchRequestByRegexPath() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByNotMatchingPath() {
@@ -94,7 +122,14 @@ function matchRequestByNotMatchingPath() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByNotMatchingMethod() {
@@ -114,7 +149,14 @@ function matchRequestByNotMatchingMethod() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByHeaders() {
@@ -138,7 +180,14 @@ function matchRequestByHeaders() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByNotMatchingHeaderValue() {
@@ -163,7 +212,14 @@ function matchRequestByNotMatchingHeaderValue() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByNotMatchingHeaders() {
@@ -187,7 +243,14 @@ function matchRequestByNotMatchingHeaders() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByCookiesAndQueryParameters() {
@@ -213,7 +276,14 @@ function matchRequestByCookiesAndQueryParameters() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByRegexBody() {
@@ -232,7 +302,14 @@ function matchRequestByRegexBody() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByBodyInUTF16() {
@@ -255,7 +332,14 @@ function matchRequestByBodyInUTF16() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByBodyWithFormSubmission() {
@@ -284,7 +368,14 @@ function matchRequestByBodyWithFormSubmission() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByBodyWithXPath() {
@@ -308,7 +399,14 @@ function matchRequestByBodyWithXPath() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
     // matches a request with the following body:
     /*
     <?xml version="1.0" encoding="ISO-8859-1"?>
@@ -357,7 +455,14 @@ function matchRequestByNotMatchingBodyWithXPath() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByBodyWithXml() {
@@ -386,7 +491,14 @@ function matchRequestByBodyWithXml() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByBodyWithXmlSchema() {
@@ -426,7 +538,14 @@ function matchRequestByBodyWithXmlSchema() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByBodyWithJsonExactly() {
@@ -455,7 +574,14 @@ function matchRequestByBodyWithJsonExactly() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByBodyWithJsonIgnoringExtraFields() {
@@ -483,7 +609,14 @@ function matchRequestByBodyWithJsonIgnoringExtraFields() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
 
 function matchRequestByBodyWithJsonSchema() {
@@ -534,5 +667,12 @@ function matchRequestByBodyWithJsonSchema() {
         "timeToLive": {
             "unlimited": true
         }
-    });
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
 }
