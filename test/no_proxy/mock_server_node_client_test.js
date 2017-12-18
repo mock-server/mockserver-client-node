@@ -2041,20 +2041,13 @@
                           '\t{\n' +
                           '\t  "statusCode" : 201,\n' +
                           '\t  "headers"'));
-                        test.equal(expectations[4], "\n" +
+                        test.ok(expectations[4].startsWith("\n" +
                           "no active expectations when receiving request:\n" +
                           "\n" +
                           "\t{\n" +
                           "\t  \"method\" : \"GET\",\n" +
                           "\t  \"path\" : \"/notFound\",\n" +
-                          "\t  \"headers\" : {\n" +
-                          "\t    \"content-length\" : [ \"0\" ],\n" +
-                          "\t    \"Connection\" : [ \"keep-alive\" ],\n" +
-                          "\t    \"Host\" : [ \"localhost:1080\" ]\n" +
-                          "\t  },\n" +
-                          "\t  \"keepAlive\" : true,\n" +
-                          "\t  \"secure\" : false\n" +
-                          "\t}\n");
+                          "\t  \"headers\""));
                         test.equal(expectations[5], '\n' +
                           'retrieving logs that match:\n' +
                           '\n' +
@@ -2114,20 +2107,13 @@
                           '\t{\n' +
                           '\t  "statusCode" : 201,\n' +
                           '\t  "headers"'));
-                        test.equal(expectations[4], "\n" +
+                        test.ok(expectations[4].startsWith("\n" +
                           "no active expectations when receiving request:\n" +
                           "\n" +
                           "\t{\n" +
                           "\t  \"method\" : \"GET\",\n" +
                           "\t  \"path\" : \"/notFound\",\n" +
-                          "\t  \"headers\" : {\n" +
-                          "\t    \"content-length\" : [ \"0\" ],\n" +
-                          "\t    \"Connection\" : [ \"keep-alive\" ],\n" +
-                          "\t    \"Host\" : [ \"localhost:1080\" ]\n" +
-                          "\t  },\n" +
-                          "\t  \"keepAlive\" : true,\n" +
-                          "\t  \"secure\" : false\n" +
-                          "\t}\n");
+                          "\t  \"headers\""));
                         test.equal(expectations[5], '\n' +
                           'retrieving logs that match:\n' +
                           '\n' +
