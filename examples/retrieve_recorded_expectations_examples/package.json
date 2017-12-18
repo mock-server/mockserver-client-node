@@ -1,12 +1,11 @@
 {
-  "name": "run_mockserver",
+  "name": "retrieve_recorded_expectations_examples",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "author": "James D Bloom",
   "license": "Apache-2.0",
   "dependencies": {
-    "mockserver-client": "5.2.3",
-    "mockserver-node": "5.2.3"
+    "mockserver-client": "5.2.3"
   }
 }

@@ -1991,7 +1991,157 @@
                     }, fail(test));
                 }, fail(test));
             }, fail(test));
-        }
+        },
+
+        'should retrieve some logs using object matcher': function (test) {
+        // given
+        var client = mockServerClient("localhost", mockServerPort);
+        client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201)
+          .then(function () {
+
+            sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
+              .then(function (response) {
+                test.equal(response.statusCode, 201);
+
+
+                sendRequest("GET", "localhost", mockServerPort, "/notFound")
+                  .then(fail(test), function (error) {
+                    test.equal(error, "404 Not Found");
+
+                    // when
+                    client
+                      .retrieveLogMessages({
+                        "httpRequest": {
+                          "path": "/somePathOne"
+                        }
+                      })
+                      .then(function (expectations) {
+
+                        // then
+                        test.equal(expectations.length, 6);
+
+                        test.equal(expectations[0], 'resetting all expectations and request logs');
+                        test.ok(expectations[1].startsWith("\n" +
+                          "creating expectation:\n" +
+                          "\n" +
+                          "\t{\n" +
+                          "\t  \"httpRequest\" : {\n" +
+                          "\t    \"path\" : \"/somePathOne\"\n" +
+                          "\t  }"));
+                        test.ok(expectations[2].startsWith("\n" +
+                          "request:\n" +
+                          "\n" +
+                          "\t{\n" +
+                          "\t  \"method\" : \"POST\",\n" +
+                          "\t  \"path\" : \"/somePathOne\",\n" +
+                          "\t  \"body\" : \"someBody\""));
+                        test.ok(expectations[3].startsWith('\n' +
+                          'returning response:\n' +
+                          '\n' +
+                          '\t{\n' +
+                          '\t  "statusCode" : 201,\n' +
+                          '\t  "headers"'));
+                        test.equal(expectations[4], "\n" +
+                          "no active expectations when receiving request:\n" +
+                          "\n" +
+                          "\t{\n" +
+                          "\t  \"method\" : \"GET\",\n" +
+                          "\t  \"path\" : \"/notFound\",\n" +
+                          "\t  \"headers\" : {\n" +
+                          "\t    \"content-length\" : [ \"0\" ],\n" +
+                          "\t    \"Connection\" : [ \"keep-alive\" ],\n" +
+                          "\t    \"Host\" : [ \"localhost:1080\" ]\n" +
+                          "\t  },\n" +
+                          "\t  \"keepAlive\" : true,\n" +
+                          "\t  \"secure\" : false\n" +
+                          "\t}\n");
+                        test.equal(expectations[5], '\n' +
+                          'retrieving logs that match:\n' +
+                          '\n' +
+                          '\t{\n' +
+                          '\t  "path" : "/somePathOne"\n' +
+                          '\t}\n' +
+                          '\n');
+
+                        test.done();
+                      }, fail(test));
+                  }, fail(test));
+              }, fail(test));
+          }, fail(test));
+      },
+
+        'should retrieve some logs using using path': function (test) {
+        // given
+        var client = mockServerClient("localhost", mockServerPort);
+        client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201)
+          .then(function () {
+
+            sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
+              .then(function (response) {
+                test.equal(response.statusCode, 201);
+
+
+                sendRequest("GET", "localhost", mockServerPort, "/notFound")
+                  .then(fail(test), function (error) {
+                    test.equal(error, "404 Not Found");
+
+                    // when
+                    client
+                      .retrieveLogMessages("/somePathOne")
+                      .then(function (expectations) {
+
+                        // then
+                        test.equal(expectations.length, 6);
+
+                        test.equal(expectations[0], 'resetting all expectations and request logs');
+                        test.ok(expectations[1].startsWith("\n" +
+                          "creating expectation:\n" +
+                          "\n" +
+                          "\t{\n" +
+                          "\t  \"httpRequest\" : {\n" +
+                          "\t    \"path\" : \"/somePathOne\"\n" +
+                          "\t  }"));
+                        test.ok(expectations[2].startsWith("\n" +
+                          "request:\n" +
+                          "\n" +
+                          "\t{\n" +
+                          "\t  \"method\" : \"POST\",\n" +
+                          "\t  \"path\" : \"/somePathOne\",\n" +
+                          "\t  \"body\" : \"someBody\""));
+                        test.ok(expectations[3].startsWith('\n' +
+                          'returning response:\n' +
+                          '\n' +
+                          '\t{\n' +
+                          '\t  "statusCode" : 201,\n' +
+                          '\t  "headers"'));
+                        test.equal(expectations[4], "\n" +
+                          "no active expectations when receiving request:\n" +
+                          "\n" +
+                          "\t{\n" +
+                          "\t  \"method\" : \"GET\",\n" +
+                          "\t  \"path\" : \"/notFound\",\n" +
+                          "\t  \"headers\" : {\n" +
+                          "\t    \"content-length\" : [ \"0\" ],\n" +
+                          "\t    \"Connection\" : [ \"keep-alive\" ],\n" +
+                          "\t    \"Host\" : [ \"localhost:1080\" ]\n" +
+                          "\t  },\n" +
+                          "\t  \"keepAlive\" : true,\n" +
+                          "\t  \"secure\" : false\n" +
+                          "\t}\n");
+                        test.equal(expectations[5], '\n' +
+                          'retrieving logs that match:\n' +
+                          '\n' +
+                          '\t{\n' +
+                          '\t  "path" : "/somePathOne"\n' +
+                          '\t}\n' +
+                          '\n');
+
+                        test.done();
+                      }, fail(test));
+                  }, fail(test));
+              }, fail(test));
+          }, fail(test));
+      }
     };
 
 })();

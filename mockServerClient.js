@@ -567,6 +567,27 @@ var mockServerClient;
                 }
             };
         };
+        /**
+         * Retrieve logs messages for expectation matching, verification, clearing, etc,
+         * log messages are filtered by request matcher as follows:
+         * - use a string value to match on path,
+         * - use a request matcher object to match on a full request,
+         * - or use null to retrieve all requests
+         *
+         * @param pathOrRequestMatcher  if a string is passed in the value will be treated as the path, however
+         *                              if an object is passed in the value will be treated as a full request
+         *                              matcher object, if null is passed in it will be treated as match all
+         */
+        var retrieveLogMessages = function (pathOrRequestMatcher) {
+            return {
+                then: function (sucess, error) {
+                    return makeRequest(host, port, "/retrieve?type=LOGS", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
+                        .then(function (result) {
+                          sucess(result.body && result.body.split("------------------------------------"));
+                        });
+                }
+            };
+        };
 
         var _this = {
             mockAnyResponse: mockAnyResponse,
@@ -579,7 +600,8 @@ var mockServerClient;
             clear: clear,
             retrieveRecordedRequests: retrieveRecordedRequests,
             retrieveActiveExpectations: retrieveActiveExpectations,
-            retrieveRecordedExpectations: retrieveRecordedExpectations
+            retrieveRecordedExpectations: retrieveRecordedExpectations,
+            retrieveLogMessages: retrieveLogMessages
         };
         return _this;
     };

@@ -462,7 +462,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'with_proxy' :
             xmlhttp.send("someBody");
         });
 
-        it("should retrieve some requests using object matcher", function (done) {
+        it("should retrieve some recorded recorded requests using object matcher", function (done) {
             // given
             var client = mockServerClient("localhost", mockServerPort);
             client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201)
@@ -528,7 +528,7 @@ if ((typeof __karma__ !== 'undefined' ? __karma__.config.mode === 'with_proxy' :
                 }, fail);
         });
 
-        it("should retrieve some requests using path", function (done) {
+        it("should retrieve some recorded requests using path", function (done) {
             // given
             var client = mockServerClient("localhost", mockServerPort);
             client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201)
