@@ -162,7 +162,7 @@ var proxyClient;
             return makeRequest(host, port, "/reset");
         };
         /**
-         * Clear all recorded requests that match the specified path
+         * Clear all recorded requests, recorded expectations and logs that match the specified path
          *
          * @param pathOrRequestMatcher  if a string is passed in the value will be treated as the path to
          *                              decide which recorded requests to cleared, however if an object is

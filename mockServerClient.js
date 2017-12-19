@@ -486,7 +486,7 @@ var mockServerClient;
             return makeRequest(host, port, "/reset");
         };
         /**
-         * Clear all expectations that match the specified path
+         * Clear all recorded requests, expectations and logs that match the specified path
          *
          * @param pathOrRequestMatcher  if a string is passed in the value will be treated as the path to
          *                              decide which expectations to cleared, however if an object is passed
