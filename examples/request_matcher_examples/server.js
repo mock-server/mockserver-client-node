@@ -6,13 +6,6 @@ function matchRequestByPath() {
         },
         "httpResponse": {
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -87,13 +80,6 @@ function matchRequestByRegexPath() {
         },
         "httpResponse": {
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -114,13 +100,25 @@ function matchRequestByNotMatchingPath() {
         },
         "httpResponse": {
             "body": "some_response_body"
+        }
+    }).then(
+        function () {
+            console.log("expectation created");
         },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
+        function (error) {
+            console.log(error);
+        }
+    );
+}
+
+function matchRequestByMethodRegex() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        "httpRequest": {
+            "method": "P.*{2,3}"
         },
-        "timeToLive": {
-            "unlimited": true
+        "httpResponse": {
+            "body": "some_response_body"
         }
     }).then(
         function () {
@@ -141,13 +139,50 @@ function matchRequestByNotMatchingMethod() {
         },
         "httpResponse": {
             "body": "some_response_body"
+        }
+    }).then(
+        function () {
+            console.log("expectation created");
         },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
+        function (error) {
+            console.log(error);
+        }
+    );
+}
+
+function matchRequestByQueryParameterNameRegex() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        "httpRequest": {
+            "path": "/some/path",
+            "queryStringParameters": {
+                "[A-z]{0,10}": ["055CA455-1DF7-45BB-8535-4F83E7266092"]
+            }
         },
-        "timeToLive": {
-            "unlimited": true
+        "httpResponse": {
+            "body": "some_response_body"
+        }
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
+}
+
+function matchRequestByQueryParameterRegexValue() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        "httpRequest": {
+            "path": "/some/path",
+            "queryStringParameters": {
+                "cartId": ["[A-Z0-9\\-]+"]
+            }
+        },
+        "httpResponse": {
+            "body": "some_response_body"
         }
     }).then(
         function () {
@@ -172,13 +207,52 @@ function matchRequestByHeaders() {
         },
         "httpResponse": {
             "body": "some_response_body"
+        }
+    }).then(
+        function () {
+            console.log("expectation created");
         },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
+        function (error) {
+            console.log(error);
+        }
+    );
+}
+
+function matchRequestByHeaderNameRegex() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        "httpRequest": {
+            "path": "/some/path",
+            "headers": {
+                // matches requests that have any header starting with the name Accept
+                "Accept.*": []
+            }
         },
-        "timeToLive": {
-            "unlimited": true
+        "httpResponse": {
+            "body": "some_response_body"
+        }
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
+}
+
+function matchRequestByHeaderRegexNameAndValue() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        "httpRequest": {
+            "path": "/some/path",
+            "headers": {
+                // matches requests that have a header with a name starting with Accept and a value containing gzip
+                "Accept.*": [".*gzip.*"]
+            }
+        },
+        "httpResponse": {
+            "body": "some_response_body"
         }
     }).then(
         function () {
@@ -204,13 +278,6 @@ function matchRequestByNotMatchingHeaderValue() {
         },
         "httpResponse": {
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -235,13 +302,6 @@ function matchRequestByNotMatchingHeaders() {
         },
         "httpResponse": {
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -268,13 +328,6 @@ function matchRequestByCookiesAndQueryParameters() {
         },
         "httpResponse": {
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -294,13 +347,6 @@ function matchRequestByRegexBody() {
         },
         "httpResponse": {
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -324,13 +370,6 @@ function matchRequestByBodyInUTF16() {
         },
         "httpResponse": {
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -360,13 +399,6 @@ function matchRequestByBodyWithFormSubmission() {
         },
         "httpResponse": {
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -391,13 +423,6 @@ function matchRequestByBodyWithXPath() {
         },
         "httpResponse": {
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -447,13 +472,6 @@ function matchRequestByNotMatchingBodyWithXPath() {
         },
         "httpResponse": {
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -483,13 +501,6 @@ function matchRequestByBodyWithXml() {
         },
         "httpResponse": {
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -530,13 +541,6 @@ function matchRequestByBodyWithXmlSchema() {
         },
         "httpResponse": {
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -566,13 +570,6 @@ function matchRequestByBodyWithJsonExactly() {
         "httpResponse": {
             "statusCode": 202,
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -601,13 +598,6 @@ function matchRequestByBodyWithJsonIgnoringExtraFields() {
         "httpResponse": {
             "statusCode": 202,
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
@@ -659,13 +649,6 @@ function matchRequestByBodyWithJsonSchema() {
         },
         "httpResponse": {
             "body": "some_response_body"
-        },
-        "times": {
-            "remainingTimes": 0,
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         }
     }).then(
         function () {
