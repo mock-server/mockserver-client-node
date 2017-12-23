@@ -109,6 +109,49 @@ function responseLiteralWith10SecondDelay() {
     );
 }
 
+function respondDifferentlyForSameRequest() {
+    var client = require('mockserver-client').mockServerClient("localhost", 1080);
+    client.mockAnyResponse({
+        "httpRequest": {
+            "path": "/some/path"
+        },
+        "httpResponse": {
+            "statusCode": 200
+        },
+        "times": {
+            "remainingTimes": 1,
+            "unlimited": false
+        }
+    }).then(
+        function () {
+            console.log("first expectation created");
+
+            client.mockAnyResponse({
+                "httpRequest": {
+                    "path": "/some/path"
+                },
+                "httpResponse": {
+                    "statusCode": 204
+                },
+                "times": {
+                    "remainingTimes": 2,
+                    "unlimited": false
+                }
+            }).then(
+                function () {
+                    console.log("second expectation created");
+                },
+                function (error) {
+                    console.log(error);
+                }
+            );
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
+}
+
 function responseLiteralWithConnectionOptionsToSuppressHeaders() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
