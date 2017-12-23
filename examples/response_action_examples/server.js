@@ -38,7 +38,7 @@ function responseLiteralWithUTF16BodyResponse() {
     );
 }
 
-function responseLiteralWithStatusCodeOnly() {
+function responseLiteralWithStatusCodeAndReasonPhrase() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
         "httpRequest": {
@@ -46,7 +46,8 @@ function responseLiteralWithStatusCodeOnly() {
             "path": "/some/path"
         },
         "httpResponse": {
-            "statusCode": 200
+            "statusCode": 418,
+            "reasonPhrase": "I'm a teapot"
         }
     }).then(
         function () {
