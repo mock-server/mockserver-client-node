@@ -2020,41 +2020,36 @@
                         // then
                         test.equal(expectations.length, 6);
 
-                        test.equal(expectations[0], 'resetting all expectations and request logs');
-                        test.ok(expectations[1].startsWith("\n" +
-                          "creating expectation:\n" +
+                        test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1);
+                        test.ok(expectations[1].indexOf("creating expectation:\n" +
                           "\n" +
                           "\t{\n" +
                           "\t  \"httpRequest\" : {\n" +
                           "\t    \"path\" : \"/somePathOne\"\n" +
-                          "\t  }"));
-                        test.ok(expectations[2].startsWith("\n" +
-                          "request:\n" +
+                          "\t  }") !== -1);
+                        test.ok(expectations[2].indexOf("request:\n" +
                           "\n" +
                           "\t{\n" +
                           "\t  \"method\" : \"POST\",\n" +
                           "\t  \"path\" : \"/somePathOne\",\n" +
-                          "\t  \"body\" : \"someBody\""));
-                        test.ok(expectations[3].startsWith('\n' +
-                          'returning response:\n' +
+                          "\t  \"body\" : \"someBody\"") !== -1);
+                        test.ok(expectations[3].indexOf('returning response:\n' +
                           '\n' +
                           '\t{\n' +
                           '\t  "statusCode" : 201,\n' +
-                          '\t  "headers"'));
-                        test.ok(expectations[4].startsWith("\n" +
-                          "no active expectations when receiving request:\n" +
+                          '\t  "headers"') !== -1);
+                        test.ok(expectations[4].indexOf("no active expectations when receiving request:\n" +
                           "\n" +
                           "\t{\n" +
                           "\t  \"method\" : \"GET\",\n" +
                           "\t  \"path\" : \"/notFound\",\n" +
-                          "\t  \"headers\""));
-                        test.equal(expectations[5], '\n' +
-                          'retrieving logs that match:\n' +
+                          "\t  \"headers\"") !== -1);
+                        test.ok(expectations[5].indexOf('retrieving logs that match:\n' +
                           '\n' +
                           '\t{\n' +
                           '\t  "path" : "/somePathOne"\n' +
                           '\t}\n' +
-                          '\n');
+                          '\n') !== -1);
 
                         test.done();
                       }, fail(test));
@@ -2086,41 +2081,36 @@
                         // then
                         test.equal(expectations.length, 6);
 
-                        test.equal(expectations[0], 'resetting all expectations and request logs');
-                        test.ok(expectations[1].startsWith("\n" +
-                          "creating expectation:\n" +
+                        test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1);
+                        test.ok(expectations[1].indexOf("creating expectation:\n" +
                           "\n" +
                           "\t{\n" +
                           "\t  \"httpRequest\" : {\n" +
                           "\t    \"path\" : \"/somePathOne\"\n" +
-                          "\t  }"));
-                        test.ok(expectations[2].startsWith("\n" +
-                          "request:\n" +
+                          "\t  }") !== -1);
+                        test.ok(expectations[2].indexOf("request:\n" +
                           "\n" +
                           "\t{\n" +
                           "\t  \"method\" : \"POST\",\n" +
                           "\t  \"path\" : \"/somePathOne\",\n" +
-                          "\t  \"body\" : \"someBody\""));
-                        test.ok(expectations[3].startsWith('\n' +
-                          'returning response:\n' +
+                          "\t  \"body\" : \"someBody\"") !== -1);
+                        test.ok(expectations[3].indexOf('returning response:\n' +
                           '\n' +
                           '\t{\n' +
                           '\t  "statusCode" : 201,\n' +
-                          '\t  "headers"'));
-                        test.ok(expectations[4].startsWith("\n" +
-                          "no active expectations when receiving request:\n" +
+                          '\t  "headers"') !== -1);
+                        test.ok(expectations[4].indexOf("no active expectations when receiving request:\n" +
                           "\n" +
                           "\t{\n" +
                           "\t  \"method\" : \"GET\",\n" +
                           "\t  \"path\" : \"/notFound\",\n" +
-                          "\t  \"headers\""));
-                        test.equal(expectations[5], '\n' +
-                          'retrieving logs that match:\n' +
+                          "\t  \"headers\"") !== -1);
+                        test.ok(expectations[5].indexOf('retrieving logs that match:\n' +
                           '\n' +
                           '\t{\n' +
                           '\t  "path" : "/somePathOne"\n' +
                           '\t}\n' +
-                          '\n');
+                          '\n') !== -1);
 
                         test.done();
                       }, fail(test));

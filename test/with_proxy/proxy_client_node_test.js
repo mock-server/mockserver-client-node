@@ -755,22 +755,19 @@
                     .then(function (expectations) {
 
                       // then
-                      test.equal(expectations.length, 3);
+                      test.equal(expectations.length, 5);
 
-                      test.equal(expectations[0], 'resetting all expectations and request logs');
-                      test.ok(expectations[1].startsWith('\n' +
-                        'returning response:\n' +
+                      test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1);
+                      test.ok(expectations[2].indexOf('returning response:\n' +
                         '\n' +
                         '\t{\n' +
-                        '\t  "statusCode" : 201,\n' +
-                        '\t  "headers"'));
-                      test.equal(expectations[2], '\n' +
-                        'retrieving logs that match:\n' +
+                        '\t  "statusCode" : 201') !== -1);
+                      test.ok(expectations[4].indexOf('retrieving logs that match:\n' +
                         '\n' +
                         '\t{\n' +
                         '\t  "path" : "/somePathOne"\n' +
                         '\t}\n' +
-                        '\n');
+                        '\n') !== -1);
 
                       test.done();
                     }, fail(test));
@@ -800,22 +797,19 @@
                     .then(function (expectations) {
 
                       // then
-                      test.equal(expectations.length, 3);
+                        test.equal(expectations.length, 5);
 
-                      test.equal(expectations[0], 'resetting all expectations and request logs');
-                      test.ok(expectations[1].startsWith('\n' +
-                        'returning response:\n' +
-                        '\n' +
-                        '\t{\n' +
-                        '\t  "statusCode" : 201,\n' +
-                        '\t  "headers"'));
-                      test.equal(expectations[2], '\n' +
-                        'retrieving logs that match:\n' +
-                        '\n' +
-                        '\t{\n' +
-                        '\t  "path" : "/somePathOne"\n' +
-                        '\t}\n' +
-                        '\n');
+                        test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1);
+                        test.ok(expectations[2].indexOf('returning response:\n' +
+                            '\n' +
+                            '\t{\n' +
+                            '\t  "statusCode" : 201') !== -1);
+                        test.ok(expectations[4].indexOf('retrieving logs that match:\n' +
+                            '\n' +
+                            '\t{\n' +
+                            '\t  "path" : "/somePathOne"\n' +
+                            '\t}\n' +
+                            '\n') !== -1);
 
                       test.done();
                     }, fail(test));
