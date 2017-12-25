@@ -1087,7 +1087,7 @@
                             .then(fail(test), function (message) {
                                 test.ok(message.startsWith("Request not found at least once, expected:<{\n" +
                                     "  \"path\" : \"/someOtherPath\"\n" +
-                                    "}> but was:<{\n"));
+                                    "}> but was:<{\n"), message);
                                 test.done();
                             });
                     });
@@ -1116,7 +1116,7 @@
                                     "  \"method\" : \"POST\",\n" +
                                     "  \"path\" : \"/somePath\",\n" +
                                     "  \"body\" : \"someBody\"\n" +
-                                    "}> but was:<{\n"));
+                                    "}> but was:<{\n"), message);
                                 test.done();
                             });
                     });
@@ -1147,7 +1147,7 @@
                                     "  \"method\" : \"POST\",\n" +
                                     "  \"path\" : \"/somePath\",\n" +
                                     "  \"body\" : \"someBody\"\n" +
-                                    "}> but was:<{\n"));
+                                    "}> but was:<{\n"), message);
                                 test.done();
                             });
                     });
@@ -1254,7 +1254,7 @@
                                                         "}, {\n" +
                                                         "  \"method\" : \"GET\",\n" +
                                                         "  \"path\" : \"/notFound\"\n" +
-                                                        "} ]> but was:<[ {\n"));
+                                                        "} ]> but was:<[ {\n"), message);
                                                     test.done();
                                                 });
 
@@ -1315,7 +1315,7 @@
                                                     "}, {\n" +
                                                     "  \"method\" : \"GET\",\n" +
                                                     "  \"path\" : \"/somePathTwo\"\n" +
-                                                    "} ]> but was:<[ {\n"));
+                                                    "} ]> but was:<[ {\n"), message);
                                                 test.done();
                                             });
                                         });
@@ -2020,41 +2020,36 @@
                         // then
                         test.equal(expectations.length, 6);
 
-                        test.ok(expectations[0], expectations[0].indexOf('resetting all expectations and request logs') !== -1);
-                        test.ok(expectations[1], expectations[1].indexOf("\n" +
-                          "creating expectation:\n" +
+                        test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1, expectations[0]);
+                        test.ok(expectations[1].indexOf("creating expectation:\n" +
                           "\n" +
                           "\t{\n" +
                           "\t  \"httpRequest\" : {\n" +
                           "\t    \"path\" : \"/somePathOne\"\n" +
-                          "\t  }") !== -1);
-                        test.ok(expectations[2], expectations[2].indexOf("\n" +
-                          "request:\n" +
+                          "\t  }") !== -1, expectations[1]);
+                        test.ok(expectations[2].indexOf("request:\n" +
                           "\n" +
                           "\t{\n" +
                           "\t  \"method\" : \"POST\",\n" +
                           "\t  \"path\" : \"/somePathOne\",\n" +
-                          "\t  \"body\" : \"someBody\"") !== -1);
-                        test.ok(expectations[3], expectations[3].indexOf('\n' +
-                          'returning response:\n' +
+                          "\t  \"body\" : \"someBody\"") !== -1, expectations[2]);
+                        test.ok(expectations[3].indexOf('returning response:\n' +
                           '\n' +
                           '\t{\n' +
                           '\t  "statusCode" : 201,\n' +
-                          '\t  "headers"') !== -1);
-                        test.ok(expectations[4], expectations[4].indexOf("\n" +
-                          "no active expectations when receiving request:\n" +
+                          '\t  "headers"') !== -1, expectations[3]);
+                        test.ok(expectations[4].indexOf("no active expectations when receiving request:\n" +
                           "\n" +
                           "\t{\n" +
                           "\t  \"method\" : \"GET\",\n" +
                           "\t  \"path\" : \"/notFound\",\n" +
-                          "\t  \"headers\"") !== -1);
-                        test.ok(expectations[5], expectations[5].indexOf('\n' +
-                          'retrieving logs that match:\n' +
+                          "\t  \"headers\"") !== -1, expectations[4]);
+                        test.ok(expectations[5].indexOf('retrieving logs that match:\n' +
                           '\n' +
                           '\t{\n' +
                           '\t  "path" : "/somePathOne"\n' +
                           '\t}\n' +
-                          '\n') !== -1);
+                          '\n') !== -1, expectations[5]);
 
                         test.done();
                       }, fail(test));
@@ -2086,36 +2081,36 @@
                         // then
                         test.equal(expectations.length, 6);
 
-                        test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1);
-                        test.ok(expectations[1].indexOf("creating expectation:\n" +
-                          "\n" +
-                          "\t{\n" +
-                          "\t  \"httpRequest\" : {\n" +
-                          "\t    \"path\" : \"/somePathOne\"\n" +
-                          "\t  }") !== -1);
-                        test.ok(expectations[2].indexOf("request:\n" +
-                          "\n" +
-                          "\t{\n" +
-                          "\t  \"method\" : \"POST\",\n" +
-                          "\t  \"path\" : \"/somePathOne\",\n" +
-                          "\t  \"body\" : \"someBody\"") !== -1);
-                        test.ok(expectations[3].indexOf('returning response:\n' +
-                          '\n' +
-                          '\t{\n' +
-                          '\t  "statusCode" : 201,\n' +
-                          '\t  "headers"') !== -1);
-                        test.ok(expectations[4].indexOf("no active expectations when receiving request:\n" +
-                          "\n" +
-                          "\t{\n" +
-                          "\t  \"method\" : \"GET\",\n" +
-                          "\t  \"path\" : \"/notFound\",\n" +
-                          "\t  \"headers\"") !== -1);
-                        test.ok(expectations[5].indexOf('retrieving logs that match:\n' +
-                          '\n' +
-                          '\t{\n' +
-                          '\t  "path" : "/somePathOne"\n' +
-                          '\t}\n' +
-                          '\n') !== -1);
+                          test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1, expectations[0]);
+                          test.ok(expectations[1].indexOf("creating expectation:\n" +
+                              "\n" +
+                              "\t{\n" +
+                              "\t  \"httpRequest\" : {\n" +
+                              "\t    \"path\" : \"/somePathOne\"\n" +
+                              "\t  }") !== -1, expectations[1]);
+                          test.ok(expectations[2].indexOf("request:\n" +
+                              "\n" +
+                              "\t{\n" +
+                              "\t  \"method\" : \"POST\",\n" +
+                              "\t  \"path\" : \"/somePathOne\",\n" +
+                              "\t  \"body\" : \"someBody\"") !== -1, expectations[2]);
+                          test.ok(expectations[3].indexOf('returning response:\n' +
+                              '\n' +
+                              '\t{\n' +
+                              '\t  "statusCode" : 201,\n' +
+                              '\t  "headers"') !== -1, expectations[3]);
+                          test.ok(expectations[4].indexOf("no active expectations when receiving request:\n" +
+                              "\n" +
+                              "\t{\n" +
+                              "\t  \"method\" : \"GET\",\n" +
+                              "\t  \"path\" : \"/notFound\",\n" +
+                              "\t  \"headers\"") !== -1, expectations[4]);
+                          test.ok(expectations[5].indexOf('retrieving logs that match:\n' +
+                              '\n' +
+                              '\t{\n' +
+                              '\t  "path" : "/somePathOne"\n' +
+                              '\t}\n' +
+                              '\n') !== -1, expectations[5]);
 
                         test.done();
                       }, fail(test));

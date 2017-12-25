@@ -146,7 +146,7 @@
             .then(fail(test), function (message) {
               test.ok(message.startsWith("Request not found at least once, expected:<{\n" +
                 "  \"path\" : \"/someOtherPath\"\n" +
-                "}> but was:<{\n"));
+                "}> but was:<{\n"), message);
               test.done();
             });
         });
@@ -172,7 +172,7 @@
                 "  \"method\" : \"POST\",\n" +
                 "  \"path\" : \"/somePath\",\n" +
                 "  \"body\" : \"someBody\"\n" +
-                "}> but was:<{\n"));
+                "}> but was:<{\n"), message);
               test.done();
             });
         });
@@ -198,7 +198,7 @@
                 "  \"method\" : \"POST\",\n" +
                 "  \"path\" : \"/somePath\",\n" +
                 "  \"body\" : \"someBody\"\n" +
-                "}> but was:<{\n"));
+                "}> but was:<{\n"), message);
               test.done();
             });
         });
@@ -334,7 +334,7 @@
                             "  \"method\" : \"POST\",\n" +
                             "  \"path\" : \"/somePath\",\n" +
                             "  \"body\" : \"someBody\"\n" +
-                            "}> but was:<{\n"));
+                            "}> but was:<{\n"), message);
                           // then - the verification should pass for other requests
                           client.verify({
                             'method': 'POST',
@@ -389,7 +389,7 @@
                             "  \"method\" : \"POST\",\n" +
                             "  \"path\" : \"/somePath\",\n" +
                             "  \"body\" : \"someBody\"\n" +
-                            "}> but was:<{\n"));
+                            "}> but was:<{\n"), message);
                           // then - the verification should pass for other requests
                           client.verify({
                             'method': 'POST',
@@ -445,7 +445,7 @@
                             "  \"method\" : \"POST\",\n" +
                             "  \"path\" : \"/somePath\",\n" +
                             "  \"body\" : \"someBody\"\n" +
-                            "}> but was:<{\n"));
+                            "}> but was:<{\n"), message);
                           // then - the verification should pass for other requests
                           client.verify({
                             'method': 'POST',
@@ -757,17 +757,17 @@
                       // then
                       test.equal(expectations.length, 5);
 
-                      test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1);
+                      test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1, expectations[0]);
                       test.ok(expectations[2].indexOf('returning response:\n' +
                         '\n' +
                         '\t{\n' +
-                        '\t  "statusCode" : 201') !== -1);
+                        '\t  "statusCode" : 201') !== -1, expectations[2]);
                       test.ok(expectations[4].indexOf('retrieving logs that match:\n' +
                         '\n' +
                         '\t{\n' +
                         '\t  "path" : "/somePathOne"\n' +
                         '\t}\n' +
-                        '\n') !== -1);
+                        '\n') !== -1, expectations[4]);
 
                       test.done();
                     }, fail(test));
@@ -799,17 +799,17 @@
                       // then
                         test.equal(expectations.length, 5);
 
-                        test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1);
+                        test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1, expectations[0]);
                         test.ok(expectations[2].indexOf('returning response:\n' +
                             '\n' +
                             '\t{\n' +
-                            '\t  "statusCode" : 201') !== -1);
+                            '\t  "statusCode" : 201') !== -1, expectations[2]);
                         test.ok(expectations[4].indexOf('retrieving logs that match:\n' +
                             '\n' +
                             '\t{\n' +
                             '\t  "path" : "/somePathOne"\n' +
                             '\t}\n' +
-                            '\n') !== -1);
+                            '\n') !== -1, expectations[4]);
 
                       test.done();
                     }, fail(test));
