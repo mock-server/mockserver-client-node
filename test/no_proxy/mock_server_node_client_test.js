@@ -35,9 +35,9 @@
         var options = {
             method: method,
             host: host,
-            path: path,
             port: port,
-            headers: headers || {}
+            headers: headers || {},
+            path: path
         };
         options.headers.Connection = "keep-alive";
 
@@ -885,7 +885,7 @@
                 }, fail(test));
         },
 
-        'should create multiple parallel expectation with method callback': function (test) {
+        'should create multiple parallel expectations with method callback': function (test) {
             // when
             client.mockWithCallback({
                 'method': 'GET',
@@ -1124,9 +1124,7 @@
         },
 
         'should fail when not enough at least requests have been sent': function (test) {
-            // given - a client
-            var client = mockServerClient("localhost", mockServerPort);
-            // and - an expectation
+            // given
             client.mockSimpleResponse('/somePath', {name: 'value'}, 203).then(function () {
                 // and - a request
                 sendRequest("POST", "localhost", mockServerPort, "/somePath", "someBody")
@@ -1584,9 +1582,7 @@
         },
 
         'should reset expectations': function (test) {
-            // given - a client
-            var client = mockServerClient("localhost", mockServerPort);
-            // and - an expectation
+            // given
             client.mockSimpleResponse('/somePathOne', {name: 'value'}, 200).then(function () {
                 // and - another expectation
                 client.mockSimpleResponse('/somePathOne', {name: 'value'}, 200).then(function () {
@@ -1932,9 +1928,7 @@
         },
 
         'should retrieve all requests using path': function (test) {
-            // given - a client
-            var client = mockServerClient("localhost", mockServerPort);
-            // and - first expectation
+            // given
             client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201).then(function () {
                 // and - second expectation
                 client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201).then(function () {
@@ -1995,7 +1989,6 @@
 
         'should retrieve some logs using object matcher': function (test) {
             // given
-            var client = mockServerClient("localhost", mockServerPort);
             client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201)
                 .then(function () {
 
@@ -2060,7 +2053,6 @@
 
         'should retrieve some logs using using path': function (test) {
             // given
-            var client = mockServerClient("localhost", mockServerPort);
             client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201)
                 .then(function () {
 
@@ -2115,6 +2107,21 @@
                                             test.done();
                                         }, fail(test));
                                 }, fail(test));
+                        }, fail(test));
+                }, fail(test));
+        },
+
+        'should bind to additional port': function (test) {
+            // given
+            client.bind([mockServerPort + 1])
+                .then(function (response) {
+                    test.equal(response.statusCode, 200);
+                    test.equal(response.body, "{\n  \"ports\" : [ " + (mockServerPort + 1) + " ]\n}");
+                    sendRequest("PUT", "localhost", mockServerPort + 1, "/status")
+                        .then(function (response) {
+                            test.equal(response.statusCode, 200);
+                            test.equal(response.body, "{\n  \"ports\" : [ " + mockServerPort + ", " + (mockServerPort + 1) + " ]\n}");
+                            test.done();
                         }, fail(test));
                 }, fail(test));
         }

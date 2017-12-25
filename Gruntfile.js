@@ -50,20 +50,6 @@ module.exports = function (grunt) {
                 reporter: 'nested'
             }
         },
-        webdriver_jasmine_runner: {
-            with_proxy: {
-                options: {
-                    browser: 'chrome',
-                    testServer: 'localhost',
-                    testServerPort: 1080,
-                    testFile: 'test/SpecRunner.html?proxy=true',
-                    proxy: {
-                        proxyType: 'manual',
-                        httpProxy: 'localhost:1090'
-                    }
-                }
-            }
-        },
         karma: {
             options: {
                 configFile: 'test/karma.conf.js',
@@ -75,33 +61,11 @@ module.exports = function (grunt) {
                 files: [
                     'mockServerClient.js',
                     'proxyClient.js',
-                    'test/no_proxy/mock_server_browser_client_spec.js',
-                    'test/with_proxy/proxy_browser_client_spec.js'
+                    'test/no_proxy/mock_server_browser_client_spec.js'
                 ]
             },
-            no_proxy_phantom: {
-                browsers: ['PhantomJS'],
-                mode: 'no_proxy'
-            },
-            with_proxy_phantom: {
-                browsers: ['PhantomJS_with_proxy'],
-                mode: 'with_proxy'
-            },
-            no_proxy_chrome: {
-                browsers: ['Chrome'],
-                mode: 'no_proxy'
-            },
-            with_proxy_chrome: {
-                browsers: ['Chrome_with_proxy'],
-                // browsers: ['Chrome'],
-                mode: 'with_proxy',
-                proxies: {
-                    '/somePath': 'http://127.0.0.1:1090/somePath',
-                    '/someOtherPath':  'http://127.0.0.1:1090/someOtherPath',
-                    '/one':  'http://127.0.0.1:1090/one',
-                    '/two':  'http://127.0.0.1:1090/two',
-                    '/three':  'http://127.0.0.1:1090/three'
-                }
+            chrome: {
+                browsers: ['Chrome']
             }
         }
     });
@@ -112,11 +76,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.loadNpmTasks('grunt-karma');
-    grunt.loadNpmTasks('grunt-webdriver-jasmine-runner');
 
     grunt.registerTask('test_node', ['start_mockserver', 'nodeunit', 'stop_mockserver']);
-    grunt.registerTask('test_browser', ['start_mockserver', 'karma:no_proxy_chrome', 'karma:with_proxy_chrome', 'stop_mockserver']);
-    grunt.registerTask('test', ['start_mockserver', 'nodeunit', 'karma:no_proxy_chrome'/*, 'karma:with_proxy_chrome'*/, 'stop_mockserver']);
+    grunt.registerTask('test_browser', ['start_mockserver', 'karma:chrome', 'stop_mockserver']);
+    grunt.registerTask('test', ['start_mockserver', 'nodeunit', 'karma:chrome', 'stop_mockserver']);
 
     grunt.registerTask('default', ['exec:stop_existing_mockservers', 'jshint', 'test']);
 };

@@ -45,14 +45,14 @@ var mockServerClient;
     });
 
     /**
-     * Start the client communicating to a MockServer at the specified host and port
+     * Start the client communicating at the specified host and port
      * for example:
      *
      *   var client = mockServerClient("localhost", 1080);
      *
-     * @param host the host for the MockServer to communicate with
-     * @param port the port for the MockServer to communicate with
-     * @param contextPath the context path if MockServer was deployed as a war
+     * @param host the host for the server to communicate with
+     * @param port the port for the server to communicate with
+     * @param contextPath the context path if server was deployed as a war
      */
     mockServerClient = function (host, port, contextPath) {
 
@@ -217,10 +217,10 @@ var mockServerClient;
         });
 
         /**
-         * Setup an expectation in the MockServer by specifying an expectation object
+         * Setup an expectation by specifying an expectation object
          * for example:
          *
-         *   mockServerClient("localhost", 1080).mockAnyResponse(
+         *   client.mockAnyResponse(
          *       {
          *           'httpRequest': {
          *               'path': '/somePath',
@@ -250,14 +250,13 @@ var mockServerClient;
             return makeRequest(host, port, "/expectation", addDefaultExpectationHeaders(expectation));
         };
         /**
-         * Setup an expectation in the MockServer by specifying a request matcher, and
+         * Setup an expectation by specifying a request matcher, and
          * a local request handler function.  The request handler function receives each
-         * request (that matches the request matcher) and returns the response that the
-         * MockServer will return for this expectation.
+         * request (that matches the request matcher) and returns the response that will be returned for this expectation.
          *
          * for example:
          *
-         *    mockServerClient("localhost", 1080).mockWithCallback(
+         *    client.mockWithCallback(
          *            {
          *                path: '/somePath',
          *                body: 'some_request_body'
@@ -280,6 +279,7 @@ var mockServerClient;
          *
          * @param requestMatcher the request matcher for the expectation
          * @param requestHandler the function to be called back when the request is matched
+         * @param times the number of times the requestMatcher should be matched
          */
         var mockWithCallback = function (requestMatcher, requestHandler, times) {
             return {
@@ -302,10 +302,10 @@ var mockServerClient;
             };
         };
         /**
-         * Setup an expectation in the MockServer without having to specify the full expectation object
+         * Setup an expectation without having to specify the full expectation object
          * for example:
          *
-         *   mockServerClient("localhost", 1080).mockSimpleResponse('/somePath', { name: 'value' }, 203);
+         *   client.mockSimpleResponse('/somePath', { name: 'value' }, 203);
          *
          * @param path the path to match requests against
          * @param responseBody the response body to return if a request matches
@@ -324,7 +324,7 @@ var mockServerClient;
          *
          * for example:
          *
-         *   mockServerClient("localhost", 1080).setDefaultHeaders([
+         *   client.setDefaultHeaders([
          *       {"name": "Content-Type", "values": ["application/json; charset=utf-8"]},
          *       {"name": "Cache-Control", "values": ["no-cache, no-store"]}
          *   ],[
@@ -343,6 +343,7 @@ var mockServerClient;
             }
             return _this;
         };
+
         var addDefaultRequestMatcherHeaders = function (pathOrRequestMatcher) {
             var requestMatcher;
             if (typeof pathOrRequestMatcher === "string") {
@@ -480,7 +481,7 @@ var mockServerClient;
             };
         };
         /**
-         * Reset MockServer by clearing all expectations
+         * Reset by clearing all recorded requests
          */
         var reset = function () {
             return makeRequest(host, port, "/reset");
@@ -489,7 +490,7 @@ var mockServerClient;
          * Clear all recorded requests, expectations and logs that match the specified path
          *
          * @param pathOrRequestMatcher  if a string is passed in the value will be treated as the path to
-         *                              decide which expectations to cleared, however if an object is passed
+         *                              decide what to clear, however if an object is passed
          *                              in the value will be treated as a full request matcher object
          * @param type                  the type to clear 'EXPECTATIONS', 'LOG' or 'ALL', defaults to 'ALL' if not specified
          */
@@ -502,7 +503,17 @@ var mockServerClient;
             }
             return makeRequest(host, port, "/clear" + (type ? "?type=" + type : ""), addDefaultRequestMatcherHeaders(pathOrRequestMatcher));
         };
-
+        /**
+         * Add new ports the server is bound to and listening on
+         *
+         * @param ports array of ports to bind to, use 0 to bind to any free port
+         */
+        var bind = function (ports) {
+            if (!Array.isArray(ports)) {
+                throw new Error("ports parameter must be an array but found: " + JSON.stringify(ports));
+            }
+            return makeRequest(host, port, "/bind", {ports: ports});
+        };
         /**
          * Retrieve the recorded requests that match the parameter, as follows:
          * - use a string value to match on path,
@@ -583,7 +594,7 @@ var mockServerClient;
                 then: function (sucess, error) {
                     return makeRequest(host, port, "/retrieve?type=LOGS", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
                         .then(function (result) {
-                          sucess(result.body && result.body.split("------------------------------------"));
+                            sucess(result.body && result.body.split("------------------------------------"));
                         });
                 }
             };
@@ -598,6 +609,7 @@ var mockServerClient;
             verifySequence: verifySequence,
             reset: reset,
             clear: clear,
+            bind: bind,
             retrieveRecordedRequests: retrieveRecordedRequests,
             retrieveActiveExpectations: retrieveActiveExpectations,
             retrieveRecordedExpectations: retrieveRecordedExpectations,
