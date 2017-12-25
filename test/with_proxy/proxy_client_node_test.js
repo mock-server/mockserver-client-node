@@ -79,8 +79,8 @@
 
     exports.proxy_client_node_test = {
         setUp: function (callback) {
-            mockServerClient("localhost", mockServerPort).reset().then(function () {
-                proxyClient("localhost", proxyPort).reset().then(function () {
+            client.reset().then(function () {
+                mockServerClient("localhost", mockServerPort).reset().then(function () {
                     callback();
                 }, function (error) {
                     throw 'Failed with error ' + JSON.stringify(error);
