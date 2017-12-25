@@ -12,13 +12,6 @@
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
     }
 
-    var fail = function (test) {
-        return function (error) {
-            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
-            test.done();
-        };
-    };
-
     var mockServer = require('../../');
     var mockServerClient = mockServer.mockServerClient;
     var proxyClient = mockServer.proxyClient;
@@ -125,7 +118,10 @@
 
                 // then - non matching request
                 sendRequest("GET", "localhost", mockServerPort, "/otherPath")
-                    .then(fail(test), function (error) {
+                    .then((function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test), function (error) {
                         test.equal(error, "404 Not Found");
                     })
                     .then(function () {
@@ -135,12 +131,18 @@
                             .then(function (response) {
                                 test.equal(response.statusCode, 200);
                                 test.equal(response.body, '{"name":"value"}');
-                            }, fail(test))
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test))
                             .then(function () {
 
                                 // then - matching request, but no times remaining
                                 sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "someBody")
-                                    .then(fail(test), function (error) {
+                                    .then((function (error) {
+                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                        test.done();
+                                    })(test), function (error) {
                                         test.equal(error, "404 Not Found");
                                     })
                                     .then(function () {
@@ -148,7 +150,10 @@
                                     });
                             });
                     });
-            }, fail(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should create expectations from array': function (test) {
@@ -198,10 +203,22 @@
                                         test.equal(response.statusCode, 200);
                                         test.equal(response.body, '{"name":"three"}');
                                         test.done();
-                                    }, fail(test));
-                            }, fail(test));
-                    }, fail(test));
-            }, fail(test));
+                                    }, (function (error) {
+                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                        test.done();
+                                    })(test));
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should set standard header on expectation array': function (test) {
@@ -261,10 +278,22 @@
                                         test.equal(response.body, '{"name":"three"}');
                                         test.equal(response.headers["x-test-default"], "default-value");
                                         test.done();
-                                    }, fail(test));
-                            }, fail(test));
-                    }, fail(test));
-            }, fail(test));
+                                    }, (function (error) {
+                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                        test.done();
+                                    })(test));
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should expose server validation failure': function (test) {
@@ -280,7 +309,10 @@
                     },
                     'httpResponse': {}
                 }
-            ).then(fail(test), function (error) {
+            ).then((function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test), function (error) {
                 test.equal(error, "2 errors:\n" +
                     " - object instance has properties which are not allowed by the schema: [\"paths\"] for field \"/httpRequest\"\n" +
                     " - for field \"/httpRequest/body\" a plain string or one of the following example bodies must be specified \n" +
@@ -380,7 +412,10 @@
                 ).then(function () {
                     // then - matching no expectation
                     sendRequest("PUT", "localhost", mockServerPort, "/somePath")
-                        .then(fail(test), function (error) {
+                        .then((function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test), function (error) {
                             test.equal(error, "404 Not Found");
                         })
                         .then(function () {
@@ -390,7 +425,10 @@
                                 .then(function (response) {
                                     test.equal(response.statusCode, 200);
                                     test.equal(response.body, '{"name":"first_body"}');
-                                }, fail(test))
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test))
                                 .then(function () {
 
                                     // then - request that matches second expectation
@@ -398,14 +436,23 @@
                                         .then(function (response) {
                                             test.equal(response.statusCode, 200);
                                             test.equal(response.body, '{"name":"second_body"}');
-                                        }, fail(test))
+                                        }, (function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test))
                                         .then(function () {
                                             test.done();
                                         });
                                 });
                         });
-                }, fail(test));
-            }, fail(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should match on path only': function (test) {
@@ -451,7 +498,10 @@
                 ).then(function () {
                     // then - matching no expectation
                     sendRequest("GET", "localhost", mockServerPort, "/otherPath")
-                        .then(fail(test), function (error) {
+                        .then((function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test), function (error) {
                             test.equal(error, "404 Not Found");
                         })
                         .then(function () {
@@ -461,7 +511,10 @@
                                 .then(function (response) {
                                     test.equal(response.statusCode, 200);
                                     test.equal(response.body, '{"name":"first_body"}');
-                                }, fail(test))
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test))
                                 .then(function () {
 
                                     // then - request that matches second expectation
@@ -469,14 +522,23 @@
                                         .then(function (response) {
                                             test.equal(response.statusCode, 200);
                                             test.equal(response.body, '{"name":"second_body"}');
-                                        }, fail(test))
+                                        }, (function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test))
                                         .then(function () {
                                             test.done();
                                         });
                                 });
                         });
-                }, fail(test));
-            }, fail(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should match on query string parameters only': function (test) {
@@ -532,7 +594,10 @@
                 ).then(function () {
                     // then - matching no expectation
                     sendRequest("GET", "localhost", mockServerPort, "/somePath?param=other")
-                        .then(fail(test), function (error) {
+                        .then((function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test), function (error) {
                             test.equal(error, "404 Not Found");
                         })
                         .then(function () {
@@ -542,7 +607,10 @@
                                 .then(function (response) {
                                     test.equal(response.statusCode, 200);
                                     test.equal(response.body, '{"name":"first_body"}');
-                                }, fail(test))
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test))
                                 .then(function () {
 
                                     // then - request that matches second expectation
@@ -550,14 +618,23 @@
                                         .then(function (response) {
                                             test.equal(response.statusCode, 200);
                                             test.equal(response.body, '{"name":"second_body"}');
-                                        }, fail(test))
+                                        }, (function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test))
                                         .then(function () {
                                             test.done();
                                         });
                                 });
                         });
-                }, fail(test));
-            }, fail(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should match on body only': function (test) {
@@ -609,7 +686,10 @@
                 ).then(function () {
                     // then - matching no expectation
                     sendRequest("POST", "localhost", mockServerPort, "/otherPath", "someIncorrectBody")
-                        .then(fail(test), function (error) {
+                        .then((function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test), function (error) {
                             test.equal(error, "404 Not Found");
                         })
                         .then(function () {
@@ -619,7 +699,10 @@
                                 .then(function (response) {
                                     test.equal(response.statusCode, 200);
                                     test.equal(response.body, '{"name":"first_body"}');
-                                }, fail(test))
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test))
                                 .then(function () {
 
                                     // then - request that matches second expectation
@@ -627,14 +710,23 @@
                                         .then(function (response) {
                                             test.equal(response.statusCode, 200);
                                             test.equal(response.body, '{"name":"second_body"}');
-                                        }, fail(test))
+                                        }, (function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test))
                                         .then(function () {
                                             test.done();
                                         });
                                 });
                         });
-                }, fail(test));
-            }, fail(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should match on headers only': function (test) {
@@ -690,7 +782,10 @@
                 ).then(function () {
                     // then - matching no expectation
                     sendRequest("GET", "localhost", mockServerPort, "/somePath", "", {'Allow': 'other'})
-                        .then(fail(test), function (error) {
+                        .then((function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test), function (error) {
                             test.equal(error, "404 Not Found");
                         })
                         .then(function () {
@@ -700,7 +795,10 @@
                                 .then(function (response) {
                                     test.equal(response.statusCode, 200);
                                     test.equal(response.body, '{"name":"first_body"}');
-                                }, fail(test))
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test))
                                 .then(function () {
 
                                     // then - request that matches second expectation
@@ -708,14 +806,23 @@
                                         .then(function (response) {
                                             test.equal(response.statusCode, 200);
                                             test.equal(response.body, '{"name":"second_body"}');
-                                        }, fail(test))
+                                        }, (function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test))
                                         .then(function () {
                                             test.done();
                                         });
                                 });
                         });
-                }, fail(test));
-            }, fail(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should match on cookies only': function (test) {
@@ -771,7 +878,10 @@
                 ).then(function () {
                     // then - matching no expectation
                     sendRequest("GET", "localhost", mockServerPort, "/somePath", "", {'Cookie': 'cookie=other'})
-                        .then(fail(test), function (error) {
+                        .then((function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test), function (error) {
                             test.equal(error, "404 Not Found");
                         })
                         .then(function () {
@@ -781,7 +891,10 @@
                                 .then(function (response) {
                                     test.equal(response.statusCode, 200);
                                     test.equal(response.body, '{"name":"first_body"}');
-                                }, fail(test))
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test))
                                 .then(function () {
 
                                     // then - request that matches second expectation
@@ -789,14 +902,23 @@
                                         .then(function (response) {
                                             test.equal(response.statusCode, 200);
                                             test.equal(response.body, '{"name":"second_body"}');
-                                        }, fail(test))
+                                        }, (function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test))
                                         .then(function () {
                                             test.done();
                                         });
                                 });
                         });
-                }, fail(test));
-            }, fail(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should create simple response expectation': function (test) {
@@ -805,7 +927,10 @@
                 .then(function () {
                     // then - non matching request
                     sendRequest("POST", "localhost", mockServerPort, "/otherPath")
-                        .then(fail(test), function (error) {
+                        .then((function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test), function (error) {
                             test.equal(error, "404 Not Found");
                         })
                         .then(function () {
@@ -815,12 +940,18 @@
                                 .then(function (response) {
                                     test.equal(response.statusCode, 203);
                                     test.equal(response.body, '{"name":"value"}');
-                                }, fail(test))
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test))
                                 .then(function () {
 
                                     // then - matching request, but no times remaining
                                     sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "someBody")
-                                        .then(fail(test), function (error) {
+                                        .then((function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test), function (error) {
                                             test.equal(error, "404 Not Found");
                                         })
                                         .then(function () {
@@ -862,7 +993,10 @@
 
                     // then - non matching request
                     sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "", {'Vary': uuid})
-                        .then(fail(test), function (error) {
+                        .then((function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test), function (error) {
                             test.equal(error, "404 Not Found");
                         })
                         .then(function () {
@@ -876,13 +1010,22 @@
 
                                     // then - matching request, but no times remaining
                                     sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "someBody", {'Vary': uuid})
-                                        .then(fail(test), function (error) {
+                                        .then((function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test), function (error) {
                                             test.equal(error, "404 Not Found");
                                             test.done();
                                         });
-                                }, fail(test));
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test));
                         });
-                }, fail(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
         },
 
         'should create multiple parallel expectation with method callback': function (test) {
@@ -946,11 +1089,26 @@
                                                     test.equal(response.body, 'one');
 
                                                     test.done();
-                                                }, fail(test));
-                                        }, fail(test));
-                                }, fail(test));
-                        }, fail(test));
-                }, fail(test));
+                                                }, (function (error) {
+                                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                    test.done();
+                                                })(test));
+                                        }, (function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test));
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test));
+                        }, (function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
         },
 
         'should create expectation with method callback with numeric times': function (test) {
@@ -985,13 +1143,25 @@
 
                                 // then - should no match request again
                                 sendRequest("GET", "localhost", mockServerPort, "/one", "", {'Vary': uuid})
-                                    .then(fail(test), function (error) {
+                                    .then((function (error) {
+                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                        test.done();
+                                    })(test), function (error) {
                                         test.equal(error, "404 Not Found");
                                         test.done();
                                     });
-                            }, fail(test));
-                    }, fail(test));
-            }, fail(test));
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should update default headers for simple response expectation': function (test) {
@@ -1010,8 +1180,14 @@
                         test.equal(response.headers["content-type"], "application/json; charset=utf-8");
                         test.equal(response.headers["x-test"], "test-value");
                         test.done();
-                    }, fail(test));
-            }, fail(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should verify exact number of requests have been sent': function (test) {
@@ -1021,7 +1197,10 @@
                 sendRequest("POST", "localhost", mockServerPort, "/somePath", "someBody")
                     .then(function (response) {
                         test.equal(response.statusCode, 203);
-                    }, fail(test))
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test))
                     .then(function () {
 
                         // when - verify at least one request
@@ -1032,9 +1211,15 @@
                                 'body': 'someBody'
                             }, 1, true).then(function () {
                             test.done();
-                        }, fail(test));
+                        }, (function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test));
                     });
-            }, fail(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should verify at least a number of requests have been sent': function (test) {
@@ -1046,13 +1231,19 @@
                     sendRequest("POST", "localhost", mockServerPort, "/somePath", "someBody")
                         .then(function (response) {
                             test.equal(response.statusCode, 203);
-                        }, fail(test))
+                        }, (function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test))
                         .then(function () {
                             // and - another request
                             sendRequest("POST", "localhost", mockServerPort, "/somePath", "someBody")
                                 .then(function (response) {
                                     test.equal(response.statusCode, 203);
-                                }, fail(test))
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test))
                                 .then(function () {
 
                                     // when - verify at least one request
@@ -1063,11 +1254,20 @@
                                             'body': 'someBody'
                                         }, 1).then(function () {
                                         test.done();
-                                    }, fail(test));
+                                    }, (function (error) {
+                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                        test.done();
+                                    })(test));
                                 });
                         });
-                }, fail(test));
-            }, fail(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should fail when no requests have been sent': function (test) {
@@ -1077,21 +1277,30 @@
                 sendRequest("POST", "localhost", mockServerPort, "/somePath", "someBody")
                     .then(function (response) {
                         test.equal(response.statusCode, 203);
-                    }, fail(test))
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test))
                     .then(function () {
 
                         // when - verify at least one request (should fail)
                         client.verify({
                             'path': '/someOtherPath'
                         }, 1)
-                            .then(fail(test), function (message) {
+                            .then((function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test), function (message) {
                                 test.ok(message.startsWith("Request not found at least once, expected:<{\n" +
                                     "  \"path\" : \"/someOtherPath\"\n" +
                                     "}> but was:<{\n"));
                                 test.done();
                             });
                     });
-            }, fail(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should fail when not enough exact requests have been sent': function (test) {
@@ -1101,7 +1310,10 @@
                 sendRequest("POST", "localhost", mockServerPort, "/somePath", "someBody")
                     .then(function (response) {
                         test.equal(response.statusCode, 203);
-                    }, fail(test))
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test))
                     .then(function () {
 
                         // when - verify exact two requests (should fail)
@@ -1111,7 +1323,10 @@
                                 'path': '/somePath',
                                 'body': 'someBody'
                             }, 2, true)
-                            .then(fail(test), function (message) {
+                            .then((function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test), function (message) {
                                 test.ok(message.startsWith("Request not found exactly 2 times, expected:<{\n" +
                                     "  \"method\" : \"POST\",\n" +
                                     "  \"path\" : \"/somePath\",\n" +
@@ -1120,7 +1335,10 @@
                                 test.done();
                             });
                     });
-            }, fail(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should fail when not enough at least requests have been sent': function (test) {
@@ -1132,7 +1350,10 @@
                 sendRequest("POST", "localhost", mockServerPort, "/somePath", "someBody")
                     .then(function (response) {
                         test.equal(response.statusCode, 203);
-                    }, fail(test))
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test))
                     .then(function () {
 
                         // when - verify at least two requests (should fail)
@@ -1142,7 +1363,10 @@
                                 'path': '/somePath',
                                 'body': 'someBody'
                             }, 2)
-                            .then(fail(test), function (message) {
+                            .then((function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test), function (message) {
                                 test.ok(message.startsWith("Request not found at least 2 times, expected:<{\n" +
                                     "  \"method\" : \"POST\",\n" +
                                     "  \"path\" : \"/somePath\",\n" +
@@ -1151,7 +1375,10 @@
                                 test.done();
                             });
                     });
-            }, fail(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should pass when correct sequence of requests have been sent': function (test) {
@@ -1163,11 +1390,17 @@
                     sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
                         .then(function (response) {
                             test.equal(response.statusCode, 201);
-                        }, fail(test))
+                        }, (function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test))
                         .then(function () {
 
                             sendRequest("GET", "localhost", mockServerPort, "/notFound")
-                                .then(fail(test), function (error) {
+                                .then((function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test), function (error) {
                                     test.equal(error, "404 Not Found");
                                 })
                                 .then(function () {
@@ -1175,7 +1408,10 @@
                                     sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
                                         .then(function (response) {
                                             test.equal(response.statusCode, 202);
-                                        }, fail(test))
+                                        }, (function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test))
                                         .then(function () {
 
                                             // when
@@ -1195,12 +1431,21 @@
                                                 }
                                             ).then(function () {
                                                 test.done();
-                                            }, fail(test));
+                                            }, (function (error) {
+                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                test.done();
+                                            })(test));
                                         });
                                 });
                         });
-                }, fail(test));
-            }, fail(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should fail when incorrect sequence (wrong order) of requests have been sent': function (test) {
@@ -1212,11 +1457,17 @@
                     sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
                         .then(function (response) {
                             test.equal(response.statusCode, 201);
-                        }, fail(test))
+                        }, (function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test))
                         .then(function () {
 
                             sendRequest("GET", "localhost", mockServerPort, "/notFound")
-                                .then(fail(test), function (error) {
+                                .then((function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test), function (error) {
                                     test.equal(error, "404 Not Found");
                                 })
                                 .then(function () {
@@ -1224,7 +1475,10 @@
                                     sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
                                         .then(function (response) {
                                             test.equal(response.statusCode, 202);
-                                        }, fail(test))
+                                        }, (function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test))
                                         .then(function () {
 
                                             // when - wrong order
@@ -1243,7 +1497,10 @@
                                                     'path': '/notFound'
                                                 }
                                             )
-                                                .then(fail(test), function (message) {
+                                                .then((function (error) {
+                                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                    test.done();
+                                                })(test), function (message) {
                                                     test.ok(message.startsWith("Request sequence not found, expected:<[ {\n" +
                                                         "  \"method\" : \"POST\",\n" +
                                                         "  \"path\" : \"/somePathOne\",\n" +
@@ -1261,8 +1518,14 @@
                                         });
                                 });
                         });
-                }, fail(test));
-            }, fail(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should fail when incorrect sequence (first request incorrect body) of requests have been sent': function (test) {
@@ -1274,11 +1537,17 @@
                     sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
                         .then(function (response) {
                             test.equal(response.statusCode, 201);
-                        }, fail(test))
+                        }, (function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test))
                         .then(function () {
 
                             sendRequest("GET", "localhost", mockServerPort, "/notFound")
-                                .then(fail(test), function (error) {
+                                .then((function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test), function (error) {
                                     test.equal(error, "404 Not Found");
                                 })
                                 .then(function () {
@@ -1286,7 +1555,10 @@
                                     sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
                                         .then(function (response) {
                                             test.equal(response.statusCode, 202);
-                                        }, fail(test))
+                                        }, (function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test))
                                         .then(function () {
 
                                             // when - first request incorrect body
@@ -1304,7 +1576,10 @@
                                                     'method': 'GET',
                                                     'path': '/somePathTwo'
                                                 }
-                                            ).then(fail(test), function (message) {
+                                            ).then((function (error) {
+                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                test.done();
+                                            })(test), function (message) {
                                                 test.ok(message.startsWith("Request sequence not found, expected:<[ {\n" +
                                                     "  \"method\" : \"POST\",\n" +
                                                     "  \"path\" : \"/somePathOne\",\n" +
@@ -1321,8 +1596,14 @@
                                         });
                                 });
                         });
-                }, fail(test));
-            }, fail(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should clear expectations and logs by path': function (test) {
@@ -1337,7 +1618,10 @@
                             .then(function (response) {
                                 test.equal(response.statusCode, 200);
                                 test.equal(response.body, '{"name":"value"}');
-                            }, fail(test))
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test))
                             .then(function () {
 
                                 // when - some expectations cleared
@@ -1345,7 +1629,10 @@
 
                                     // then - request matching cleared expectation should return 404
                                     sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
-                                        .then(fail(test), function (error) {
+                                        .then((function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test), function (error) {
                                             test.strictEqual(error, "404 Not Found");
                                         })
                                         .then(function () {
@@ -1373,16 +1660,40 @@
                                                                         test.equal(requests[0].path, '/somePathTwo');
 
                                                                         test.done();
-                                                                    }, fail(test));
-                                                            }, fail(test));
-                                                    }, fail(test));
-                                                }, fail(test));
+                                                                    }, (function (error) {
+                                                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                                        test.done();
+                                                                    })(test));
+                                                            }, (function (error) {
+                                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                                test.done();
+                                                            })(test));
+                                                    }, (function (error) {
+                                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                        test.done();
+                                                    })(test));
+                                                }, (function (error) {
+                                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                    test.done();
+                                                })(test));
                                         });
-                                }, fail(test));
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test));
                             });
-                    }, fail(test));
-                }, fail(test));
-            }, fail(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should clear expectations by request matcher': function (test) {
@@ -1397,7 +1708,10 @@
                             .then(function (response) {
                                 test.equal(response.statusCode, 200);
                                 test.equal(response.body, '{"name":"value"}');
-                            }, fail(test))
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test))
                             .then(function () {
 
                                 // when - some expectations cleared
@@ -1408,7 +1722,10 @@
 
                                         // then - request matching cleared expectation should return 404
                                         sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
-                                            .then(fail(test), function (error) {
+                                            .then((function (error) {
+                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                test.done();
+                                            })(test), function (error) {
                                                 test.strictEqual(error, "404 Not Found");
                                             })
                                             .then(function () {
@@ -1419,13 +1736,28 @@
                                                         test.equal(response.statusCode, 200);
                                                         test.equal(response.body, '{"name":"value"}');
                                                         test.done();
-                                                    }, fail(test));
+                                                    }, (function (error) {
+                                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                        test.done();
+                                                    })(test));
                                             });
-                                    }, fail(test));
+                                    }, (function (error) {
+                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                        test.done();
+                                    })(test));
                             });
-                    }, fail(test));
-                }, fail(test));
-            }, fail(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should clear expectations by expectation matcher': function (test) {
@@ -1440,7 +1772,10 @@
                             .then(function (response) {
                                 test.equal(response.statusCode, 200);
                                 test.equal(response.body, '{"name":"value"}');
-                            }, fail(test))
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test))
                             .then(function () {
 
                                 // when - some expectations cleared
@@ -1453,7 +1788,10 @@
 
                                         // then - request matching cleared expectation should return 404
                                         sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
-                                            .then(fail(test), function (error) {
+                                            .then((function (error) {
+                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                test.done();
+                                            })(test), function (error) {
                                                 test.strictEqual(error, "404 Not Found");
                                             })
                                             .then(function () {
@@ -1464,13 +1802,28 @@
                                                         test.equal(response.statusCode, 200);
                                                         test.equal(response.body, '{"name":"value"}');
                                                         test.done();
-                                                    }, fail(test));
+                                                    }, (function (error) {
+                                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                        test.done();
+                                                    })(test));
                                             });
-                                    }, fail(test));
+                                    }, (function (error) {
+                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                        test.done();
+                                    })(test));
                             });
-                    }, fail(test));
-                }, fail(test));
-            }, fail(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should clear only logs by path': function (test) {
@@ -1485,7 +1838,10 @@
                             .then(function (response) {
                                 test.equal(response.statusCode, 200);
                                 test.equal(response.body, '{"name":"value"}');
-                            }, fail(test))
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test))
                             .then(function () {
 
                                 // when - some expectations cleared
@@ -1493,7 +1849,10 @@
 
                                     // then - request matching cleared expectation should return 404
                                     sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
-                                        .then(fail(test), function (error) {
+                                        .then((function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test), function (error) {
                                             test.strictEqual(error, "404 Not Found");
                                         })
                                         .then(function () {
@@ -1512,15 +1871,36 @@
                                                             .then(function (requests) {
                                                                 test.strictEqual(requests.length, 0);
                                                                 test.done();
-                                                            }, fail(test));
-                                                    }, fail(test));
-                                                }, fail(test));
+                                                            }, (function (error) {
+                                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                                test.done();
+                                                            })(test));
+                                                    }, (function (error) {
+                                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                        test.done();
+                                                    })(test));
+                                                }, (function (error) {
+                                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                    test.done();
+                                                })(test));
                                         });
-                                }, fail(test));
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test));
                             });
-                    }, fail(test));
-                }, fail(test));
-            }, fail(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should clear only expectation by path': function (test) {
@@ -1535,7 +1915,10 @@
                             .then(function (response) {
                                 test.strictEqual(response.statusCode, 200);
                                 test.strictEqual(response.body, '{"name":"value"}');
-                            }, fail(test))
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test))
                             .then(function () {
 
                                 // when - some expectations cleared
@@ -1543,7 +1926,10 @@
 
                                     // then - request matching cleared expectation should return 404
                                     sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
-                                        .then(fail(test), function (error) {
+                                        .then((function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test), function (error) {
                                             test.strictEqual(error, "404 Not Found");
                                         })
                                         .then(function () {
@@ -1571,16 +1957,40 @@
                                                                         test.strictEqual(requests[0].path, '/somePathTwo');
 
                                                                         test.done();
-                                                                    }, fail(test));
-                                                            }, fail(test));
-                                                    }, fail(test));
-                                                }, fail(test));
+                                                                    }, (function (error) {
+                                                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                                        test.done();
+                                                                    })(test));
+                                                            }, (function (error) {
+                                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                                test.done();
+                                                            })(test));
+                                                    }, (function (error) {
+                                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                        test.done();
+                                                    })(test));
+                                                }, (function (error) {
+                                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                    test.done();
+                                                })(test));
                                         });
-                                }, fail(test));
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test));
                             });
-                    }, fail(test));
-                }, fail(test));
-            }, fail(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should reset expectations': function (test) {
@@ -1597,7 +2007,10 @@
                             .then(function (response) {
                                 test.strictEqual(response.statusCode, 200);
                                 test.strictEqual(response.body, '{"name":"value"}');
-                            }, fail(test))
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test))
                             .then(function () {
 
                                 // when - all expectations reset
@@ -1605,24 +2018,42 @@
 
                                     // then - request matching one reset expectation should return 404
                                     sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
-                                        .then(fail(test), function (error) {
+                                        .then((function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test), function (error) {
                                             test.strictEqual(error, "404 Not Found");
                                         })
                                         .then(function () {
 
                                             // then - request matching other reset expectation should return 404
                                             sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
-                                                .then(fail(test), function (error) {
+                                                .then((function (error) {
+                                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                    test.done();
+                                                })(test), function (error) {
                                                     test.strictEqual(error, "404 Not Found");
                                                     test.done();
                                                 });
 
                                         });
-                                }, fail(test));
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test));
                             });
-                    }, fail(test));
-                }, fail(test));
-            }, fail(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should retrieve some expectations using object matcher': function (test) {
@@ -1650,10 +2081,22 @@
                                 test.strictEqual(expectations[1].httpResponse.body, '{"name":"one"}');
                                 test.strictEqual(expectations[1].httpResponse.statusCode, 201);
                                 test.done();
-                            }, fail(test));
-                    }, fail(test));
-                }, fail(test));
-            }, fail(test));
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should retrieve some expectations using path': function (test) {
@@ -1677,11 +2120,23 @@
                             test.strictEqual(expectations[1].httpResponse.body, '{"name":"one"}');
                             test.strictEqual(expectations[1].httpResponse.statusCode, 201);
                             test.done();
-                        }, fail(test));
+                        }, (function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test));
 
-                    }, fail(test));
-                }, fail(test));
-            }, fail(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should retrieve all expectations using object matcher': function (test) {
@@ -1714,12 +2169,24 @@
                                 test.strictEqual(expectations[2].httpResponse.body, '{"name":"two"}');
                                 test.strictEqual(expectations[2].httpResponse.statusCode, 202);
                                 test.done();
-                            }, fail(test));
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test));
 
-                    }, fail(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
 
-                }, fail(test));
-            }, fail(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should retrieve all expectations using null matcher': function (test) {
@@ -1747,10 +2214,22 @@
                             test.strictEqual(expectations[2].httpResponse.body, '{"name":"two"}');
                             test.strictEqual(expectations[2].httpResponse.statusCode, 202);
                             test.done();
-                        }, fail(test));
-                    }, fail(test));
-                }, fail(test));
-            }, fail(test));
+                        }, (function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should retrieve some requests using object matcher': function (test) {
@@ -1764,17 +2243,26 @@
                         sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
                             .then(function (response) {
                                 test.strictEqual(response.statusCode, 201);
-                            }, fail(test))
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test))
                             .then(function () {
 
                                 sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
                                     .then(function (response) {
                                         test.strictEqual(response.statusCode, 201);
-                                    }, fail(test))
+                                    }, (function (error) {
+                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                        test.done();
+                                    })(test))
                                     .then(function () {
 
                                         sendRequest("GET", "localhost", mockServerPort, "/notFound")
-                                            .then(fail(test), function (error) {
+                                            .then((function (error) {
+                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                test.done();
+                                            })(test), function (error) {
                                                 test.strictEqual(error, "404 Not Found");
                                             })
                                             .then(function () {
@@ -1782,7 +2270,10 @@
                                                 sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
                                                     .then(function (response) {
                                                         test.strictEqual(response.statusCode, 202);
-                                                    }, fail(test))
+                                                    }, (function (error) {
+                                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                        test.done();
+                                                    })(test))
                                                     .then(function () {
 
                                                         // when
@@ -1802,14 +2293,26 @@
                                                                 test.strictEqual(requests[1].path, '/somePathOne');
                                                                 test.strictEqual(requests[1].method, 'GET');
                                                                 test.done();
-                                                            }, fail(test));
+                                                            }, (function (error) {
+                                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                                test.done();
+                                                            })(test));
                                                     });
                                             });
                                     });
                             });
-                    }, fail(test));
-                }, fail(test));
-            }, fail(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should retrieve some requests using path': function (test) {
@@ -1823,17 +2326,26 @@
                         sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
                             .then(function (response) {
                                 test.strictEqual(response.statusCode, 201);
-                            }, fail(test))
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test))
                             .then(function () {
 
                                 sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
                                     .then(function (response) {
                                         test.strictEqual(response.statusCode, 201);
-                                    }, fail(test))
+                                    }, (function (error) {
+                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                        test.done();
+                                    })(test))
                                     .then(function () {
 
                                         sendRequest("GET", "localhost", mockServerPort, "/notFound")
-                                            .then(fail(test), function (error) {
+                                            .then((function (error) {
+                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                test.done();
+                                            })(test), function (error) {
                                                 test.strictEqual(error, "404 Not Found");
                                             })
                                             .then(function () {
@@ -1841,7 +2353,10 @@
                                                 sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
                                                     .then(function (response) {
                                                         test.strictEqual(response.statusCode, 202);
-                                                    }, fail(test))
+                                                    }, (function (error) {
+                                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                        test.done();
+                                                    })(test))
                                                     .then(function () {
 
                                                         // when
@@ -1856,14 +2371,26 @@
                                                             test.strictEqual(requests[1].path, '/somePathOne');
                                                             test.strictEqual(requests[1].method, 'GET');
                                                             test.done();
-                                                        }, fail(test));
+                                                        }, (function (error) {
+                                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                            test.done();
+                                                        })(test));
                                                     });
                                             });
                                     });
                             });
-                    }, fail(test));
-                }, fail(test));
-            }, fail(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should retrieve all requests using object matcher': function (test) {
@@ -1877,17 +2404,26 @@
                         sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
                             .then(function (response) {
                                 test.strictEqual(response.statusCode, 201);
-                            }, fail(test))
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test))
                             .then(function () {
 
                                 sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
                                     .then(function (response) {
                                         test.strictEqual(response.statusCode, 201);
-                                    }, fail(test))
+                                    }, (function (error) {
+                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                        test.done();
+                                    })(test))
                                     .then(function () {
 
                                         sendRequest("GET", "localhost", mockServerPort, "/notFound")
-                                            .then(fail(test), function (error) {
+                                            .then((function (error) {
+                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                test.done();
+                                            })(test), function (error) {
                                                 test.strictEqual(error, "404 Not Found");
                                             })
                                             .then(function () {
@@ -1895,7 +2431,10 @@
                                                 sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
                                                     .then(function (response) {
                                                         test.strictEqual(response.statusCode, 202);
-                                                    }, fail(test))
+                                                    }, (function (error) {
+                                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                        test.done();
+                                                    })(test))
                                                     .then(function () {
 
                                                         // when
@@ -1921,14 +2460,26 @@
                                                                 test.strictEqual(requests[3].path, '/somePathTwo');
                                                                 test.strictEqual(requests[3].method, 'GET');
                                                                 test.done();
-                                                            }, fail(test));
+                                                            }, (function (error) {
+                                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                                test.done();
+                                                            })(test));
                                                     });
                                             });
                                     });
                             });
-                    }, fail(test));
-                }, fail(test));
-            }, fail(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should retrieve all requests using path': function (test) {
@@ -1944,17 +2495,26 @@
                         sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
                             .then(function (response) {
                                 test.strictEqual(response.statusCode, 201);
-                            }, fail(test))
+                            }, (function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })(test))
                             .then(function () {
 
                                 sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
                                     .then(function (response) {
                                         test.strictEqual(response.statusCode, 201);
-                                    }, fail(test))
+                                    }, (function (error) {
+                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                        test.done();
+                                    })(test))
                                     .then(function () {
 
                                         sendRequest("GET", "localhost", mockServerPort, "/notFound")
-                                            .then(fail(test), function (error) {
+                                            .then((function (error) {
+                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                test.done();
+                                            })(test), function (error) {
                                                 test.strictEqual(error, "404 Not Found");
                                             })
                                             .then(function () {
@@ -1962,7 +2522,10 @@
                                                 sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
                                                     .then(function (response) {
                                                         test.strictEqual(response.statusCode, 202);
-                                                    }, fail(test))
+                                                    }, (function (error) {
+                                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                        test.done();
+                                                    })(test))
                                                     .then(function () {
 
                                                         // when
@@ -1983,141 +2546,183 @@
                                                             test.strictEqual(requests[3].path, '/somePathTwo');
                                                             test.strictEqual(requests[3].method, 'GET');
                                                             test.done();
-                                                        }, fail(test));
+                                                        }, (function (error) {
+                                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                            test.done();
+                                                        })(test));
                                                     });
                                             });
                                     });
                             });
-                    }, fail(test));
-                }, fail(test));
-            }, fail(test));
+                    }, (function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+            }, (function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            })(test));
         },
 
         'should retrieve some logs using object matcher': function (test) {
-        // given
-        var client = mockServerClient("localhost", mockServerPort);
-        client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201)
-          .then(function () {
+            // given
+            var client = mockServerClient("localhost", mockServerPort);
+            client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201)
+                .then(function () {
 
-            sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
-              .then(function (response) {
-                test.equal(response.statusCode, 201);
+                    sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
+                        .then(function (response) {
+                            test.equal(response.statusCode, 201);
 
 
-                sendRequest("GET", "localhost", mockServerPort, "/notFound")
-                  .then(fail(test), function (error) {
-                    test.equal(error, "404 Not Found");
+                            sendRequest("GET", "localhost", mockServerPort, "/notFound")
+                                .then((function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test), function (error) {
+                                    test.equal(error, "404 Not Found");
 
-                    // when
-                    client
-                      .retrieveLogMessages({
-                        "httpRequest": {
-                          "path": "/somePathOne"
-                        }
-                      })
-                      .then(function (expectations) {
+                                    // when
+                                    client
+                                        .retrieveLogMessages({
+                                            "httpRequest": {
+                                                "path": "/somePathOne"
+                                            }
+                                        })
+                                        .then(function (expectations) {
 
-                        // then
-                        test.equal(expectations.length, 6);
+                                            // then
+                                            test.equal(expectations.length, 6);
 
-                        test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1);
-                        test.ok(expectations[1].indexOf("creating expectation:\n" +
-                          "\n" +
-                          "\t{\n" +
-                          "\t  \"httpRequest\" : {\n" +
-                          "\t    \"path\" : \"/somePathOne\"\n" +
-                          "\t  }") !== -1);
-                        test.ok(expectations[2].indexOf("request:\n" +
-                          "\n" +
-                          "\t{\n" +
-                          "\t  \"method\" : \"POST\",\n" +
-                          "\t  \"path\" : \"/somePathOne\",\n" +
-                          "\t  \"body\" : \"someBody\"") !== -1);
-                        test.ok(expectations[3].indexOf('returning response:\n' +
-                          '\n' +
-                          '\t{\n' +
-                          '\t  "statusCode" : 201,\n' +
-                          '\t  "headers"') !== -1);
-                        test.ok(expectations[4].indexOf("no active expectations when receiving request:\n" +
-                          "\n" +
-                          "\t{\n" +
-                          "\t  \"method\" : \"GET\",\n" +
-                          "\t  \"path\" : \"/notFound\",\n" +
-                          "\t  \"headers\"") !== -1);
-                        test.ok(expectations[5].indexOf('retrieving logs that match:\n' +
-                          '\n' +
-                          '\t{\n' +
-                          '\t  "path" : "/somePathOne"\n' +
-                          '\t}\n' +
-                          '\n') !== -1);
+                                            test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1);
+                                            test.ok(expectations[1].indexOf("creating expectation:\n" +
+                                                "\n" +
+                                                "\t{\n" +
+                                                "\t  \"httpRequest\" : {\n" +
+                                                "\t    \"path\" : \"/somePathOne\"\n" +
+                                                "\t  }") !== -1);
+                                            test.ok(expectations[2].indexOf("request:\n" +
+                                                "\n" +
+                                                "\t{\n" +
+                                                "\t  \"method\" : \"POST\",\n" +
+                                                "\t  \"path\" : \"/somePathOne\",\n" +
+                                                "\t  \"body\" : \"someBody\"") !== -1);
+                                            test.ok(expectations[3].indexOf('returning response:\n' +
+                                                '\n' +
+                                                '\t{\n' +
+                                                '\t  "statusCode" : 201,\n' +
+                                                '\t  "headers"') !== -1);
+                                            test.ok(expectations[4].indexOf("no active expectations when receiving request:\n" +
+                                                "\n" +
+                                                "\t{\n" +
+                                                "\t  \"method\" : \"GET\",\n" +
+                                                "\t  \"path\" : \"/notFound\",\n" +
+                                                "\t  \"headers\"") !== -1);
+                                            test.ok(expectations[5].indexOf('retrieving logs that match:\n' +
+                                                '\n' +
+                                                '\t{\n' +
+                                                '\t  "path" : "/somePathOne"\n' +
+                                                '\t}\n' +
+                                                '\n') !== -1);
 
-                        test.done();
-                      }, fail(test));
-                  }, fail(test));
-              }, fail(test));
-          }, fail(test));
-      },
+                                            test.done();
+                                        }, (function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test));
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test));
+                        }, (function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+        },
 
         'should retrieve some logs using using path': function (test) {
-        // given
-        var client = mockServerClient("localhost", mockServerPort);
-        client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201)
-          .then(function () {
+            // given
+            var client = mockServerClient("localhost", mockServerPort);
+            client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201)
+                .then(function () {
 
-            sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
-              .then(function (response) {
-                test.equal(response.statusCode, 201);
+                    sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
+                        .then(function (response) {
+                            test.equal(response.statusCode, 201);
 
 
-                sendRequest("GET", "localhost", mockServerPort, "/notFound")
-                  .then(fail(test), function (error) {
-                    test.equal(error, "404 Not Found");
+                            sendRequest("GET", "localhost", mockServerPort, "/notFound")
+                                .then((function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test), function (error) {
+                                    test.equal(error, "404 Not Found");
 
-                    // when
-                    client
-                      .retrieveLogMessages("/somePathOne")
-                      .then(function (expectations) {
+                                    // when
+                                    client
+                                        .retrieveLogMessages("/somePathOne")
+                                        .then(function (expectations) {
 
-                        // then
-                        test.equal(expectations.length, 6);
+                                            // then
+                                            test.equal(expectations.length, 6);
 
-                        test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1);
-                        test.ok(expectations[1].indexOf("creating expectation:\n" +
-                          "\n" +
-                          "\t{\n" +
-                          "\t  \"httpRequest\" : {\n" +
-                          "\t    \"path\" : \"/somePathOne\"\n" +
-                          "\t  }") !== -1);
-                        test.ok(expectations[2].indexOf("request:\n" +
-                          "\n" +
-                          "\t{\n" +
-                          "\t  \"method\" : \"POST\",\n" +
-                          "\t  \"path\" : \"/somePathOne\",\n" +
-                          "\t  \"body\" : \"someBody\"") !== -1);
-                        test.ok(expectations[3].indexOf('returning response:\n' +
-                          '\n' +
-                          '\t{\n' +
-                          '\t  "statusCode" : 201,\n' +
-                          '\t  "headers"') !== -1);
-                        test.ok(expectations[4].indexOf("no active expectations when receiving request:\n" +
-                          "\n" +
-                          "\t{\n" +
-                          "\t  \"method\" : \"GET\",\n" +
-                          "\t  \"path\" : \"/notFound\",\n" +
-                          "\t  \"headers\"") !== -1);
-                        test.ok(expectations[5].indexOf('retrieving logs that match:\n' +
-                          '\n' +
-                          '\t{\n' +
-                          '\t  "path" : "/somePathOne"\n' +
-                          '\t}\n' +
-                          '\n') !== -1);
+                                            test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1);
+                                            test.ok(expectations[1].indexOf("creating expectation:\n" +
+                                                "\n" +
+                                                "\t{\n" +
+                                                "\t  \"httpRequest\" : {\n" +
+                                                "\t    \"path\" : \"/somePathOne\"\n" +
+                                                "\t  }") !== -1);
+                                            test.ok(expectations[2].indexOf("request:\n" +
+                                                "\n" +
+                                                "\t{\n" +
+                                                "\t  \"method\" : \"POST\",\n" +
+                                                "\t  \"path\" : \"/somePathOne\",\n" +
+                                                "\t  \"body\" : \"someBody\"") !== -1);
+                                            test.ok(expectations[3].indexOf('returning response:\n' +
+                                                '\n' +
+                                                '\t{\n' +
+                                                '\t  "statusCode" : 201,\n' +
+                                                '\t  "headers"') !== -1);
+                                            test.ok(expectations[4].indexOf("no active expectations when receiving request:\n" +
+                                                "\n" +
+                                                "\t{\n" +
+                                                "\t  \"method\" : \"GET\",\n" +
+                                                "\t  \"path\" : \"/notFound\",\n" +
+                                                "\t  \"headers\"") !== -1);
+                                            test.ok(expectations[5].indexOf('retrieving logs that match:\n' +
+                                                '\n' +
+                                                '\t{\n' +
+                                                '\t  "path" : "/somePathOne"\n' +
+                                                '\t}\n' +
+                                                '\n') !== -1);
 
-                        test.done();
-                      }, fail(test));
-                  }, fail(test));
-              }, fail(test));
-          }, fail(test));
-      }
+                                            test.done();
+                                        }, (function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        })(test));
+                                }, (function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                })(test));
+                        }, (function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        })(test));
+                }, (function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                })(test));
+        }
     };
 
 })();
