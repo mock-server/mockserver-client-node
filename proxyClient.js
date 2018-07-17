@@ -100,24 +100,26 @@ var proxyClient;
             return arrayTarget;
         };
         var createRequestMatcher = function (path) {
-            return {
+            var ret =({
                 method: "",
                 path: path,
                 body: "",
-                headers: defaultRequestHeaders,
                 cookies: [],
                 queryStringParameters: []
-            };
+            });
+            if (defaultRequestHeaders !== null) {
+                ret.headers = defaultRequestHeaders;
+            }
+            return ret;
 
         };
         var createExpectation = function (path, responseBody, statusCode) {
-            return {
+            var ret = ({
                 httpRequest: createRequestMatcher(path),
                 httpResponse: {
                     statusCode: statusCode || 200,
                     body: JSON.stringify(responseBody),
                     cookies: [],
-                    headers: defaultResponseHeaders,
                     delay: {
                         timeUnit: "MICROSECONDS",
                         value: 0
@@ -127,7 +129,11 @@ var proxyClient;
                     remainingTimes: 1,
                     unlimited: false
                 }
-            };
+            });
+
+            if (defaultResponseHeaders !== null) {
+                ret.httpResponse.headers = defaultResponseHeaders;
+            }
         };
         var createExpectationWithCallback = function (requestMatcher, clientId, times) {
             var timesObject;
@@ -139,7 +145,9 @@ var proxyClient;
             } else if (typeof times === 'object') {
                 timesObject = times;
             }
-            requestMatcher.headers = arrayUniqueConcatenate(requestMatcher.headers, defaultRequestHeaders);
+            if (defaultRequestHeaders !== null) {
+                requestMatcher.headers = arrayUniqueConcatenate(requestMatcher.headers, defaultRequestHeaders);
+            }
             return {
                 httpRequest: requestMatcher,
                 httpObjectCallback: {
@@ -322,6 +330,8 @@ var proxyClient;
          *
          * - headers added to every request matcher, this is particularly useful for running tests in parallel
          *
+         * - to disable entirely automatic settings of headers, pass null. This is especially required for expectation that forward
+         *
          * for example:
          *
          *   client.setDefaultHeaders([
@@ -335,10 +345,10 @@ var proxyClient;
          * @param requestHeaders the default headers to be added to every request matcher
          */
         var setDefaultHeaders = function (responseHeaders, requestHeaders) {
-            if (responseHeaders) {
+            if (responseHeaders || responseHeaders === null) {
                 defaultResponseHeaders = responseHeaders;
             }
-            if (requestHeaders) {
+            if (requestHeaders || requestHeaders === null) {
                 defaultRequestHeaders = requestHeaders;
             }
             return _this;
@@ -355,7 +365,7 @@ var proxyClient;
             } else {
                 requestMatcher = {};
             }
-            if (defaultRequestHeaders.length) {
+            if (defaultRequestHeaders !== null && defaultRequestHeaders.length) {
                 if (requestMatcher.httpRequest) {
                     requestMatcher.httpRequest.headers = arrayUniqueConcatenate(requestMatcher.httpRequest.headers, defaultRequestHeaders);
                 } else {
@@ -371,7 +381,7 @@ var proxyClient;
             } else {
                 responseMatcher = {};
             }
-            if (defaultResponseHeaders.length) {
+            if (defaultResponseHeaders !== null && defaultResponseHeaders.length) {
                 if (responseMatcher.httpResponse) {
                     responseMatcher.httpResponse.headers = arrayUniqueConcatenate(responseMatcher.httpResponse.headers, defaultResponseHeaders);
                 } else {
@@ -383,12 +393,12 @@ var proxyClient;
         var addDefaultExpectationHeaders = function (expectation) {
             if (Array.isArray(expectation)) {
                 for (var i = 0; i < expectation.length; i++) {
-                    expectation[i].httpRequest = addDefaultRequestMatcherHeaders(expectation[i].httpRequest);
-                    expectation[i].httpResponse = addDefaultResponseMatcherHeaders(expectation[i].httpResponse);
+                    if (defaultRequestHeaders !== null) expectation[i].httpRequest = addDefaultRequestMatcherHeaders(expectation[i].httpRequest);
+                    if (defaultResponseHeaders !== null) expectation[i].httpResponse = addDefaultResponseMatcherHeaders(expectation[i].httpResponse);
                 }
             } else {
-                expectation.httpRequest = addDefaultRequestMatcherHeaders(expectation.httpRequest);
-                expectation.httpResponse = addDefaultResponseMatcherHeaders(expectation.httpResponse);
+                if (defaultRequestHeaders !== null) expectation.httpRequest = addDefaultRequestMatcherHeaders(expectation.httpRequest);
+                if (defaultResponseHeaders !== null) expectation.httpResponse = addDefaultResponseMatcherHeaders(expectation.httpResponse);
             }
             return expectation;
         };
@@ -412,7 +422,9 @@ var proxyClient;
             }
             return {
                 then: function (sucess, error) {
-                    request.headers = arrayUniqueConcatenate(request.headers, defaultRequestHeaders);
+                    if (defaultRequestHeaders !== null) {
+                        request.headers = arrayUniqueConcatenate(request.headers, defaultRequestHeaders);
+                    }
                     return makeRequest(host, port, "/verify", {
                         "httpRequest": request,
                         "times": {
@@ -458,7 +470,9 @@ var proxyClient;
             var requestSequence = [];
             for (var i = 0; i < arguments.length; i++) {
                 var requestMatcher = arguments[i];
-                requestMatcher.headers = arrayUniqueConcatenate(requestMatcher.headers, defaultRequestHeaders);
+                if (defaultRequestHeaders !== null) {
+                    requestMatcher.headers = arrayUniqueConcatenate(requestMatcher.headers, defaultRequestHeaders);
+                }
                 requestSequence.push(requestMatcher);
             }
             return {
