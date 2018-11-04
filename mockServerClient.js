@@ -142,7 +142,7 @@ var mockServerClient;
             requestMatcher.headers = arrayUniqueConcatenate(requestMatcher.headers, defaultRequestHeaders);
             return {
                 httpRequest: requestMatcher,
-                httpObjectCallback: {
+                httpResponseObjectCallback: {
                     clientId: clientId
                 },
                 times: timesObject || {
@@ -287,9 +287,13 @@ var mockServerClient;
                     try {
                         var webSocketClient = WebSocketClient(host, port, cleanedContextPath);
                         webSocketClient.requestCallback(function (request) {
+                            var response = requestHandler(request);
+                            response.headers = arrayUniqueConcatenate(response.headers, [
+                                {"name": "WebSocketCorrelationId", "values": request.headers["WebSocketCorrelationId"] || request.headers["websocketcorrelationid"]}
+                            ]);
                             return {
                                 type: "org.mockserver.model.HttpResponse",
-                                value: JSON.stringify(requestHandler(request))
+                                value: JSON.stringify(response)
                             };
                         });
                         webSocketClient.clientIdCallback(function (clientId) {

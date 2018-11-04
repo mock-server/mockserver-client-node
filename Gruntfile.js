@@ -29,14 +29,13 @@ module.exports = function (grunt) {
         start_mockserver: {
             options: {
                 serverPort: 1080,
-                proxyPort: 1090,
+                trace: true,
                 systemProperties: "-Dmockserver.enableCORSForAllResponses=true"
             }
         },
         stop_mockserver: {
             options: {
-                serverPort: 1080,
-                proxyPort: 1090
+                serverPort: 1080
             }
         },
         nodeunit: {
@@ -60,7 +59,6 @@ module.exports = function (grunt) {
                 singleRun: true,
                 files: [
                     'mockServerClient.js',
-                    'proxyClient.js',
                     'test/no_proxy/mock_server_browser_client_spec.js'
                 ]
             },
@@ -81,5 +79,5 @@ module.exports = function (grunt) {
     grunt.registerTask('test_browser', ['start_mockserver', 'karma:chrome', 'stop_mockserver']);
     grunt.registerTask('test', ['start_mockserver', 'nodeunit', 'karma:chrome', 'stop_mockserver']);
 
-    grunt.registerTask('default', ['exec:stop_existing_mockservers', 'jshint', 'test']);
+    grunt.registerTask('default', ['exec:stop_existing_mockservers', 'jshint', 'test_node']);
 };

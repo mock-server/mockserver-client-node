@@ -16,12 +16,11 @@ This npm modules is allows any grunt of node project to easily communicate with 
 
 An addition to this module for communicating with the MockServer there is also a grunt task that can be used to start and stop MockServer from grunt called [mockserver-grunt](https://www.npmjs.org/package/mockserver-grunt).
 
-The both the MockServer and proxy clients can be created as follows:
+The the MockServer client can be created as follows:
 
 ```js
 var mockServer = require('mockserver-client'),
-    mockServerClient = mockServer.mockServerClient, // MockServer client
-    proxyClient = mockServer.proxyClient; // proxy client
+    mockServerClient = mockServer.mockServerClient // MockServer and proxy client
 ```
 **Note:** this assumes you have an instance of MockServer running on port 1080 for more information on how to do this see [mockserver-grunt](https://www.npmjs.org/package/mockserver-grunt).
 
@@ -176,6 +175,7 @@ Date       | Version | Description
 2017-12-12 | v5.2.2  | Fixed incorrect error format 5.2.2
 2017-12-18 | v5.2.3  | Added retrieveLogs + upgrade to 5.2.3
 2017-12-25 | v5.3.0  | Upgrading MockServer to 5.3.0
+2018-11-04 | v5.4.1  | Upgrading MockServer to 5.4.1
 
 ---
 

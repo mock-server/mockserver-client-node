@@ -10,7 +10,6 @@
     "use strict";
 
     module.exports = {
-        mockServerClient: require('./mockServerClient').mockServerClient,
-        proxyClient: require('./proxyClient').proxyClient
+        mockServerClient: require('./mockServerClient').mockServerClient
     };
 })();
