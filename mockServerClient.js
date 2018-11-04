@@ -388,13 +388,13 @@ var mockServerClient;
             if (Array.isArray(expectation)) {
                 for (var i = 0; i < expectation.length; i++) {
                     expectation[i].httpRequest = addDefaultRequestMatcherHeaders(expectation[i].httpRequest);
-                    if(!expectation[i].httpForward) {
+                    if(!expectation[i].httpResponseTemplate && !expectation[i].httpResponseClassCallback && !expectation[i].httpResponseObjectCallback && !expectation[i].httpForward && !expectation[i].httpForwardTemplate && !expectation[i].httpForwardClassCallback && !expectation[i].httpForwardObjectCallback && !expectation[i].httpOverrideForwardedRequest && !expectation[i].httpError) {
                         expectation[i].httpResponse = addDefaultResponseMatcherHeaders(expectation[i].httpResponse);
                     }
                 }
             } else {
                 expectation.httpRequest = addDefaultRequestMatcherHeaders(expectation.httpRequest);
-                if(!expectation.httpForward) {
+                if(!expectation.httpResponseTemplate && !expectation.httpResponseClassCallback && !expectation.httpResponseObjectCallback && !expectation.httpForward && !expectation.httpForwardTemplate && !expectation.httpForwardClassCallback && !expectation.httpForwardObjectCallback && !expectation.httpOverrideForwardedRequest && !expectation.httpError) {
                     expectation.httpResponse = addDefaultResponseMatcherHeaders(expectation.httpResponse);
                 }
             }
