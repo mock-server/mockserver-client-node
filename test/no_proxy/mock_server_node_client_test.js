@@ -65,10 +65,11 @@
         return deferred.promise;
     }
 
-    var client = mockServerClient("localhost", mockServerPort);
+    var client;
 
     exports.mock_server_node_client_test = {
         setUp: function (callback) {
+            client = mockServerClient("localhost", mockServerPort);
             client.reset().then(function () {
                 callback();
             }, function (error) {
@@ -215,7 +216,7 @@
             });
         },
 
-        'should set standard header on expectation array': function (test) {
+        'should set default headers on expectation array': function (test) {
             // when
             client.setDefaultHeaders([
                 {"name": "x-test-default", "values": ["default-value"]}
@@ -250,14 +251,14 @@
                 }
             ]).then(function () {
 
-                // then - non matching request
+                // then - matching first request
                 sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
                     .then(function (response) {
                         test.equal(response.statusCode, 200);
                         test.equal(response.body, '{"name":"one"}');
                         test.equal(response.headers["x-test-default"], "default-value");
 
-                        // then - matching request
+                        // then - matching second request
                         sendRequest("GET", "localhost", mockServerPort, "/somePathTwo", "someBody")
                             .then(function (response) {
                                 test.equal(response.statusCode, 200);
@@ -265,7 +266,7 @@
                                 test.equal(response.headers["x-test-default"], "default-value");
                                 test.equal(response.headers["x-test"], "test-value");
 
-                                // then - matching request, but no times remaining
+                                // then - matching third request
                                 sendRequest("GET", "localhost", mockServerPort, "/somePathThree", "someBody")
                                     .then(function (response) {
                                         test.equal(response.statusCode, 200);
@@ -289,6 +290,62 @@
                 test.done();
             });
         },
+
+'should clear default headers': function (test) {
+    // when
+    client.mockAnyResponse({
+        'httpRequest': {
+            'path': '/somePathOne'
+        },
+        'httpResponse': {
+            'body': JSON.stringify({name: 'one'})
+        }
+    }).then(function () {
+
+        // then - matching request
+        sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
+            .then(function (response) {
+                test.equal(response.statusCode, 200);
+                test.equal(response.body, '{"name":"one"}');
+                test.equal((response.headers["Content-Type"] || response.headers["content-type"]), ["application/json; charset=utf-8"]);
+                test.equal((response.headers["Cache-Control"] || response.headers["cache-control"]), ["no-cache, no-store"]);
+
+                client.setDefaultHeaders([], []);
+                client.mockAnyResponse({
+                    'httpRequest': {
+                        'path': '/somePathTwo'
+                    },
+                    'httpResponse': {
+                        'body': JSON.stringify({name: 'one'})
+                    }
+                }).then(function () {
+
+                    // then - matching request
+                    sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
+                        .then(function (response) {
+                            test.equal(response.statusCode, 200);
+                            test.equal(response.body, '{"name":"one"}');
+                            test.ok(!(response.headers["Content-Type"] || response.headers["content-type"]));
+                            test.ok(!(response.headers["Cache-Control"] || response.headers["cache-control"]));
+
+                            test.done();
+                        }, function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        });
+                }, function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                });
+            }, function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            });
+    }, function (error) {
+        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+        test.done();
+    });
+},
 
         'should expose server validation failure': function (test) {
             // when

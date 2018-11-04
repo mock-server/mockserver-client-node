@@ -389,15 +389,13 @@ var mockServerClient;
                 for (var i = 0; i < expectation.length; i++) {
                     expectation[i].httpRequest = addDefaultRequestMatcherHeaders(expectation[i].httpRequest);
                     if(!expectation[i].httpForward) {
-                        expectation[i].httpResponse = addDefaultResponseMatcherHeaders(
-                            expectation[i].httpResponse);
+                        expectation[i].httpResponse = addDefaultResponseMatcherHeaders(expectation[i].httpResponse);
                     }
                 }
             } else {
                 expectation.httpRequest = addDefaultRequestMatcherHeaders(expectation.httpRequest);
                 if(!expectation.httpForward) {
-                    expectation.httpResponse = addDefaultResponseMatcherHeaders(
-                        expectation.httpResponse);
+                    expectation.httpResponse = addDefaultResponseMatcherHeaders(expectation.httpResponse);
                 }
             }
             return expectation;
