@@ -192,10 +192,10 @@ var mockServerClient;
                     }
                 };
                 socket.onopen = function (event) {
-
+                    console.log("foo");
                 };
                 socket.onclose = function (event) {
-
+                    console.log("foo");
                 };
             }
 
@@ -411,12 +411,12 @@ var mockServerClient;
          *   })).toBeTruthy();
          *
          * @param request the http request that must be matched for this verification to pass
-         * @param count   the number of times this request must be matched
-         * @param exact   true if the count is matched as "equal to" or false if the count is matched as "greater than or equal to"
+         * @param atLeast the minimum number of times this request must be matched
+         * @param atMost  the maximum number of times this request must be matched
          */
-        var verify = function (request, count, exact) {
-            if (count === undefined) {
-                count = 1;
+        var verify = function (request, atLeast, atMost) {
+            if (atLeast === undefined && atMost === undefined) {
+                atLeast = 1;
             }
             return {
                 then: function (sucess, error) {
@@ -424,8 +424,8 @@ var mockServerClient;
                     return makeRequest(host, port, "/verify", {
                         "httpRequest": request,
                         "times": {
-                            "count": count,
-                            "exact": exact
+                            "atLeast": atLeast,
+                            "atMost": atMost
                         }
                     }).then(
                         function () {

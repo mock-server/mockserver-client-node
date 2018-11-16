@@ -291,61 +291,61 @@
             });
         },
 
-'should clear default headers': function (test) {
-    // when
-    client.mockAnyResponse({
-        'httpRequest': {
-            'path': '/somePathOne'
-        },
-        'httpResponse': {
-            'body': JSON.stringify({name: 'one'})
-        }
-    }).then(function () {
+        'should clear default headers': function (test) {
+            // when
+            client.mockAnyResponse({
+                'httpRequest': {
+                    'path': '/somePathOne'
+                },
+                'httpResponse': {
+                    'body': JSON.stringify({name: 'one'})
+                }
+            }).then(function () {
 
-        // then - matching request
-        sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
-            .then(function (response) {
-                test.equal(response.statusCode, 200);
-                test.equal(response.body, '{"name":"one"}');
-                test.equal((response.headers["Content-Type"] || response.headers["content-type"]), ["application/json; charset=utf-8"]);
-                test.equal((response.headers["Cache-Control"] || response.headers["cache-control"]), ["no-cache, no-store"]);
+                // then - matching request
+                sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
+                    .then(function (response) {
+                        test.equal(response.statusCode, 200);
+                        test.equal(response.body, '{"name":"one"}');
+                        test.equal((response.headers["Content-Type"] || response.headers["content-type"]), ["application/json; charset=utf-8"]);
+                        test.equal((response.headers["Cache-Control"] || response.headers["cache-control"]), ["no-cache, no-store"]);
 
-                client.setDefaultHeaders([], []);
-                client.mockAnyResponse({
-                    'httpRequest': {
-                        'path': '/somePathTwo'
-                    },
-                    'httpResponse': {
-                        'body': JSON.stringify({name: 'one'})
-                    }
-                }).then(function () {
+                        client.setDefaultHeaders([], []);
+                        client.mockAnyResponse({
+                            'httpRequest': {
+                                'path': '/somePathTwo'
+                            },
+                            'httpResponse': {
+                                'body': JSON.stringify({name: 'one'})
+                            }
+                        }).then(function () {
 
-                    // then - matching request
-                    sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
-                        .then(function (response) {
-                            test.equal(response.statusCode, 200);
-                            test.equal(response.body, '{"name":"one"}');
-                            test.ok(!(response.headers["Content-Type"] || response.headers["content-type"]));
-                            test.ok(!(response.headers["Cache-Control"] || response.headers["cache-control"]));
+                            // then - matching request
+                            sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
+                                .then(function (response) {
+                                    test.equal(response.statusCode, 200);
+                                    test.equal(response.body, '{"name":"one"}');
+                                    test.ok(!(response.headers["Content-Type"] || response.headers["content-type"]));
+                                    test.ok(!(response.headers["Cache-Control"] || response.headers["cache-control"]));
 
-                            test.done();
+                                    test.done();
+                                }, function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                });
                         }, function (error) {
                             test.ok(false, "failed with the following error \n" + JSON.stringify(error));
                             test.done();
                         });
-                }, function (error) {
-                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
-                    test.done();
-                });
+                    }, function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    });
             }, function (error) {
                 test.ok(false, "failed with the following error \n" + JSON.stringify(error));
                 test.done();
             });
-    }, function (error) {
-        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
-        test.done();
-    });
-},
+        },
 
         'should expose server validation failure': function (test) {
             // when
@@ -1260,7 +1260,7 @@
                                 'method': 'POST',
                                 'path': '/somePath',
                                 'body': 'someBody'
-                            }, 1, true).then(function () {
+                            }, 1, 1).then(function () {
                             test.done();
                         }, function (error) {
                             test.ok(false, "failed with the following error \n" + JSON.stringify(error));
@@ -1373,12 +1373,12 @@
                                 'method': 'POST',
                                 'path': '/somePath',
                                 'body': 'someBody'
-                            }, 2, true)
+                            }, 2, 3)
                             .then(function (error) {
                                 test.ok(false, "failed with the following error \n" + JSON.stringify(error));
                                 test.done();
                             }, function (message) {
-                                test.ok(message.startsWith("Request not found exactly 2 times, expected:<{\n" +
+                                test.ok(message.startsWith("Request not found between 2 and 3 times, expected:<{\n" +
                                     "  \"method\" : \"POST\",\n" +
                                     "  \"path\" : \"/somePath\",\n" +
                                     "  \"body\" : \"someBody\"\n" +

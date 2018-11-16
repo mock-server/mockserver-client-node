@@ -39,7 +39,7 @@
                             var request = JSON.parse(payload.value);
                             var response = requestHandler(request);
                             connection.sendUTF(JSON.stringify(response));
-                        } else if (payload.type === "org.mockserver.client.serialization.model.WebSocketClientIdDTO") {
+                        } else if (payload.type === "org.mockserver.serialization.model.WebSocketClientIdDTO") {
                             var registration = JSON.parse(payload.value);
                             if (registration.clientId) {
                                 clientId = registration.clientId;
