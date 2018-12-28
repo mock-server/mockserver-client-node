@@ -659,3 +659,25 @@ function matchRequestByBodyWithJsonSchema() {
         }
     );
 }
+
+function matchRequestByBodyWithJsonPath() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        "httpRequest": {
+            "body": {
+                "type": "JSON_PATH",
+                "jsonPath": "$.store.book[?(@.price < 10)]"
+            }
+        },
+        "httpResponse": {
+            "body": "some_response_body"
+        }
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
+}
