@@ -177,6 +177,7 @@ Date       | Version | Description
 2017-12-25 | v5.3.0  | Upgrading MockServer to 5.3.0
 2018-11-04 | v5.4.1  | Upgrading MockServer to 5.4.1
 2018-11-16 | v5.5.0  | Upgrading MockServer to 5.5.0
+2018-12-29 | v5.5.1  | Upgrading MockServer to 5.5.1
 
 ---
 

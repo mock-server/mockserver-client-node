@@ -388,8 +388,13 @@
                     "   },\n" +
                     "   {\n" +
                     "     \"not\": false,\n" +
+                    "     \"type\": \"JSON_PATH\",\n" +
+                    "     \"jsonPath\": \"\"\n" +
+                    "   },\n" +
+                    "   {\n" +
+                    "     \"not\": false,\n" +
                     "     \"type\": \"PARAMETERS\",\n" +
-                    "     \"parameters\": \"TO DO\"\n" +
+                    "     \"parameters\": {\"name\": \"value\"}\n" +
                     "   },\n" +
                     "   {\n" +
                     "     \"not\": false,\n" +
