@@ -1,32 +1,33 @@
 # mockserver-client-node 
 
-> Communicate with [MockServer](http://mock-server.com/) from any node or grunt build
+> Communicate with a [MockServer](http://mock-server.com/) from any node or grunt build
 
 [![Build status](https://badge.buildkite.com/368c3b69e959f29725d8ab582f8d75dedddceee196d39b6d28.svg?style=square&theme=slack)](https://buildkite.com/mockserver/mockserver-client-node) [![Dependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node.png)](https://david-dm.org/jamesdbloom/mockserver-client-node) [![devDependency Status](https://david-dm.org/jamesdbloom/mockserver-client-node/dev-status.png)](https://david-dm.org/jamesdbloom/mockserver-client-node#info=devDependencies) [![Code Climate](http://codeclimate.com/github/jamesdbloom/mockserver-client-node.png)](https://codeclimate.com/github/jamesdbloom/mockserver-client-node)
 
 [![NPM](https://nodei.co/npm/mockserver-client.png?downloads=true&stars=true)](https://nodei.co/npm/mockserver-client/) 
 
-For chat room: [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jamesdbloom/mockserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+Chat room: [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jamesdbloom/mockserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Getting Started
 
-MockServer is for mocking of any system you integrate with via HTTP or HTTPS (i.e. services, web sites, etc).
+[MockServer](http://mock-server.com/) allows you to mock any system you integrate with via HTTP or HTTPS (i.e. (REST) services, web sites, etc). Please note that it is a third party project that needs java.
 
-This npm modules is allows any grunt of node project to easily communicate with the [MockServer](http://mock-server.com/).
+This npm module allows any grunt or node project to easily communicate with a running [MockServer](http://mock-server.com/) instance.
 
-An addition to this module for communicating with the MockServer there is also a grunt task that can be used to start and stop MockServer from grunt called [mockserver-grunt](https://www.npmjs.org/package/mockserver-grunt).
+As an addition to this module for communicating with a running MockServer there is a second project that can be used to start and stop a MockServer called [mockserver-node](https://www.npmjs.org/package/mockserver-node).
 
-The the MockServer client can be created as follows:
+The MockServer client can be created as follows:
 
 ```js
 var mockServer = require('mockserver-client'),
     mockServerClient = mockServer.mockServerClient // MockServer and proxy client
 ```
-**Note:** this assumes you have an instance of MockServer running on port 1080 for more information on how to do this see [mockserver-grunt](https://www.npmjs.org/package/mockserver-grunt).
+**Note:** this assumes you have an instance of MockServer running on port 1080.
+For more information on how to do so check [mockserver-node](https://www.npmjs.org/package/mockserver-node).
 
 ## Setup Expectation
 
-Then an simple expectation can be setup as follows:
+A simple expectation can be set up as follows:
 
 ```js
 mockServerClient("localhost", 1080)
@@ -41,7 +42,7 @@ mockServerClient("localhost", 1080)
     );
 ```
 
-Or a more complex expectation can be setup as follows:
+A more complex expectation can be set up like this:
 
 ```js
 mockServerClient("localhost", 1080)
@@ -89,7 +90,7 @@ For the full syntax support see [MockServer - Creating JavaScript Expectations](
 
 ## Verify Requests
 
-It is also possible to verify that request were made as follows:
+It is also possible to verify that request were made:
 
 ```js
 mockServerClient("localhost", 1080)
@@ -110,7 +111,7 @@ mockServerClient("localhost", 1080)
         }
     );
 ```
-It is also possible to verify that sequences of requests were made in a specific order as follows:
+It is furthermore possible to verify that sequences of requests were made in a specific order:
 
 ```js
 mockServerClient("localhost", 1080)
