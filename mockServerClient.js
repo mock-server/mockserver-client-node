@@ -181,7 +181,7 @@ var mockServerClient;
                         } else {
                             throw "The socket is not open.";
                         }
-                    } else if (message.type === "org.mockserver.client.serialization.model.WebSocketClientIdDTO") {
+                    } else if (message.type === "org.mockserver.serialization.model.WebSocketClientIdDTO") {
                         var registration = JSON.parse(message.value);
                         if (registration.clientId) {
                             clientId = registration.clientId;
