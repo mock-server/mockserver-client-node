@@ -4,7 +4,7 @@ function retrieveAllRecordedRequests() {
         .retrieveRecordedRequests({})
         .then(
             function (recordedRequests) {
-                console.log(JSON.stringify(recordedRequests));
+                console.log(JSON.stringify(recordedRequests, null, "  "));
             },
             function (error) {
                 console.log(error);
@@ -19,7 +19,7 @@ function retrieveRecordedRequestsUsingRequestMatcher() {
         "method": "POST"
     }).then(
         function (recordedRequests) {
-            console.log(JSON.stringify(recordedRequests));
+            console.log(JSON.stringify(recordedRequests, null, "  "));
         },
         function (error) {
             console.log(error);
@@ -34,7 +34,7 @@ function retrieveRecordedRequestsInJson() {
         "method": "POST"
     }).then(
         function (recordedRequests) {
-            console.log(JSON.stringify(recordedRequests));
+            console.log(JSON.stringify(recordedRequests, null, "  "));
         },
         function (error) {
             console.log(error);

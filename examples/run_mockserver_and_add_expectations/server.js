@@ -53,6 +53,6 @@ mockserver
             );
         },
         function (error) {
-            console.log(JSON.stringify(error));
+            console.log(JSON.stringify(error, null, "  "));
         }
     );

@@ -4,7 +4,7 @@ function retrieveAllActiveExpectations() {
         .retrieveActiveExpectations({})
         .then(
             function (activeExpectations) {
-                console.log(JSON.stringify(activeExpectations));
+                console.log(JSON.stringify(activeExpectations, null, "  "));
             },
             function (error) {
                 console.log(error);
@@ -19,7 +19,7 @@ function retrieveActiveExpectationsUsingRequestMatcher() {
         "method": "POST"
     }).then(
         function (activeExpectations) {
-            console.log(JSON.stringify(activeExpectations));
+            console.log(JSON.stringify(activeExpectations, null, "  "));
         },
         function (error) {
             console.log(error);
@@ -34,7 +34,7 @@ function retrieveActiveExpectationsInJson() {
         "method": "POST"
     }).then(
         function (activeExpectations) {
-            console.log(JSON.stringify(activeExpectations));
+            console.log(JSON.stringify(activeExpectations, null, "  "));
         },
         function (error) {
             console.log(error);

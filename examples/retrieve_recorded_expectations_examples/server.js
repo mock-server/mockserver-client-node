@@ -4,7 +4,7 @@ function retrieveAllRecordedExpectations() {
         .retrieveRecordedExpectations({})
         .then(
             function (recordedExpectations) {
-                console.log(JSON.stringify(recordedExpectations));
+                console.log(JSON.stringify(recordedExpectations, null, "  "));
             },
             function (error) {
                 console.log(error);
@@ -19,7 +19,7 @@ function retrieveRecordedExpectationsUsingRequestMatcher() {
         "method": "POST"
     }).then(
         function (recordedExpectations) {
-            console.log(JSON.stringify(recordedExpectations));
+            console.log(JSON.stringify(recordedExpectations, null, "  "));
         },
         function (error) {
             console.log(error);
@@ -34,7 +34,7 @@ function retrieveRecordedExpectationsInJson() {
         "method": "POST"
     }).then(
         function (recordedExpectations) {
-            console.log(JSON.stringify(recordedExpectations));
+            console.log(JSON.stringify(recordedExpectations, null, "  "));
         },
         function (error) {
             console.log(error);

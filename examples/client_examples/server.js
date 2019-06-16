@@ -76,7 +76,7 @@ function retrieveRecordedRequests() {
         })
         .then(
             function (recordedRequests) {
-                console.log(JSON.stringify(recordedRequests));
+                console.log(JSON.stringify(recordedRequests, null, "  "));
             },
             function (error) {
                 console.log(error);
