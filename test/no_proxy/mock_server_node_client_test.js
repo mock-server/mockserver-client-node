@@ -881,6 +881,144 @@
             });
         },
 
+        'should support headers object format in matcher': function (test) {
+            // when
+            client.setDefaultHeaders([
+                {"name": "x-test-default", "values": ["default-value"]}
+            ]);
+            client.mockAnyResponse(
+                {
+                    'httpRequest': {
+                        'path': '/somePath'
+                    },
+                    'httpResponse': {
+                        'statusCode': 200,
+                        'body': JSON.stringify({name: 'first_body'}),
+                        'headers': {
+                            'x-test': ['test-value']
+                        },
+                        'delay': {
+                            'timeUnit': 'MILLISECONDS',
+                            'value': 250
+                        }
+                    },
+                    'times': {
+                        'remainingTimes': 1,
+                        'unlimited': false
+                    }
+                }
+            ).then(function () {
+                // then - matching first expectation
+                sendRequest("GET", "localhost", mockServerPort, "/somePath")
+                    .then(function (response) {
+                        test.equal(response.statusCode, 200);
+                        test.equal(response.body, '{"name":"first_body"}');
+                        test.equal(response.headers["x-test-default"], "default-value");
+                        test.equal(response.headers["x-test"], "test-value");
+                        test.done();
+                    }, function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    });
+            }, function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            });
+        },
+
+        'should support headers object format in default headers': function (test) {
+            // when
+            client.setDefaultHeaders({
+                "x-test-default": ["default-value"]
+            });
+            client.mockAnyResponse(
+                {
+                    'httpRequest': {
+                        'path': '/somePath'
+                    },
+                    'httpResponse': {
+                        'statusCode': 200,
+                        'body': JSON.stringify({name: 'first_body'}),
+                        'headers': [
+                            {
+                                'name': 'x-test',
+                                'values': ['test-value']
+                            }
+                        ],
+                        'delay': {
+                            'timeUnit': 'MILLISECONDS',
+                            'value': 250
+                        }
+                    },
+                    'times': {
+                        'remainingTimes': 1,
+                        'unlimited': false
+                    }
+                }
+            ).then(function () {
+                // then - matching first expectation
+                sendRequest("GET", "localhost", mockServerPort, "/somePath", "", {'Allow': 'first'})
+                    .then(function (response) {
+                        test.equal(response.statusCode, 200);
+                        test.equal(response.body, '{"name":"first_body"}');
+                        test.equal(response.headers["x-test-default"], "default-value");
+                        test.equal(response.headers["x-test"], "test-value");
+                        test.done();
+                    }, function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    });
+            }, function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            });
+        },
+
+        'should support headers object format in default headers and matcher': function (test) {
+            // when
+            client.setDefaultHeaders([
+                {"name": "x-test-default", "values": ["default-value"]}
+            ]);
+            client.mockAnyResponse(
+                {
+                    'httpRequest': {
+                        'path': '/somePath'
+                    },
+                    'httpResponse': {
+                        'statusCode': 200,
+                        'body': JSON.stringify({name: 'first_body'}),
+                        'headers': {
+                            'x-test': ['test-value']
+                        },
+                        'delay': {
+                            'timeUnit': 'MILLISECONDS',
+                            'value': 250
+                        }
+                    },
+                    'times': {
+                        'remainingTimes': 1,
+                        'unlimited': false
+                    }
+                }
+            ).then(function () {
+                // then - matching first expectation
+                sendRequest("GET", "localhost", mockServerPort, "/somePath", "", {'Allow': 'first'})
+                    .then(function (response) {
+                        test.equal(response.statusCode, 200);
+                        test.equal(response.body, '{"name":"first_body"}');
+                        test.equal(response.headers["x-test-default"], "default-value");
+                        test.equal(response.headers["x-test"], "test-value");
+                        test.done();
+                    }, function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    });
+            }, function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            });
+        },
+
         'should match on cookies only': function (test) {
             // when
             client.mockAnyResponse(

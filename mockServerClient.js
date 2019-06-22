@@ -79,23 +79,39 @@ var mockServerClient;
         ];
         var defaultRequestHeaders = [];
 
-        var arrayUniqueConcatenate = function (arrayTarget, arraySource) {
-            if (arraySource && arraySource.length) {
-                if (arrayTarget && arrayTarget.length) {
-                    for (var i = 0; i < arraySource.length; i++) {
-                        var arrayTargetAlreadyHasValue = false;
-                        for (var j = 0; j < arrayTarget.length; j++) {
-                            if (JSON.stringify(arraySource[i]) === JSON.stringify(arrayTarget[j])) {
-                                arrayTargetAlreadyHasValue = true;
+        var headersUniqueConcatenate = function (arrayTarget, arraySource) {
+            if (!arrayTarget) {
+                arrayTarget = arraySource;
+            } else if (Array.isArray(arrayTarget) && Array.isArray(arraySource)) {
+                if (arraySource && arraySource.length) {
+                    if (arrayTarget && arrayTarget.length) {
+                        for (var i = 0; i < arraySource.length; i++) {
+                            var arrayTargetAlreadyHasValue = false;
+                            for (var j = 0; j < arrayTarget.length; j++) {
+                                if (JSON.stringify(arraySource[i]) === JSON.stringify(arrayTarget[j])) {
+                                    arrayTargetAlreadyHasValue = true;
+                                }
+                            }
+                            if (!arrayTargetAlreadyHasValue) {
+                                arrayTarget.push(arraySource[i]);
                             }
                         }
-                        if (!arrayTargetAlreadyHasValue) {
-                            arrayTarget.push(arraySource[i]);
-                        }
+                    } else {
+                        arrayTarget = arraySource;
                     }
-                } else {
-                    arrayTarget = arraySource;
                 }
+            } else if (!Array.isArray(arrayTarget) && Array.isArray(arraySource)) {
+                arraySource.forEach(function(entry) {
+                    arrayTarget[entry["name"]] = entry["values"];
+                });
+            } else if (Array.isArray(arrayTarget) && !Array.isArray(arraySource)) {
+                for (var property in arraySource) {
+                    if (arraySource.hasOwnProperty(property)) {
+                        arrayTarget.push({"name": property, "values": arraySource[property]});
+                    }
+                }
+            } else if (!Array.isArray(arrayTarget) && !Array.isArray(arraySource))  {
+                arrayTarget = Object.assign(arrayTarget, arraySource);
             }
             return arrayTarget;
         };
@@ -139,7 +155,7 @@ var mockServerClient;
             } else if (typeof times === 'object') {
                 timesObject = times;
             }
-            requestMatcher.headers = arrayUniqueConcatenate(requestMatcher.headers, defaultRequestHeaders);
+            requestMatcher.headers = headersUniqueConcatenate(requestMatcher.headers, defaultRequestHeaders);
             return {
                 httpRequest: requestMatcher,
                 httpResponseObjectCallback: {
@@ -288,7 +304,7 @@ var mockServerClient;
                         var webSocketClient = WebSocketClient(host, port, cleanedContextPath);
                         webSocketClient.requestCallback(function (request) {
                             var response = requestHandler(request);
-                            response.headers = arrayUniqueConcatenate(response.headers, [
+                            response.headers = headersUniqueConcatenate(response.headers, [
                                 {"name": "WebSocketCorrelationId", "values": request.headers["WebSocketCorrelationId"] || request.headers["websocketcorrelationid"]}
                             ]);
                             return {
@@ -359,11 +375,11 @@ var mockServerClient;
             } else {
                 requestMatcher = {};
             }
-            if (defaultRequestHeaders.length) {
+            if (defaultRequestHeaders) {
                 if (requestMatcher.httpRequest) {
-                    requestMatcher.httpRequest.headers = arrayUniqueConcatenate(requestMatcher.httpRequest.headers, defaultRequestHeaders);
+                    requestMatcher.httpRequest.headers = headersUniqueConcatenate(requestMatcher.httpRequest.headers, defaultRequestHeaders);
                 } else {
-                    requestMatcher.headers = arrayUniqueConcatenate(requestMatcher.headers, defaultRequestHeaders);
+                    requestMatcher.headers = headersUniqueConcatenate(requestMatcher.headers, defaultRequestHeaders);
                 }
             }
             return requestMatcher;
@@ -375,11 +391,11 @@ var mockServerClient;
             } else {
                 responseMatcher = {};
             }
-            if (defaultResponseHeaders.length) {
+            if (defaultResponseHeaders) {
                 if (responseMatcher.httpResponse) {
-                    responseMatcher.httpResponse.headers = arrayUniqueConcatenate(responseMatcher.httpResponse.headers, defaultResponseHeaders);
+                    responseMatcher.httpResponse.headers = headersUniqueConcatenate(responseMatcher.httpResponse.headers, defaultResponseHeaders);
                 } else {
-                    responseMatcher.headers = arrayUniqueConcatenate(responseMatcher.headers, defaultResponseHeaders);
+                    responseMatcher.headers = headersUniqueConcatenate(responseMatcher.headers, defaultResponseHeaders);
                 }
             }
             return responseMatcher;
@@ -420,7 +436,7 @@ var mockServerClient;
             }
             return {
                 then: function (sucess, error) {
-                    request.headers = arrayUniqueConcatenate(request.headers, defaultRequestHeaders);
+                    request.headers = headersUniqueConcatenate(request.headers, defaultRequestHeaders);
                     return makeRequest(host, port, "/verify", {
                         "httpRequest": request,
                         "times": {
@@ -466,7 +482,7 @@ var mockServerClient;
             var requestSequence = [];
             for (var i = 0; i < arguments.length; i++) {
                 var requestMatcher = arguments[i];
-                requestMatcher.headers = arrayUniqueConcatenate(requestMatcher.headers, defaultRequestHeaders);
+                requestMatcher.headers = headersUniqueConcatenate(requestMatcher.headers, defaultRequestHeaders);
                 requestSequence.push(requestMatcher);
             }
             return {
