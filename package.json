@@ -19,6 +19,15 @@
   "engines": {
     "node": ">= 0.8.0"
   },
+  "files": [
+    "README.md",
+    "LICENSE.md",
+    "index.js",
+    "mockServerClient.js",
+    "sendRequest.js",
+    "webSocketClient.js",
+    "stop_MockServer.sh"
+  ],
   "devDependencies": {
     "grunt": "^1.0.3",
     "grunt-contrib-clean": "~2.0",
