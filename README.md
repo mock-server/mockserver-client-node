@@ -182,6 +182,7 @@ Date       | Version | Description
 2019-06-02 | v5.5.4  | Upgrading MockServer to 5.5.4
 2019-06-02 | v5.6.0  | Upgrading MockServer to 5.6.0
 2019-07-26 | v5.6.1  | Upgrading MockServer to 5.6.1
+2019-07-26 | v5.7.0  | Cleaned code & upgrading to 5.7.0
 
 ---
 

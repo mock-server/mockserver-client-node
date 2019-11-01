@@ -133,58 +133,8 @@ describe("mockServerClient client:", function () {
                 'httpResponse': {}
             }
         ).then(fail, function (error) {
-            expect(error).toEqual("2 errors:\n" +
-                " - object instance has properties which are not allowed by the schema: [\"paths\"] for field \"/httpRequest\"\n" +
-                " - for field \"/httpRequest/body\" a plain string or one of the following example bodies must be specified \n" +
-                "   {\n" +
-                "     \"not\": false,\n" +
-                "     \"type\": \"BINARY\",\n" +
-                "     \"base64Bytes\": \"\",\n" +
-                "     \"contentType\": \"\"\n" +
-                "   }, \n" +
-                "   {\n" +
-                "     \"not\": false,\n" +
-                "     \"type\": \"JSON\",\n" +
-                "     \"json\": \"\",\n" +
-                "     \"contentType\": \"\",\n" +
-                "     \"matchType\": \"ONLY_MATCHING_FIELDS\"\n" +
-                "   },\n" +
-                "   {\n" +
-                "     \"not\": false,\n" +
-                "     \"type\": \"JSON_SCHEMA\",\n" +
-                "     \"jsonSchema\": \"\"\n" +
-                "   },\n" +
-                "   {\n" +
-                "     \"not\": false,\n" +
-                "     \"type\": \"PARAMETERS\",\n" +
-                "     \"parameters\": \"TO DO\"\n" +
-                "   },\n" +
-                "   {\n" +
-                "     \"not\": false,\n" +
-                "     \"type\": \"REGEX\",\n" +
-                "     \"regex\": \"\"\n" +
-                "   },\n" +
-                "   {\n" +
-                "     \"not\": false,\n" +
-                "     \"type\": \"STRING\",\n" +
-                "     \"string\": \"\"\n" +
-                "   },\n" +
-                "   {\n" +
-                "     \"not\": false,\n" +
-                "     \"type\": \"XML\",\n" +
-                "     \"xml\": \"\",\n" +
-                "     \"contentType\": \"\"\n" +
-                "   },\n" +
-                "   {\n" +
-                "     \"not\": false,\n" +
-                "     \"type\": \"XML_SCHEMA\",\n" +
-                "     \"xmlSchema\": \"\"\n" +
-                "   },\n" +
-                "   {\n" +
-                "     \"not\": false,\n" +
-                "     \"type\": \"XPATH\",\n" +
-                "     \"xpath\": \"\"\n" +
-                "   }");
+            expect(error).toEqual("1 error:\n" +
+                " - object instance has properties which are not allowed by the schema: [\"paths\"] for field \"/httpRequest\"");
             done();
         });
     });
@@ -852,7 +802,7 @@ describe("mockServerClient client:", function () {
                         'method': 'POST',
                         'path': '/somePath',
                         'body': 'someBody'
-                    }, 1, true).then(function () {
+                    }, 1, 1).then(function () {
                     done();
                 }, fail);
             };
@@ -934,15 +884,15 @@ describe("mockServerClient client:", function () {
                 xmlhttp.onload = function () {
                     expect(this.status).toEqual(203);
 
-                    // when
+                        // when - verify exact two requests (should fail)
                     client.verify(
                         {
                             'method': 'POST',
                             'path': '/somePath',
                             'body': 'someBody'
-                        }, 2, true)
+                        }, 2, 3)
                         .then(fail, function (error) {
-                            expect(error).toContain("Request not found exactly 2 times, expected:<{\n" +
+                            expect(error).toContain("Request not found between 2 and 3 times, expected:<{\n" +
                                 "  \"method\" : \"POST\",\n" +
                                 "  \"path\" : \"/somePath\",\n" +
                                 "  \"body\" : \"someBody\",\n" +

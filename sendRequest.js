@@ -38,7 +38,7 @@
                     path: "/jamesdbloom/mockserver/master/mockserver-core/src/main/resources/org/mockserver/socket/CertificateAuthorityCertificate.pem",
                     port: 443,
                 };
-                var req = http.request(options);
+                var req = require('https').request(options);
 
                 req.once('error', function (error) {
                     console.error('Fetching ' + JSON.stringify(options, null, 2) + ' failed with error ' + error);

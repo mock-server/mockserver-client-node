@@ -214,10 +214,8 @@ var mockServerClient;
                     }
                 };
                 socket.onopen = function (event) {
-                    console.log("foo");
                 };
                 socket.onclose = function (event) {
-                    console.log("foo");
                 };
             }
 
