@@ -10,7 +10,6 @@
 
     if (module && require) {
         var Q = require('q');
-        var http = require('http');
         var fs = require('fs');
         var glob = require('glob');
 
@@ -26,7 +25,7 @@
             return deferred;
         };
 
-        var downloadCACert = function () {
+        var downloadCACert = function (tls, caCertPath, callback) {
             // https://raw.githubusercontent.com/jamesdbloom/mockserver/master/mockserver-core/src/main/resources/org/mockserver/socket/CertificateAuthorityCertificate.pem
 
             var dest = "CertificateAuthorityCertificate.pem";
@@ -56,76 +55,77 @@
                         });
                         writeStream.on('close', function () {
                             console.log('Saved ' + dest + ' from ' + JSON.stringify(options, null, 2));
+                            callback(tls ? [fs.readFileSync(caCertPath || "./" + dest, {encoding: 'utf-8'})] : []);
                         });
                     }
                 });
 
                 req.end();
+            } else {
+                callback(tls ? [fs.readFileSync(caCertPath || "./" + dest, {encoding: 'utf-8'})] : []);
             }
-            return dest;
         };
 
         var sendRequest = function (tls, caCertPath) {
             var http = tls ? require('https') : require('http');
-            var ca = tls ? [fs.readFileSync(caCertPath || "./" + downloadCACert(), {encoding: 'utf-8'})] : [];
-
             return function (host, port, path, jsonBody, resolveCallback) {
-
                 var deferred = defer();
+                downloadCACert(tls, caCertPath, function (ca) {
 
-                var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
-                var options = {
-                    protocol: tls ? 'https:' : 'http:',
-                    method: 'PUT',
-                    host: host,
-                    path: path,
-                    port: port,
-                    ca: ca,
-                    headers: {
-                        'Content-Type': "application/json; charset=utf-8"
-                    },
-                };
+                    var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
+                    var options = {
+                        protocol: tls ? 'https:' : 'http:',
+                        method: 'PUT',
+                        host: host,
+                        path: path,
+                        port: port,
+                        ca: ca,
+                        headers: {
+                            'Content-Type': "application/json; charset=utf-8"
+                        },
+                    };
 
-                var req = http.request(options);
+                    var req = http.request(options);
 
-                req.once('response', function (response) {
-                    var data = '';
+                    req.once('response', function (response) {
+                        var data = '';
 
-                    response.on('data', function (chunk) {
-                        data += chunk;
+                        response.on('data', function (chunk) {
+                            data += chunk;
+                        });
+
+                        response.on('end', function () {
+                            if (resolveCallback) {
+                                deferred.resolve(resolveCallback(data));
+                            } else {
+                                if (response.statusCode >= 400 && response.statusCode < 600) {
+                                    if (response.statusCode === 404) {
+                                        deferred.reject("404 Not Found");
+                                    } else {
+                                        deferred.reject(data);
+                                    }
+                                } else {
+                                    deferred.resolve({
+                                        statusCode: response.statusCode,
+                                        body: data
+                                    });
+                                }
+                            }
+                        });
                     });
 
-                    response.on('end', function () {
-                        if (resolveCallback) {
-                            deferred.resolve(resolveCallback(data));
+                    req.once('error', function (error) {
+                        if (error.code && error.code === "ECONNREFUSED") {
+                            deferred.reject("Can't connect to MockServer running on host: \"" + host + "\" and port: \"" + port + "\"");
                         } else {
-                            if (response.statusCode >= 400 && response.statusCode < 600) {
-                                if (response.statusCode === 404) {
-                                    deferred.reject("404 Not Found");
-                                } else {
-                                    deferred.reject(data);
-                                }
-                            } else {
-                                deferred.resolve({
-                                    statusCode: response.statusCode,
-                                    body: data
-                                });
-                            }
+                            deferred.reject(JSON.stringify(error));
                         }
                     });
+
+                    req.write(body);
+                    req.end();
+
                 });
-
-                req.once('error', function (error) {
-                    if (error.code && error.code === "ECONNREFUSED") {
-                        deferred.reject("Can't connect to MockServer running on host: \"" + host + "\" and port: \"" + port + "\"");
-                    } else {
-                        deferred.reject(JSON.stringify(error));
-                    }
-                });
-
-                req.write(body);
-                req.end();
-
                 return deferred.promise;
             };
         };
