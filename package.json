@@ -37,7 +37,7 @@
     "grunt-jasmine-runner": "~0.6",
     "grunt-karma": "~3.0",
     "jasmine-core": "~3.3",
-    "karma": "~3.1",
+    "karma": "^4.4.1",
     "karma-chrome-launcher": "~2.2",
     "karma-firefox-launcher": "~1.1",
     "karma-jasmine": "~2.0",
@@ -54,6 +54,6 @@
   ],
   "dependencies": {
     "q": "~2.0",
-    "websocket": "^1.0.28"
+    "websocket": "^1.0.30"
   }
 }

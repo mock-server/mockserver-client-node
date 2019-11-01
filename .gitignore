@@ -19,6 +19,7 @@
 *.tar
 *.zip
 mods
+*.pem
 
 # Logs and databases #
 ######################

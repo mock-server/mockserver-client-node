@@ -10,40 +10,6 @@ var mockServerClient;
 (function () {
     "use strict";
 
-    var makeRequest = (typeof require !== 'undefined' ? require('./sendRequest').sendRequest : function (host, port, path, jsonBody, resolveCallback) {
-        var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
-        var url = 'http://' + host + ':' + port + path;
-
-        return {
-            then: function (sucess, error) {
-                try {
-                    var xmlhttp = new XMLHttpRequest();
-                    xmlhttp.addEventListener("load", (function (sucess, error) {
-                        return function () {
-                            if (error && this.status >= 400 && this.status < 600) {
-                                if (this.statusCode === 404) {
-                                    error("404 Not Found");
-                                } else {
-                                    error(this.responseText);
-                                }
-                            } else {
-                                sucess && sucess({
-                                    statusCode: this.status,
-                                    body: this.responseText
-                                });
-                            }
-                        };
-                    })(sucess, error));
-                    xmlhttp.open('PUT', url);
-                    xmlhttp.setRequestHeader("Content-Type", "application/json; charset=utf-8");
-                    xmlhttp.send(body);
-                } catch (e) {
-                    error && error(e);
-                }
-            }
-        };
-    });
-
     /**
      * Start the client communicating at the specified host and port
      * for example:
@@ -53,8 +19,48 @@ var mockServerClient;
      * @param host the host for the server to communicate with
      * @param port the port for the server to communicate with
      * @param contextPath the context path if server was deployed as a war
+     * @param tls enable TLS (i.e. HTTPS) for communication to server
+     * @param caCertPemFilePath provide custom CA Certificate (defaults to MockServer CA Certificate)
      */
-    mockServerClient = function (host, port, contextPath) {
+    mockServerClient = function (host, port, contextPath, tls, caCertPemFilePath) {
+
+        var makeRequest = (typeof require !== 'undefined' ? require('./sendRequest').sendRequest(tls, caCertPemFilePath) : function (host, port, path, jsonBody, resolveCallback) {
+            var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
+            var url = 'http://' + host + ':' + port + path;
+
+            return {
+                then: function (sucess, error) {
+                    try {
+                        var xmlhttp = new XMLHttpRequest();
+                        xmlhttp.addEventListener("load", (function (sucess, error) {
+                            return function () {
+                                if (error && this.status >= 400 && this.status < 600) {
+                                    if (this.statusCode === 404) {
+                                        error("404 Not Found");
+                                    } else {
+                                        error(this.responseText);
+                                    }
+                                } else {
+                                    if (sucess) {
+                                        sucess({
+                                            statusCode: this.status,
+                                            body: this.responseText
+                                        });
+                                    }
+                                }
+                            };
+                        })(sucess, error));
+                        xmlhttp.open('PUT', url);
+                        xmlhttp.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+                        xmlhttp.send(body);
+                    } catch (e) {
+                        if (error) {
+                            error(e);
+                        }
+                    }
+                }
+            };
+        });
 
         var cleanedContextPath = (function (contextPath) {
             if (contextPath) {
@@ -232,108 +238,7 @@ var mockServerClient;
             };
         });
 
-        /**
-         * Setup an expectation by specifying an expectation object
-         * for example:
-         *
-         *   client.mockAnyResponse(
-         *       {
-         *           'httpRequest': {
-         *               'path': '/somePath',
-         *               'body': {
-         *                   'type': "STRING",
-         *                   'value': 'someBody'
-         *               }
-         *           },
-         *           'httpResponse': {
-         *               'statusCode': 200,
-         *               'body': Base64.encode(JSON.stringify({ name: 'first_body' })),
-         *               'delay': {
-         *                   'timeUnit': 'MILLISECONDS',
-         *                   'value': 250
-         *               }
-         *           },
-         *           'times': {
-         *               'remainingTimes': 1,
-         *               'unlimited': false
-         *           }
-         *       }
-         *   );
-         *
-         * @param expectation the expectation to setup on the MockServer
-         */
-        var mockAnyResponse = function (expectation) {
-            return makeRequest(host, port, "/expectation", addDefaultExpectationHeaders(expectation));
-        };
-        /**
-         * Setup an expectation by specifying a request matcher, and
-         * a local request handler function.  The request handler function receives each
-         * request (that matches the request matcher) and returns the response that will be returned for this expectation.
-         *
-         * for example:
-         *
-         *    client.mockWithCallback(
-         *            {
-         *                path: '/somePath',
-         *                body: 'some_request_body'
-         *            },
-         *            function (request) {
-         *                var response = {
-         *                    statusCode: 200,
-         *                    body: 'some_response_body'
-         *                };
-         *                return response
-         *            }
-         *    ).then(
-         *            function () {
-         *                alert('expectation sent');
-         *            },
-         *            function (error) {
-         *                alert('error');
-         *            }
-         *    );
-         *
-         * @param requestMatcher the request matcher for the expectation
-         * @param requestHandler the function to be called back when the request is matched
-         * @param times the number of times the requestMatcher should be matched
-         */
-        var mockWithCallback = function (requestMatcher, requestHandler, times) {
-            return {
-                then: function (sucess, error) {
-                    try {
-                        var webSocketClient = WebSocketClient(host, port, cleanedContextPath);
-                        webSocketClient.requestCallback(function (request) {
-                            var response = requestHandler(request);
-                            response.headers = headersUniqueConcatenate(response.headers, [
-                                {"name": "WebSocketCorrelationId", "values": request.headers["WebSocketCorrelationId"] || request.headers["websocketcorrelationid"]}
-                            ]);
-                            return {
-                                type: "org.mockserver.model.HttpResponse",
-                                value: JSON.stringify(response)
-                            };
-                        });
-                        webSocketClient.clientIdCallback(function (clientId) {
-                            return makeRequest(host, port, "/expectation", createExpectationWithCallback(requestMatcher, clientId, times)).then(sucess, error)
-                        });
-                    } catch (e) {
-                        error && error(e);
-                    }
-                }
-            };
-        };
-        /**
-         * Setup an expectation without having to specify the full expectation object
-         * for example:
-         *
-         *   client.mockSimpleResponse('/somePath', { name: 'value' }, 203);
-         *
-         * @param path the path to match requests against
-         * @param responseBody the response body to return if a request matches
-         * @param statusCode the response code to return if a request matches
-         */
-        var mockSimpleResponse = function (path, responseBody, statusCode) {
-            return mockAnyResponse(createExpectation(path, responseBody, statusCode));
-        };
+
         /**
          * Override:
          *
@@ -417,6 +322,110 @@ var mockServerClient;
             return expectation;
         };
         /**
+         * Setup an expectation by specifying an expectation object
+         * for example:
+         *
+         *   client.mockAnyResponse(
+         *       {
+         *           'httpRequest': {
+         *               'path': '/somePath',
+         *               'body': {
+         *                   'type': "STRING",
+         *                   'value': 'someBody'
+         *               }
+         *           },
+         *           'httpResponse': {
+         *               'statusCode': 200,
+         *               'body': Base64.encode(JSON.stringify({ name: 'first_body' })),
+         *               'delay': {
+         *                   'timeUnit': 'MILLISECONDS',
+         *                   'value': 250
+         *               }
+         *           },
+         *           'times': {
+         *               'remainingTimes': 1,
+         *               'unlimited': false
+         *           }
+         *       }
+         *   );
+         *
+         * @param expectation the expectation to setup on the MockServer
+         */
+        var mockAnyResponse = function (expectation) {
+            return makeRequest(host, port, "/expectation", addDefaultExpectationHeaders(expectation));
+        };
+        /**
+         * Setup an expectation by specifying a request matcher, and
+         * a local request handler function.  The request handler function receives each
+         * request (that matches the request matcher) and returns the response that will be returned for this expectation.
+         *
+         * for example:
+         *
+         *    client.mockWithCallback(
+         *            {
+         *                path: '/somePath',
+         *                body: 'some_request_body'
+         *            },
+         *            function (request) {
+         *                var response = {
+         *                    statusCode: 200,
+         *                    body: 'some_response_body'
+         *                };
+         *                return response
+         *            }
+         *    ).then(
+         *            function () {
+         *                alert('expectation sent');
+         *            },
+         *            function (error) {
+         *                alert('error');
+         *            }
+         *    );
+         *
+         * @param requestMatcher the request matcher for the expectation
+         * @param requestHandler the function to be called back when the request is matched
+         * @param times the number of times the requestMatcher should be matched
+         */
+        var mockWithCallback = function (requestMatcher, requestHandler, times) {
+            return {
+                then: function (sucess, error) {
+                    try {
+                        var webSocketClient = new WebSocketClient(host, port, cleanedContextPath);
+                        webSocketClient.requestCallback(function (request) {
+                            var response = requestHandler(request);
+                            response.headers = headersUniqueConcatenate(response.headers, [
+                                {"name": "WebSocketCorrelationId", "values": request.headers["WebSocketCorrelationId"] || request.headers["websocketcorrelationid"]}
+                            ]);
+                            return {
+                                type: "org.mockserver.model.HttpResponse",
+                                value: JSON.stringify(response)
+                            };
+                        });
+                        webSocketClient.clientIdCallback(function (clientId) {
+                            return makeRequest(host, port, "/expectation", createExpectationWithCallback(requestMatcher, clientId, times)).then(sucess, error);
+                        });
+                    } catch (e) {
+                        if (error) {
+                            error(e);
+                        }
+                    }
+                }
+            };
+        };
+        /**
+         * Setup an expectation without having to specify the full expectation object
+         * for example:
+         *
+         *   client.mockSimpleResponse('/somePath', { name: 'value' }, 203);
+         *
+         * @param path the path to match requests against
+         * @param responseBody the response body to return if a request matches
+         * @param statusCode the response code to return if a request matches
+         */
+        var mockSimpleResponse = function (path, responseBody, statusCode) {
+            return mockAnyResponse(createExpectation(path, responseBody, statusCode));
+        };
+        /**
          * Verify a request has been sent for example:
          *
          *   expect(client.verify({
@@ -445,13 +454,19 @@ var mockServerClient;
                         }
                     }).then(
                         function () {
-                            sucess && sucess();
+                            if (sucess) {
+                                sucess();
+                            }
                         },
                         function (result) {
                             if (!result.statusCode || result.statusCode !== 202) {
-                                error && error(result);
+                                if (error) {
+                                    error(result);
+                                }
                             } else {
-                                error && sucess(result);
+                                if (error) {
+                                    sucess(result);
+                                }
                             }
                         }
                     );
@@ -491,13 +506,19 @@ var mockServerClient;
                         "httpRequests": requestSequence
                     }).then(
                         function () {
-                            sucess && sucess();
+                            if (sucess) {
+                                sucess();
+                            }
                         },
                         function (result) {
                             if (!result.statusCode || result.statusCode !== 202) {
-                                error && error(result);
+                                if (error) {
+                                    error(result);
+                                }
                             } else {
-                                error && sucess(result);
+                                if (error) {
+                                    sucess(result);
+                                }
                             }
                         }
                     );
@@ -552,6 +573,26 @@ var mockServerClient;
             return {
                 then: function (sucess, error) {
                     makeRequest(host, port, "/retrieve?type=REQUESTS&format=JSON", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
+                        .then(function (result) {
+                            sucess(result.body && JSON.parse(result.body));
+                        });
+                }
+            };
+        };
+        /**
+         * Retrieve the recorded requests and their responses that match the parameter:
+         * - use a string value to match on path,
+         * - use a request matcher object to match on a full request,
+         * - or use null to retrieve all requests
+         *
+         * @param pathOrRequestMatcher  if a string is passed in the value will be treated as the path, however
+         *                              if an object is passed in the value will be treated as a full request
+         *                              matcher object, if null is passed in it will be treated as match all
+         */
+        var retrieveRecordedRequestsAndResponses = function (pathOrRequestMatcher) {
+            return {
+                then: function (sucess, error) {
+                    makeRequest(host, port, "/retrieve?type=REQUEST_RESPONSES&format=JSON", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
                         .then(function (result) {
                             sucess(result.body && JSON.parse(result.body));
                         });
@@ -635,6 +676,7 @@ var mockServerClient;
             clear: clear,
             bind: bind,
             retrieveRecordedRequests: retrieveRecordedRequests,
+            retrieveRecordedRequestsAndResponses: retrieveRecordedRequestsAndResponses,
             retrieveActiveExpectations: retrieveActiveExpectations,
             retrieveRecordedExpectations: retrieveRecordedExpectations,
             retrieveLogMessages: retrieveLogMessages

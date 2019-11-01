@@ -66,12 +66,18 @@
     }
 
     var client;
+    var clientOverTls;
 
     exports.mock_server_node_client_test = {
         setUp: function (callback) {
             client = mockServerClient("localhost", mockServerPort);
             client.reset().then(function () {
-                callback();
+                clientOverTls = mockServerClient("localhost", mockServerPort, undefined, true);
+                clientOverTls.reset().then(function () {
+                    callback();
+                }, function (error) {
+                    throw 'Failed with error ' + JSON.stringify(error);
+                });
             }, function (error) {
                 throw 'Failed with error ' + JSON.stringify(error);
             });
@@ -144,6 +150,57 @@
                                         test.done();
                                     });
                             });
+                    });
+            }, function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            });
+        },
+
+        'should create full expectation with string body over tls': function (test) {
+            // when
+            var mockAnyResponse = clientOverTls.mockAnyResponse(
+                {
+                    'httpRequest': {
+                        'method': 'POST',
+                        'path': '/somePath',
+                        'queryStringParameters': [
+                            {
+                                'name': 'test',
+                                'values': ['true']
+                            }
+                        ],
+                        'body': {
+                            'type': "STRING",
+                            'string': 'someBody'
+                        }
+                    },
+                    'httpResponse': {
+                        'statusCode': 200,
+                        'body': JSON.stringify({name: 'value'}),
+                        'delay': {
+                            'timeUnit': 'MILLISECONDS',
+                            'value': 250
+                        }
+                    },
+                    'times': {
+                        'remainingTimes': 1,
+                        'unlimited': false
+                    }
+                }
+            );
+            mockAnyResponse.then(function () {
+                // then - matching request
+                sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "someBody")
+                    .then(function (response) {
+                        test.equal(response.statusCode, 200);
+                        test.equal(response.body, '{"name":"value"}');
+                    }, function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })
+                    .then(function () {
+                        test.done();
                     });
             }, function (error) {
                 test.ok(false, "failed with the following error \n" + JSON.stringify(error));
@@ -364,63 +421,8 @@
                 test.ok(false, "failed with the following error \n" + JSON.stringify(error));
                 test.done();
             }, function (error) {
-                test.equal(error, "2 errors:\n" +
-                    " - object instance has properties which are not allowed by the schema: [\"paths\"] for field \"/httpRequest\"\n" +
-                    " - for field \"/httpRequest/body\" a plain string or one of the following example bodies must be specified \n" +
-                    "   {\n" +
-                    "     \"not\": false,\n" +
-                    "     \"type\": \"BINARY\",\n" +
-                    "     \"base64Bytes\": \"\",\n" +
-                    "     \"contentType\": \"\"\n" +
-                    "   }, \n" +
-                    "   {\n" +
-                    "     \"not\": false,\n" +
-                    "     \"type\": \"JSON\",\n" +
-                    "     \"json\": \"\",\n" +
-                    "     \"contentType\": \"\",\n" +
-                    "     \"matchType\": \"ONLY_MATCHING_FIELDS\"\n" +
-                    "   },\n" +
-                    "   {\n" +
-                    "     \"not\": false,\n" +
-                    "     \"type\": \"JSON_SCHEMA\",\n" +
-                    "     \"jsonSchema\": \"\"\n" +
-                    "   },\n" +
-                    "   {\n" +
-                    "     \"not\": false,\n" +
-                    "     \"type\": \"JSON_PATH\",\n" +
-                    "     \"jsonPath\": \"\"\n" +
-                    "   },\n" +
-                    "   {\n" +
-                    "     \"not\": false,\n" +
-                    "     \"type\": \"PARAMETERS\",\n" +
-                    "     \"parameters\": {\"name\": \"value\"}\n" +
-                    "   },\n" +
-                    "   {\n" +
-                    "     \"not\": false,\n" +
-                    "     \"type\": \"REGEX\",\n" +
-                    "     \"regex\": \"\"\n" +
-                    "   },\n" +
-                    "   {\n" +
-                    "     \"not\": false,\n" +
-                    "     \"type\": \"STRING\",\n" +
-                    "     \"string\": \"\"\n" +
-                    "   },\n" +
-                    "   {\n" +
-                    "     \"not\": false,\n" +
-                    "     \"type\": \"XML\",\n" +
-                    "     \"xml\": \"\",\n" +
-                    "     \"contentType\": \"\"\n" +
-                    "   },\n" +
-                    "   {\n" +
-                    "     \"not\": false,\n" +
-                    "     \"type\": \"XML_SCHEMA\",\n" +
-                    "     \"xmlSchema\": \"\"\n" +
-                    "   },\n" +
-                    "   {\n" +
-                    "     \"not\": false,\n" +
-                    "     \"type\": \"XPATH\",\n" +
-                    "     \"xpath\": \"\"\n" +
-                    "   }");
+                test.equal(error, "1 error:\n" +
+                    " - object instance has properties which are not allowed by the schema: [\"paths\"] for field \"/httpRequest\"");
                 test.done();
             });
         },
@@ -2788,6 +2790,183 @@
             });
         },
 
+        'should retrieve some requests and responses using object matcher': function (test) {
+            // given
+            client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201).then(function () {
+                // and - second expectation
+                client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201).then(function () {
+                    // and - third expectation
+                    client.mockSimpleResponse('/somePathTwo', {name: 'two'}, 202).then(function () {
+
+                        sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
+                            .then(function (response) {
+                                test.strictEqual(response.statusCode, 201);
+                            }, function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })
+                            .then(function () {
+
+                                sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
+                                    .then(function (response) {
+                                        test.strictEqual(response.statusCode, 201);
+                                    }, function (error) {
+                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                        test.done();
+                                    })
+                                    .then(function () {
+
+                                        sendRequest("GET", "localhost", mockServerPort, "/notFound")
+                                            .then(function (error) {
+                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                test.done();
+                                            }, function (error) {
+                                                test.strictEqual(error, "404 Not Found");
+                                            })
+                                            .then(function () {
+
+                                                sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
+                                                    .then(function (response) {
+                                                        test.strictEqual(response.statusCode, 202);
+                                                    }, function (error) {
+                                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                        test.done();
+                                                    })
+                                                    .then(function () {
+
+                                                        // when
+                                                        client.retrieveRecordedRequestsAndResponses({
+                                                            "httpRequest": {
+                                                                "path": "/somePathOne"
+                                                            }
+                                                        })
+                                                            .then(function (requests) {
+                                                                // then
+                                                                test.strictEqual(requests.length, 2);
+                                                                try {
+                                                                    // first request
+                                                                    test.strictEqual(requests[0].httpRequest.path, '/somePathOne');
+                                                                    test.strictEqual(requests[0].httpRequest.method, 'POST');
+                                                                    test.strictEqual(requests[0].httpRequest.body, 'someBody');
+                                                                    test.strictEqual(requests[0].httpResponse.statusCode, 201);
+                                                                    test.strictEqual(requests[0].httpResponse.body, '{"name":"one"}');
+                                                                    // second request
+                                                                    test.strictEqual(requests[1].httpRequest.path, '/somePathOne');
+                                                                    test.strictEqual(requests[1].httpRequest.method, 'GET');
+                                                                    test.strictEqual(requests[1].httpResponse.statusCode, 201);
+                                                                    test.strictEqual(requests[1].httpResponse.body, '{"name":"one"}');
+                                                                } catch (exception) {
+                                                                    test.ok(false, "failed with the following error \n" + JSON.stringify(exception));
+                                                                }
+                                                                test.done();
+                                                            }, function (error) {
+                                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                                test.done();
+                                                            });
+                                                    });
+                                            });
+                                    });
+                            });
+                    }, function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    });
+                }, function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                });
+            }, function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            });
+        },
+
+        'should retrieve some requests and responses using path': function (test) {
+            // given
+            client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201).then(function () {
+                // and - second expectation
+                client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201).then(function () {
+                    // and - third expectation
+                    client.mockSimpleResponse('/somePathTwo', {name: 'two'}, 202).then(function () {
+
+                        sendRequest("POST", "localhost", mockServerPort, "/somePathOne", "someBody")
+                            .then(function (response) {
+                                test.strictEqual(response.statusCode, 201);
+                            }, function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            })
+                            .then(function () {
+
+                                sendRequest("GET", "localhost", mockServerPort, "/somePathOne")
+                                    .then(function (response) {
+                                        test.strictEqual(response.statusCode, 201);
+                                    }, function (error) {
+                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                        test.done();
+                                    })
+                                    .then(function () {
+
+                                        sendRequest("GET", "localhost", mockServerPort, "/notFound")
+                                            .then(function (error) {
+                                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                test.done();
+                                            }, function (error) {
+                                                test.strictEqual(error, "404 Not Found");
+                                            })
+                                            .then(function () {
+
+                                                sendRequest("GET", "localhost", mockServerPort, "/somePathTwo")
+                                                    .then(function (response) {
+                                                        test.strictEqual(response.statusCode, 202);
+                                                    }, function (error) {
+                                                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                        test.done();
+                                                    })
+                                                    .then(function () {
+
+                                                        // when
+                                                        client.retrieveRecordedRequestsAndResponses("/somePathOne").then(function (requests) {
+                                                            // then
+                                                            test.strictEqual(requests.length, 2);
+                                                            try {
+                                                                // first request
+                                                                test.strictEqual(requests[0].httpRequest.path, '/somePathOne');
+                                                                test.strictEqual(requests[0].httpRequest.method, 'POST');
+                                                                test.strictEqual(requests[0].httpRequest.body, 'someBody');
+                                                                test.strictEqual(requests[0].httpResponse.statusCode, 201);
+                                                                test.strictEqual(requests[0].httpResponse.body, '{"name":"one"}');
+                                                                // second request
+                                                                test.strictEqual(requests[1].httpRequest.path, '/somePathOne');
+                                                                test.strictEqual(requests[1].httpRequest.method, 'GET');
+                                                                test.strictEqual(requests[1].httpResponse.statusCode, 201);
+                                                                test.strictEqual(requests[1].httpResponse.body, '{"name":"one"}');
+                                                            } catch (exception) {
+                                                                test.ok(false, "failed with the following error \n" + JSON.stringify(exception));
+                                                            }
+                                                            test.done();
+                                                        }, function (error) {
+                                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                                            test.done();
+                                                        });
+                                                    });
+                                            });
+                                    });
+                            });
+                    }, function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    });
+                }, function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                });
+            }, function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            });
+        },
+
         'should retrieve some logs using object matcher': function (test) {
             // given
             client.mockSimpleResponse('/somePathOne', {name: 'one'}, 201)
@@ -2812,40 +2991,35 @@
                                                 "path": "/somePathOne"
                                             }
                                         })
-                                        .then(function (expectations) {
+                                        .then(function (logMessages) {
 
                                             // then
-                                            test.equal(expectations.length, 6);
+                                            test.equal(logMessages.length, 5);
 
                                             try {
-                                                test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1, expectations[0]);
-                                                test.ok(expectations[1].indexOf("creating expectation:\n" +
+                                                test.ok(logMessages[0].indexOf('resetting all expectations and request logs') !== -1, logMessages[0]);
+                                                test.ok(logMessages[1].indexOf("creating expectation:\n" +
                                                     "\n" +
                                                     "\t{\n" +
                                                     "\t  \"httpRequest\" : {\n" +
                                                     "\t    \"path\" : \"/somePathOne\"\n" +
-                                                    "\t  }") !== -1, expectations[1]);
-                                                test.ok(expectations[2].indexOf("received request:\n" +
+                                                    "\t  }") !== -1, logMessages[1]);
+                                                test.ok(logMessages[2].indexOf("request:\n" +
                                                     "\n" +
                                                     "\t{\n" +
                                                     "\t  \"method\" : \"POST\",\n" +
-                                                    "\t  \"path\" : \"/somePathOne\",\n") !== -1, expectations[2]);
-                                                test.ok(expectations[3].indexOf("request:\n" +
-                                                    "\n" +
-                                                    "\t{\n" +
-                                                    "\t  \"method\" : \"POST\",\n" +
-                                                    "\t  \"path\" : \"/somePathOne\",\n") !== -1, expectations[3]);
-                                                test.ok(expectations[4].indexOf('returning response:\n' +
+                                                    "\t  \"path\" : \"/somePathOne\",\n") !== -1, logMessages[2]);
+                                                test.ok(logMessages[3].indexOf('returning response:\n' +
                                                     '\n' +
                                                     '\t{\n' +
                                                     '\t  "statusCode" : 201,\n' +
-                                                    '\t  "headers"') !== -1, expectations[4]);
-                                                test.ok(expectations[5].indexOf('retrieving logs that match:\n' +
+                                                    '\t  "headers"') !== -1, logMessages[3]);
+                                                test.ok(logMessages[4].indexOf('retrieving logs that match:\n' +
                                                     '\n' +
                                                     '\t{\n' +
                                                     '\t  "path" : "/somePathOne"\n' +
                                                     '\t}\n' +
-                                                    '\n') !== -1, expectations[5]);
+                                                    '\n') !== -1, logMessages[4]);
                                             } catch (exception) {
                                                 test.ok(false, "failed with the following error \n" + JSON.stringify(exception));
                                             }
@@ -2888,40 +3062,35 @@
                                     // when
                                     client
                                         .retrieveLogMessages("/somePathOne")
-                                        .then(function (expectations) {
+                                        .then(function (logMessages) {
 
                                             // then
-                                            test.equal(expectations.length, 6);
+                                            test.equal(logMessages.length, 5);
 
                                             try {
-                                                test.ok(expectations[0].indexOf('resetting all expectations and request logs') !== -1, expectations[0]);
-                                                test.ok(expectations[1].indexOf("creating expectation:\n" +
+                                                test.ok(logMessages[0].indexOf('resetting all expectations and request logs') !== -1, logMessages[0]);
+                                                test.ok(logMessages[1].indexOf("creating expectation:\n" +
                                                     "\n" +
                                                     "\t{\n" +
                                                     "\t  \"httpRequest\" : {\n" +
                                                     "\t    \"path\" : \"/somePathOne\"\n" +
-                                                    "\t  }") !== -1, expectations[1]);
-                                                test.ok(expectations[2].indexOf("received request:\n" +
+                                                    "\t  }") !== -1, logMessages[1]);
+                                                test.ok(logMessages[2].indexOf("request:\n" +
                                                     "\n" +
                                                     "\t{\n" +
                                                     "\t  \"method\" : \"POST\",\n" +
-                                                    "\t  \"path\" : \"/somePathOne\",\n") !== -1, expectations[2]);
-                                                test.ok(expectations[3].indexOf("request:\n" +
-                                                    "\n" +
-                                                    "\t{\n" +
-                                                    "\t  \"method\" : \"POST\",\n" +
-                                                    "\t  \"path\" : \"/somePathOne\",\n") !== -1, expectations[3]);
-                                                test.ok(expectations[4].indexOf('returning response:\n' +
+                                                    "\t  \"path\" : \"/somePathOne\",\n") !== -1, logMessages[2]);
+                                                test.ok(logMessages[3].indexOf('returning response:\n' +
                                                     '\n' +
                                                     '\t{\n' +
                                                     '\t  "statusCode" : 201,\n' +
-                                                    '\t  "headers"') !== -1, expectations[4]);
-                                                test.ok(expectations[5].indexOf('retrieving logs that match:\n' +
+                                                    '\t  "headers"') !== -1, logMessages[3]);
+                                                test.ok(logMessages[4].indexOf('retrieving logs that match:\n' +
                                                     '\n' +
                                                     '\t{\n' +
                                                     '\t  "path" : "/somePathOne"\n' +
                                                     '\t}\n' +
-                                                    '\n') !== -1, expectations[5]);
+                                                    '\n') !== -1, logMessages[4]);
                                             } catch (exception) {
                                                 test.ok(false, "failed with the following error \n" + JSON.stringify(exception));
                                             }
