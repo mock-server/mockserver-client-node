@@ -2994,7 +2994,7 @@
                                         .then(function (logMessages) {
 
                                             // then
-                                            test.equal(logMessages.length, 5);
+                                            test.equal(logMessages.length, 6);
 
                                             try {
                                                 test.ok(logMessages[0].indexOf('resetting all expectations and request logs') !== -1, logMessages[0]);
@@ -3004,17 +3004,22 @@
                                                     "\t  \"httpRequest\" : {\n" +
                                                     "\t    \"path\" : \"/somePathOne\"\n" +
                                                     "\t  }") !== -1, logMessages[1]);
-                                                test.ok(logMessages[2].indexOf("request:\n" +
+                                                test.ok(logMessages[2].indexOf("received request:\n" +
                                                     "\n" +
                                                     "\t{\n" +
                                                     "\t  \"method\" : \"POST\",\n" +
                                                     "\t  \"path\" : \"/somePathOne\",\n") !== -1, logMessages[2]);
-                                                test.ok(logMessages[3].indexOf('returning response:\n' +
+                                                test.ok(logMessages[3].indexOf("request:\n" +
+                                                    "\n" +
+                                                    "\t{\n" +
+                                                    "\t  \"method\" : \"POST\",\n" +
+                                                    "\t  \"path\" : \"/somePathOne\",\n") !== -1, logMessages[2]);
+                                                test.ok(logMessages[4].indexOf('returning response:\n' +
                                                     '\n' +
                                                     '\t{\n' +
                                                     '\t  "statusCode" : 201,\n' +
                                                     '\t  "headers"') !== -1, logMessages[3]);
-                                                test.ok(logMessages[4].indexOf('retrieving logs that match:\n' +
+                                                test.ok(logMessages[5].indexOf('retrieving logs that match:\n' +
                                                     '\n' +
                                                     '\t{\n' +
                                                     '\t  "path" : "/somePathOne"\n' +
@@ -3065,7 +3070,7 @@
                                         .then(function (logMessages) {
 
                                             // then
-                                            test.equal(logMessages.length, 5);
+                                            test.equal(logMessages.length, 6);
 
                                             try {
                                                 test.ok(logMessages[0].indexOf('resetting all expectations and request logs') !== -1, logMessages[0]);
@@ -3075,17 +3080,22 @@
                                                     "\t  \"httpRequest\" : {\n" +
                                                     "\t    \"path\" : \"/somePathOne\"\n" +
                                                     "\t  }") !== -1, logMessages[1]);
-                                                test.ok(logMessages[2].indexOf("request:\n" +
+                                                test.ok(logMessages[2].indexOf("received request:\n" +
                                                     "\n" +
                                                     "\t{\n" +
                                                     "\t  \"method\" : \"POST\",\n" +
                                                     "\t  \"path\" : \"/somePathOne\",\n") !== -1, logMessages[2]);
-                                                test.ok(logMessages[3].indexOf('returning response:\n' +
+                                                test.ok(logMessages[3].indexOf("request:\n" +
+                                                    "\n" +
+                                                    "\t{\n" +
+                                                    "\t  \"method\" : \"POST\",\n" +
+                                                    "\t  \"path\" : \"/somePathOne\",\n") !== -1, logMessages[2]);
+                                                test.ok(logMessages[4].indexOf('returning response:\n' +
                                                     '\n' +
                                                     '\t{\n' +
                                                     '\t  "statusCode" : 201,\n' +
                                                     '\t  "headers"') !== -1, logMessages[3]);
-                                                test.ok(logMessages[4].indexOf('retrieving logs that match:\n' +
+                                                test.ok(logMessages[5].indexOf('retrieving logs that match:\n' +
                                                     '\n' +
                                                     '\t{\n' +
                                                     '\t  "path" : "/somePathOne"\n' +
