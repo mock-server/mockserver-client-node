@@ -29,7 +29,7 @@
             // https://raw.githubusercontent.com/jamesdbloom/mockserver/master/mockserver-core/src/main/resources/org/mockserver/socket/CertificateAuthorityCertificate.pem
 
             var dest = "CertificateAuthorityCertificate.pem";
-            if (glob.sync('**/' + dest).length === 0) {
+            if (!fs.existsSync('./' + dest)) {
                 var options = {
                     protocol: 'https:',
                     method: 'GET',
