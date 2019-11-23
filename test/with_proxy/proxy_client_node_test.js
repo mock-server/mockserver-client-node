@@ -308,8 +308,6 @@
                     .then(function (response) {
                         test.equal(response.statusCode, 200);
                         test.equal(response.body, '{"name":"one"}');
-                        test.equal((response.headers["Content-Type"] || response.headers["content-type"]), ["application/json; charset=utf-8"]);
-                        test.equal((response.headers["Cache-Control"] || response.headers["cache-control"]), ["no-cache, no-store"]);
 
                         client.setDefaultHeaders([], []);
                         client.mockAnyResponse({

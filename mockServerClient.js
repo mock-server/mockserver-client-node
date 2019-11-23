@@ -79,10 +79,7 @@ var mockServerClient;
         /**
          * The default headers added to to the mocked response when using mockSimpleResponse(...)
          */
-        var defaultResponseHeaders = [
-            {"name": "Content-Type", "values": ["application/json; charset=utf-8"]},
-            {"name": "Cache-Control", "values": ["no-cache, no-store"]}
-        ];
+        var defaultResponseHeaders = [];
         var defaultRequestHeaders = [];
 
         var headersUniqueConcatenate = function (arrayTarget, arraySource) {
