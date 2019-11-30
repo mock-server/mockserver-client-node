@@ -2,7 +2,7 @@
   "name": "mockserver-client",
   "description": "A node client for the MockServer",
   "version": "5.7.2",
-  "homepage": "https://github.com/jamesdbloom/mockserver",
+  "homepage": "http://mock-server.com",
   "author": {
     "name": "James Bloom",
     "email": "jamesdbloom@gmail.com",
@@ -10,10 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jamesdbloom/mockserver-client-node.git"
+    "url": "https://github.com/mock-server/mockserver-client-node.git"
   },
   "bugs": {
-    "url": "https://github.com/jamesdbloom/mockserver-client-node/issues"
+    "url": "https://github.com/mock-server/mockserver-client-node/issues"
   },
   "license": "Apache-2.0",
   "engines": {
