@@ -26,7 +26,7 @@ var mockServerClient;
 
         var makeRequest = (typeof require !== 'undefined' ? require('./sendRequest').sendRequest(tls, caCertPemFilePath) : function (host, port, path, jsonBody, resolveCallback) {
             var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
-            var url = 'http://' + host + ':' + port + path;
+            var url = (tls ? 'https' : 'http') + '://' + host + ':' + port + path;
 
             return {
                 then: function (sucess, error) {
@@ -104,7 +104,7 @@ var mockServerClient;
                     }
                 }
             } else if (!Array.isArray(arrayTarget) && Array.isArray(arraySource)) {
-                arraySource.forEach(function(entry) {
+                arraySource.forEach(function (entry) {
                     arrayTarget[entry["name"]] = entry["values"];
                 });
             } else if (Array.isArray(arrayTarget) && !Array.isArray(arraySource)) {
@@ -113,7 +113,7 @@ var mockServerClient;
                         arrayTarget.push({"name": property, "values": arraySource[property]});
                     }
                 }
-            } else if (!Array.isArray(arrayTarget) && !Array.isArray(arraySource))  {
+            } else if (!Array.isArray(arrayTarget) && !Array.isArray(arraySource)) {
                 arrayTarget = Object.assign(arrayTarget, arraySource);
             }
             return arrayTarget;
@@ -171,65 +171,72 @@ var mockServerClient;
             };
         };
 
-        var WebSocketClient = (typeof require !== 'undefined' ? require('./webSocketClient').webSocketClient : function (host, port, contextPath) {
+        var WebSocketClient = (typeof require !== 'undefined' ? require('./webSocketClient').webSocketClient(tls, caCertPemFilePath) : function (host, port, contextPath) {
             var clientId;
             var clientIdHandler;
             var requestHandler;
             var browserWebSocket;
 
-            if (typeof(window) !== "undefined") {
-                if (window.WebSocket) {
-                    browserWebSocket = window.WebSocket;
-                } else if (window.MozWebSocket) {
-                    browserWebSocket = window.MozWebSocket;
-                } else {
-                    throw "Your browser does not support web sockets.";
-                }
-            }
-
-            if (browserWebSocket) {
-                var webSocketLocation = "ws://" + host + ":" + port + contextPath + "/_mockserver_callback_websocket";
-                var socket = new WebSocket(webSocketLocation);
-                socket.onmessage = function (event) {
-                    var message = JSON.parse(event.data);
-                    if (message.type === "org.mockserver.model.HttpRequest") {
-                        var request = JSON.parse(message.value);
-                        var response = requestHandler(request);
-                        if (socket.readyState === WebSocket.OPEN) {
-                            socket.send(JSON.stringify(response));
-                        } else {
-                            throw "The socket is not open.";
-                        }
-                    } else if (message.type === "org.mockserver.serialization.model.WebSocketClientIdDTO") {
-                        var registration = JSON.parse(message.value);
-                        if (registration.clientId) {
-                            clientId = registration.clientId;
-                            if (clientIdHandler) {
-                                clientIdHandler(clientId);
+            return {
+                then: function (sucess, error) {
+                    try {
+                        if (typeof (window) !== "undefined") {
+                            if (window.WebSocket) {
+                                browserWebSocket = window.WebSocket;
+                            } else if (window.MozWebSocket) {
+                                browserWebSocket = window.MozWebSocket;
+                            } else {
+                                error("Your browser does not support web sockets.");
                             }
                         }
+
+                        if (browserWebSocket) {
+                            var webSocketLocation = (tls ? "wss" : "ws") + "://" + host + ":" + port + contextPath + "/_mockserver_callback_websocket";
+
+                            var socket = new WebSocket(webSocketLocation);
+                            socket.onmessage = function (event) {
+                                var message = JSON.parse(event.data);
+                                if (message.type === "org.mockserver.model.HttpRequest") {
+                                    var request = JSON.parse(message.value);
+                                    var response = requestHandler(request);
+                                    if (socket.readyState === WebSocket.OPEN) {
+                                        socket.send(JSON.stringify(response));
+                                    } else {
+                                        throw "The socket is not open.";
+                                    }
+                                } else if (message.type === "org.mockserver.serialization.model.WebSocketClientIdDTO") {
+                                    var registration = JSON.parse(message.value);
+                                    if (registration.clientId) {
+                                        clientId = registration.clientId;
+                                        if (clientIdHandler) {
+                                            clientIdHandler(clientId);
+                                        }
+                                    }
+                                }
+                            };
+                            socket.onopen = function (event) {
+                            };
+                            socket.onclose = function (event) {
+                            };
+                        }
+
+                        sucess({
+                            requestCallback: function requestCallback(callback) {
+                                requestHandler = callback;
+                            },
+                            clientIdCallback: function clientIdCallback(callback) {
+                                clientIdHandler = callback;
+                                if (clientId) {
+                                    clientIdHandler(clientId);
+                                }
+                            }
+                        });
+                    } catch (e) {
+                        if (error) {
+                            error(e);
+                        }
                     }
-                };
-                socket.onopen = function (event) {
-                };
-                socket.onclose = function (event) {
-                };
-            }
-
-            function requestCallback(callback) {
-                requestHandler = callback;
-            }
-
-            function clientIdCallback(callback) {
-                clientIdHandler = callback;
-                if (clientId) {
-                    clientIdHandler(clientId);
                 }
-            }
-
-            return {
-                requestCallback: requestCallback,
-                clientIdCallback: clientIdCallback
             };
         });
 
@@ -304,13 +311,13 @@ var mockServerClient;
             if (Array.isArray(expectation)) {
                 for (var i = 0; i < expectation.length; i++) {
                     expectation[i].httpRequest = addDefaultRequestMatcherHeaders(expectation[i].httpRequest);
-                    if(!expectation[i].httpResponseTemplate && !expectation[i].httpResponseClassCallback && !expectation[i].httpResponseObjectCallback && !expectation[i].httpForward && !expectation[i].httpForwardTemplate && !expectation[i].httpForwardClassCallback && !expectation[i].httpForwardObjectCallback && !expectation[i].httpOverrideForwardedRequest && !expectation[i].httpError) {
+                    if (!expectation[i].httpResponseTemplate && !expectation[i].httpResponseClassCallback && !expectation[i].httpResponseObjectCallback && !expectation[i].httpForward && !expectation[i].httpForwardTemplate && !expectation[i].httpForwardClassCallback && !expectation[i].httpForwardObjectCallback && !expectation[i].httpOverrideForwardedRequest && !expectation[i].httpError) {
                         expectation[i].httpResponse = addDefaultResponseMatcherHeaders(expectation[i].httpResponse);
                     }
                 }
             } else {
                 expectation.httpRequest = addDefaultRequestMatcherHeaders(expectation.httpRequest);
-                if(!expectation.httpResponseTemplate && !expectation.httpResponseClassCallback && !expectation.httpResponseObjectCallback && !expectation.httpForward && !expectation.httpForwardTemplate && !expectation.httpForwardClassCallback && !expectation.httpForwardObjectCallback && !expectation.httpOverrideForwardedRequest && !expectation.httpError) {
+                if (!expectation.httpResponseTemplate && !expectation.httpResponseClassCallback && !expectation.httpResponseObjectCallback && !expectation.httpForward && !expectation.httpForwardTemplate && !expectation.httpForwardClassCallback && !expectation.httpForwardObjectCallback && !expectation.httpOverrideForwardedRequest && !expectation.httpError) {
                     expectation.httpResponse = addDefaultResponseMatcherHeaders(expectation.httpResponse);
                 }
             }
@@ -385,20 +392,25 @@ var mockServerClient;
             return {
                 then: function (sucess, error) {
                     try {
-                        var webSocketClient = new WebSocketClient(host, port, cleanedContextPath);
-                        webSocketClient.requestCallback(function (request) {
-                            var response = requestHandler(request);
-                            response.headers = headersUniqueConcatenate(response.headers, [
-                                {"name": "WebSocketCorrelationId", "values": request.headers["WebSocketCorrelationId"] || request.headers["websocketcorrelationid"]}
-                            ]);
-                            return {
-                                type: "org.mockserver.model.HttpResponse",
-                                value: JSON.stringify(response)
-                            };
-                        });
-                        webSocketClient.clientIdCallback(function (clientId) {
-                            return makeRequest(host, port, "/expectation", createExpectationWithCallback(requestMatcher, clientId, times)).then(sucess, error);
-                        });
+                        var webSocketClientPromise = new WebSocketClient(host, port, cleanedContextPath);
+                        webSocketClientPromise.then(function (webSocketClient) {
+                            webSocketClient.requestCallback(function (request) {
+                                var response = requestHandler(request);
+                                response.headers = headersUniqueConcatenate(response.headers, [
+                                    {
+                                        "name": "WebSocketCorrelationId",
+                                        "values": request.headers["WebSocketCorrelationId"] || request.headers["websocketcorrelationid"]
+                                    }
+                                ]);
+                                return {
+                                    type: "org.mockserver.model.HttpResponse",
+                                    value: JSON.stringify(response)
+                                };
+                            });
+                            webSocketClient.clientIdCallback(function (clientId) {
+                                return makeRequest(host, port, "/expectation", createExpectationWithCallback(requestMatcher, clientId, times)).then(sucess, error);
+                            });
+                        }, error);
                     } catch (e) {
                         if (error) {
                             error(e);

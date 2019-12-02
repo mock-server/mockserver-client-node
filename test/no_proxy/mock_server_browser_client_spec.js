@@ -40,6 +40,9 @@ describe("mockServerClient client:", function () {
     var client = mockServerClient("localhost", mockServerPort).setDefaultHeaders(undefined, [
         {"name": "Vary", "values": [uuid]}
     ]);
+    var clientOverTls = mockServerClient("localhost", mockServerPort, null, true).setDefaultHeaders(undefined, [
+        {"name": "Vary", "values": [uuid]}
+    ]);
 
     beforeEach(function (done) {
         originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -116,6 +119,52 @@ describe("mockServerClient client:", function () {
             xmlhttp.open("GET", "http://localhost:" + mockServerPort + "/otherPath");
             xmlhttp.setRequestHeader("Vary", uuid);
             xmlhttp.send();
+        }, fail);
+    });
+
+    it("should create full expectation with string body over tls", function (done) {
+        // when
+        clientOverTls.mockAnyResponse(
+            {
+                'httpRequest': {
+                    'method': 'POST',
+                    'path': '/somePath',
+                    'queryStringParameters': [
+                        {
+                            'name': 'test',
+                            'values': ['true']
+                        }
+                    ],
+                    'body': {
+                        'type': 'STRING',
+                        'string': 'someBody'
+                    }
+                },
+                'httpResponse': {
+                    'statusCode': 200,
+                    'body': JSON.stringify({name: 'value'}),
+                    'delay': {
+                        'timeUnit': 'MILLISECONDS',
+                        'value': 250
+                    }
+                },
+                'times': {
+                    'remainingTimes': 1,
+                    'unlimited': false
+                }
+            }
+        ).then(function () {
+            // then - matching request
+            var xmlhttp = HttpRequest();
+            xmlhttp.onload = function () {
+                expect(this.status).toEqual(200);
+                expect(this.responseText).toEqual('{"name":"value"}');
+
+                done();
+            };
+            xmlhttp.open("POST", "http://localhost:" + mockServerPort + "/somePath?test=true");
+            xmlhttp.setRequestHeader("Vary", uuid);
+            xmlhttp.send("someBody");
         }, fail);
     });
 
@@ -583,6 +632,66 @@ describe("mockServerClient client:", function () {
     it("should create expectation with method callback", function (done) {
         // when
         client.mockWithCallback({
+            'method': 'POST',
+            'path': '/somePath',
+            'queryStringParameters': [
+                {
+                    'name': 'test',
+                    'values': ['true']
+                }
+            ],
+            'body': {
+                'type': "STRING",
+                'string': 'someBody'
+            }
+        }, function (request) {
+            if (request.method === 'POST' && request.path === '/somePath') {
+                return {
+                    'statusCode': 200,
+                    'body': JSON.stringify({name: 'value'})
+                };
+            } else {
+                return {
+                    'statusCode': 406
+                };
+            }
+        }).then(function () {
+
+            // then - non matching request
+            var xmlhttp = HttpRequest();
+            xmlhttp.onload = function () {
+                expect(this.status).toEqual(404);
+
+                // then - matching request
+                var xmlhttp = HttpRequest();
+                xmlhttp.onload = function () {
+                    expect(this.status).toEqual(200);
+                    expect(this.responseText).toEqual('{"name":"value"}');
+
+                    // then - matching request, but no times remaining
+                    var xmlhttp = HttpRequest();
+                    xmlhttp.onload = function () {
+                        expect(this.status).toEqual(404);
+
+                        done();
+                    };
+                    xmlhttp.open("POST", "http://localhost:" + mockServerPort + "/somePath?test=true");
+                    xmlhttp.setRequestHeader("Vary", uuid);
+                    xmlhttp.send("someBody");
+                };
+                xmlhttp.open("POST", "http://localhost:" + mockServerPort + "/somePath?test=true");
+                xmlhttp.setRequestHeader("Vary", uuid);
+                xmlhttp.send("someBody");
+            };
+            xmlhttp.open("GET", "http://localhost:" + mockServerPort + "/otherPath");
+            xmlhttp.setRequestHeader("Vary", uuid);
+            xmlhttp.send();
+        }, fail);
+    });
+
+    it("should create expectation with method callback over tls", function (done) {
+        // when
+        clientOverTls.mockWithCallback({
             'method': 'POST',
             'path': '/somePath',
             'queryStringParameters': [

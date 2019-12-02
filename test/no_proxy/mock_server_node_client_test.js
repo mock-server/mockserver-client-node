@@ -1222,6 +1222,72 @@
                 });
         },
 
+        'should create expectation with method callback over tls': function (test) {
+            // when
+            clientOverTls.mockWithCallback({
+                'method': 'POST',
+                'path': '/somePath',
+                'queryStringParameters': [
+                    {
+                        'name': 'test',
+                        'values': ['true']
+                    }
+                ],
+                'body': {
+                    'type': "STRING",
+                    'string': 'someBody'
+                }
+            }, function (request) {
+                if (request.method === 'POST' && request.path === '/somePath') {
+                    return {
+                        'statusCode': 200,
+                        'body': JSON.stringify({name: 'value'})
+                    };
+                } else {
+                    return {
+                        'statusCode': 406
+                    };
+                }
+            })
+                .then(function () {
+
+                    // then - non matching request
+                    sendRequest("POST", "localhost", mockServerPort, "/someOtherPath?test=true", "", {'Vary': uuid})
+                        .then(function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        }, function (error) {
+                            test.equal(error, "404 Not Found");
+                        })
+                        .then(function () {
+
+                            // then - matching request
+                            sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "someBody", {'Vary': uuid})
+                                .then(function (response) {
+
+                                    test.equal(response.statusCode, 200);
+                                    test.equal(response.body, '{"name":"value"}');
+
+                                    // then - matching request, but no times remaining
+                                    sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "someBody", {'Vary': uuid})
+                                        .then(function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        }, function (error) {
+                                            test.equal(error, "404 Not Found");
+                                            test.done();
+                                        });
+                                }, function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                });
+                        });
+                }, function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                });
+        },
+
         'should create multiple parallel expectations with method callback': function (test) {
             // when
             client.mockWithCallback({
@@ -3015,8 +3081,7 @@
                                                 test.ok(logMessages[4].indexOf('returning response:\n' +
                                                     '\n' +
                                                     '\t{\n' +
-                                                    '\t  "statusCode" : 201,\n' +
-                                                    '\t  "headers"') !== -1, logMessages[3]);
+                                                    '\t  "statusCode" : 201') !== -1, logMessages[3]);
                                                 test.ok(logMessages[5].indexOf('retrieving logs that match:\n' +
                                                     '\n' +
                                                     '\t{\n' +
@@ -3091,8 +3156,7 @@
                                                 test.ok(logMessages[4].indexOf('returning response:\n' +
                                                     '\n' +
                                                     '\t{\n' +
-                                                    '\t  "statusCode" : 201,\n' +
-                                                    '\t  "headers"') !== -1, logMessages[3]);
+                                                    '\t  "statusCode" : 201') !== -1, logMessages[3]);
                                                 test.ok(logMessages[5].indexOf('retrieving logs that match:\n' +
                                                     '\n' +
                                                     '\t{\n' +

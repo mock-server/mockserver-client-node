@@ -11,7 +11,6 @@
     if (module && require) {
         var Q = require('q');
         var fs = require('fs');
-        var glob = require('glob');
 
         var defer = function () {
             var promise = (global.protractor && protractor.promise.USE_PROMISE_MANAGER !== false)

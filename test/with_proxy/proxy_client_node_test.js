@@ -67,12 +67,18 @@
     }
 
     var client;
+    var clientOverTls;
 
     exports.proxy_client_node_test = {
         setUp: function (callback) {
             client = mockServerClient("localhost", mockServerPort);
             client.reset().then(function () {
-                callback();
+                clientOverTls = mockServerClient("localhost", mockServerPort, undefined, true);
+                clientOverTls.reset().then(function () {
+                    callback();
+                }, function (error) {
+                    throw 'Failed with error ' + JSON.stringify(error);
+                });
             }, function (error) {
                 throw 'Failed with error ' + JSON.stringify(error);
             });
@@ -145,6 +151,57 @@
                                         test.done();
                                     });
                             });
+                    });
+            }, function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            });
+        },
+
+        'should create full expectation with string body over tls': function (test) {
+            // when
+            var mockAnyResponse = clientOverTls.mockAnyResponse(
+                {
+                    'httpRequest': {
+                        'method': 'POST',
+                        'path': '/somePath',
+                        'queryStringParameters': [
+                            {
+                                'name': 'test',
+                                'values': ['true']
+                            }
+                        ],
+                        'body': {
+                            'type': "STRING",
+                            'string': 'someBody'
+                        }
+                    },
+                    'httpResponse': {
+                        'statusCode': 200,
+                        'body': JSON.stringify({name: 'value'}),
+                        'delay': {
+                            'timeUnit': 'MILLISECONDS',
+                            'value': 250
+                        }
+                    },
+                    'times': {
+                        'remainingTimes': 1,
+                        'unlimited': false
+                    }
+                }
+            );
+            mockAnyResponse.then(function () {
+                // then - matching request
+                sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "someBody")
+                    .then(function (response) {
+                        test.equal(response.statusCode, 200);
+                        test.equal(response.body, '{"name":"value"}');
+                    }, function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    })
+                    .then(function () {
+                        test.done();
                     });
             }, function (error) {
                 test.ok(false, "failed with the following error \n" + JSON.stringify(error));
@@ -1103,6 +1160,72 @@
         'should create expectation with method callback': function (test) {
             // when
             client.mockWithCallback({
+                'method': 'POST',
+                'path': '/somePath',
+                'queryStringParameters': [
+                    {
+                        'name': 'test',
+                        'values': ['true']
+                    }
+                ],
+                'body': {
+                    'type': "STRING",
+                    'string': 'someBody'
+                }
+            }, function (request) {
+                if (request.method === 'POST' && request.path === '/somePath') {
+                    return {
+                        'statusCode': 200,
+                        'body': JSON.stringify({name: 'value'})
+                    };
+                } else {
+                    return {
+                        'statusCode': 406
+                    };
+                }
+            })
+                .then(function () {
+
+                    // then - non matching request
+                    sendRequest("POST", "localhost", mockServerPort, "/someOtherPath?test=true", "", {'Vary': uuid})
+                        .then(function (error) {
+                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                            test.done();
+                        }, function (error) {
+                            test.equal(error, "404 Not Found");
+                        })
+                        .then(function () {
+
+                            // then - matching request
+                            sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "someBody", {'Vary': uuid})
+                                .then(function (response) {
+
+                                    test.equal(response.statusCode, 200);
+                                    test.equal(response.body, '{"name":"value"}');
+
+                                    // then - matching request, but no times remaining
+                                    sendRequest("POST", "localhost", mockServerPort, "/somePath?test=true", "someBody", {'Vary': uuid})
+                                        .then(function (error) {
+                                            test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                            test.done();
+                                        }, function (error) {
+                                            test.equal(error, "404 Not Found");
+                                            test.done();
+                                        });
+                                }, function (error) {
+                                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                    test.done();
+                                });
+                        });
+                }, function (error) {
+                    test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                    test.done();
+                });
+        },
+
+        'should create expectation with method callback over tls': function (test) {
+            // when
+            clientOverTls.mockWithCallback({
                 'method': 'POST',
                 'path': '/somePath',
                 'queryStringParameters': [
@@ -2959,8 +3082,7 @@
                                                 test.ok(logMessages[4].indexOf('returning response:\n' +
                                                     '\n' +
                                                     '\t{\n' +
-                                                    '\t  "statusCode" : 201,\n' +
-                                                    '\t  "headers"') !== -1, logMessages[3]);
+                                                    '\t  "statusCode" : 201') !== -1, logMessages[3]);
                                                 test.ok(logMessages[5].indexOf('retrieving logs that match:\n' +
                                                     '\n' +
                                                     '\t{\n' +
@@ -3035,8 +3157,7 @@
                                                 test.ok(logMessages[4].indexOf('returning response:\n' +
                                                     '\n' +
                                                     '\t{\n' +
-                                                    '\t  "statusCode" : 201,\n' +
-                                                    '\t  "headers"') !== -1, logMessages[3]);
+                                                    '\t  "statusCode" : 201') !== -1, logMessages[3]);
                                                 test.ok(logMessages[5].indexOf('retrieving logs that match:\n' +
                                                     '\n' +
                                                     '\t{\n' +
