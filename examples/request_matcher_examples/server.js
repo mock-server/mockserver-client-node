@@ -609,13 +609,55 @@ function matchRequestByBodyWithJsonIgnoringExtraFields() {
     );
 }
 
+function matchRequestByBodyWithJsonIgnoringExtraFieldsInArrayObjects() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        "httpRequest": {
+            "method": "POST",
+            "path": "/json",
+            "body": {
+                "type": "JSON",
+                "json": {
+                    "context": [
+                        {
+                            "source": "DECISION_REQUEST"
+                        },
+                        {
+                            "source": "DECISION_REQUEST"
+                        },
+                        {
+                            "source": "DECISION_REQUEST"
+                        }
+                    ]
+                },
+                "matchType": "ONLY_MATCHING_FIELDS"
+            }
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "body": "some response"
+        },
+        "times": {
+            "remainingTimes": 1,
+            "unlimited": true
+        }
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
+}
+
 function matchRequestByBodyWithJsonSchema() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
         "httpRequest": {
             "body": {
                 "type": "JSON_SCHEMA",
-                "jsonSchema": JSON.stringify({
+                "jsonSchema": {
                     "$schema": "http://json-schema.org/draft-04/schema#",
                     "title": "Product",
                     "description": "A product from Acme's catalog",
@@ -643,8 +685,12 @@ function matchRequestByBodyWithJsonSchema() {
                             "uniqueItems": true
                         }
                     },
-                    "required": ["id", "name", "price"]
-                })
+                    "required": [
+                        "id",
+                        "name",
+                        "price"
+                    ]
+                }
             }
         },
         "httpResponse": {
@@ -665,6 +711,31 @@ function matchRequestByBodyWithJsonPath() {
     mockServerClient("localhost", 1080).mockAnyResponse({
         "httpRequest": {
             "body": {
+                "type": "JSON_PATH",
+                "jsonPath": "$.store.book[?(@.price < 10)]"
+            }
+        },
+        "httpResponse": {
+            "body": "some_response_body"
+        }
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
+}
+
+function matchRequestByNotMatchingBodyWithJsonPath() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        "httpRequest": {
+            "body": {
+                // matches any request with an JSON body that does NOT contain
+                // one or more fields that match the JsonPath expression
+                "not": true,
                 "type": "JSON_PATH",
                 "jsonPath": "$.store.book[?(@.price < 10)]"
             }
