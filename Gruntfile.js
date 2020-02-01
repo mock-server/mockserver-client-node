@@ -30,7 +30,7 @@ module.exports = function (grunt) {
             options: {
                 serverPort: 1080,
                 jvmOptions: "-Dmockserver.enableCORSForAllResponses=true",
-                mockServerVersion: "5.8.1"
+                mockServerVersion: "5.9.0"
             }
         },
         stop_mockserver: {

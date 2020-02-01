@@ -421,7 +421,9 @@
                 test.done();
             }, function (error) {
                 test.equal(error, "1 error:\n" +
-                    " - object instance has properties which are not allowed by the schema: [\"paths\"] for field \"/httpRequest\"");
+                    " - object instance has properties which are not allowed by the schema: [\"paths\"] for field \"/httpRequest\"\n" +
+                    "\n" +
+                    "See: https://app.swaggerhub.com/apis/jamesdbloom/mock-server-openapi/5.9.x for OpenAPI Specification");
                 test.done();
             });
         },
@@ -3059,16 +3061,11 @@
                                         .then(function (logMessages) {
 
                                             // then
-                                            test.equal(logMessages.length, 6);
+                                            test.equal(logMessages.length, 7);
 
                                             try {
                                                 test.ok(logMessages[0].indexOf('resetting all expectations and request logs') !== -1, logMessages[0]);
-                                                test.ok(logMessages[1].indexOf("creating expectation:\n" +
-                                                    "\n" +
-                                                    "\t{\n" +
-                                                    "\t  \"httpRequest\" : {\n" +
-                                                    "\t    \"path\" : \"/somePathOne\"\n" +
-                                                    "\t  }") !== -1, logMessages[1]);
+test.ok(logMessages[1].indexOf("creating expectation:\n") !== -1, logMessages[1]);
                                                 test.ok(logMessages[2].indexOf("received request:\n" +
                                                     "\n" +
                                                     "\t{\n" +
@@ -3078,17 +3075,18 @@
                                                     "\n" +
                                                     "\t{\n" +
                                                     "\t  \"method\" : \"POST\",\n" +
-                                                    "\t  \"path\" : \"/somePathOne\",\n") !== -1, logMessages[2]);
-                                                test.ok(logMessages[4].indexOf('returning response:\n' +
+                                                    "\t  \"path\" : \"/somePathOne\",\n") !== -1, logMessages[3]);
+                                                test.ok(logMessages[4].indexOf("removed expectation:\n") !== -1, logMessages[4]);
+                                                test.ok(logMessages[5].indexOf('returning response:\n' +
                                                     '\n' +
                                                     '\t{\n' +
-                                                    '\t  "statusCode" : 201') !== -1, logMessages[3]);
-                                                test.ok(logMessages[5].indexOf('retrieving logs that match:\n' +
+                                                    '\t  "statusCode" : 201') !== -1, logMessages[5]);
+                                                test.ok(logMessages[6].indexOf('retrieving logs that match:\n' +
                                                     '\n' +
                                                     '\t{\n' +
                                                     '\t  "path" : "/somePathOne"\n' +
                                                     '\t}\n' +
-                                                    '\n') !== -1, logMessages[4]);
+                                                    '\n') !== -1, logMessages[6]);
                                             } catch (exception) {
                                                 test.ok(false, "failed with the following error \n" + JSON.stringify(exception));
                                             }
@@ -3134,16 +3132,11 @@
                                         .then(function (logMessages) {
 
                                             // then
-                                            test.equal(logMessages.length, 6);
+                                            test.equal(logMessages.length, 7);
 
                                             try {
                                                 test.ok(logMessages[0].indexOf('resetting all expectations and request logs') !== -1, logMessages[0]);
-                                                test.ok(logMessages[1].indexOf("creating expectation:\n" +
-                                                    "\n" +
-                                                    "\t{\n" +
-                                                    "\t  \"httpRequest\" : {\n" +
-                                                    "\t    \"path\" : \"/somePathOne\"\n" +
-                                                    "\t  }") !== -1, logMessages[1]);
+test.ok(logMessages[1].indexOf("creating expectation:\n") !== -1, logMessages[1]);
                                                 test.ok(logMessages[2].indexOf("received request:\n" +
                                                     "\n" +
                                                     "\t{\n" +
@@ -3153,17 +3146,18 @@
                                                     "\n" +
                                                     "\t{\n" +
                                                     "\t  \"method\" : \"POST\",\n" +
-                                                    "\t  \"path\" : \"/somePathOne\",\n") !== -1, logMessages[2]);
-                                                test.ok(logMessages[4].indexOf('returning response:\n' +
+                                                    "\t  \"path\" : \"/somePathOne\",\n") !== -1, logMessages[3]);
+                                                test.ok(logMessages[4].indexOf("removed expectation:\n") !== -1, logMessages[4]);
+                                                test.ok(logMessages[5].indexOf('returning response:\n' +
                                                     '\n' +
                                                     '\t{\n' +
-                                                    '\t  "statusCode" : 201') !== -1, logMessages[3]);
-                                                test.ok(logMessages[5].indexOf('retrieving logs that match:\n' +
+                                                    '\t  "statusCode" : 201') !== -1, logMessages[5]);
+                                                test.ok(logMessages[6].indexOf('retrieving logs that match:\n' +
                                                     '\n' +
                                                     '\t{\n' +
                                                     '\t  "path" : "/somePathOne"\n' +
                                                     '\t}\n' +
-                                                    '\n') !== -1, logMessages[4]);
+                                                    '\n') !== -1, logMessages[6]);
                                             } catch (exception) {
                                                 test.ok(false, "failed with the following error \n" + JSON.stringify(exception));
                                             }
