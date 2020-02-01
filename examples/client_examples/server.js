@@ -54,13 +54,47 @@ function createExpectationOverTLS() {
         );
 }
 
-function verifyRequests() {
+function verifyRequestsExact() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080)
         .verify(
             {
                 'path': '/some/path'
-            }, 2, true)
+            }, 2, 2)
+        .then(
+            function () {
+                console.log("request found exactly 2 times");
+            },
+            function (error) {
+                console.log(error);
+            }
+        );
+}
+
+function verifyRequestsAtLeast() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080)
+        .verify(
+            {
+                'path': '/some/path'
+            }, 2)
+        .then(
+            function () {
+                console.log("request found exactly 2 times");
+            },
+            function (error) {
+                console.log(error);
+            }
+        );
+}
+
+function verifyRequestsAtMost() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080)
+        .verify(
+            {
+                'path': '/some/path'
+            }, 0, 2)
         .then(
             function () {
                 console.log("request found exactly 2 times");
