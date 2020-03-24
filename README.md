@@ -193,6 +193,7 @@ Date       | Version | Description
 2019-12-01 | v5.8.0  | Upgrading MockServer to 5.8.0
 2019-12-24 | v5.8.1  | Upgrading MockServer to 5.8.1
 2020-02-01 | v5.9.0  | Upgrading MockServer to 5.9.0
+2020-03-24 | v5.10.0 | Upgrading MockServer to 5.10.0
 
 ---
 

@@ -30,7 +30,7 @@ module.exports = function (grunt) {
             options: {
                 serverPort: 1080,
                 jvmOptions: "-Dmockserver.enableCORSForAllResponses=true",
-                mockServerVersion: "5.9.0"
+                mockServerVersion: "5.10.0"
             }
         },
         stop_mockserver: {
@@ -79,6 +79,6 @@ module.exports = function (grunt) {
     grunt.registerTask('test_browser', ['start_mockserver', 'karma:chrome', 'stop_mockserver']);
     grunt.registerTask('test', ['start_mockserver', 'nodeunit', 'karma:chrome', 'stop_mockserver']);
 
-    grunt.registerTask('default', ['exec:stop_existing_mockservers', 'jshint', 'test']);
+    grunt.registerTask('default', ['exec:stop_existing_mockservers', 'jshint', 'test_node']);
     grunt.registerTask('headless', ['exec:stop_existing_mockservers', 'jshint', 'test_node']);
 };
