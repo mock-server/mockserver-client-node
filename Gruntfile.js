@@ -65,6 +65,13 @@ module.exports = function (grunt) {
             chrome: {
                 browsers: ['Chrome']
             }
+        },
+        ts: {
+            default: {
+                src: [
+                  'typescript/mockServerClient.ts'
+                ]
+            }
         }
     });
 
@@ -74,8 +81,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks("grunt-ts");
 
-    grunt.registerTask('test_node', ['start_mockserver', 'nodeunit', 'stop_mockserver']);
+    grunt.registerTask('test_node', ['start_mockserver', 'nodeunit', 'stop_mockserver', 'ts']);
     grunt.registerTask('test_browser', ['start_mockserver', 'karma:chrome', 'stop_mockserver']);
     grunt.registerTask('test', ['start_mockserver', 'nodeunit', 'karma:chrome', 'stop_mockserver']);
 
