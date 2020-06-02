@@ -71,10 +71,9 @@ async function test() {
 
    requestResponse = await client.reset();
 
-   requestResponse = await client.clear('some/path', ClearType.EXPECTATIONS);
+   requestResponse = await client.clear('some/path', 'ALL');
+   requestResponse = await client.clear('some/path', 'LOG');
+   requestResponse = await client.clear('some/path', 'EXPECTATIONS');
 
    requestResponse = await client.bind([1, 2, 3, 4]);
-
-
-
 }

@@ -67,6 +67,9 @@ module.exports = function (grunt) {
             }
         },
         ts: {
+            options: {
+                noEmit: true
+            },
             default: {
                 src: [
                   'typescript/mockServerClient.ts'

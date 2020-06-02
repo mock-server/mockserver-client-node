@@ -17,11 +17,7 @@ export type ContextPath = string;
 export type TLS = boolean;
 export type CaCertPemFilePath = string;
 
-export enum ClearType {
-    EXPECTATIONS = 'EXPECTATIONS',
-    LOG = 'LOG',
-    ALL = 'ALL',
-}
+export type ClearType = 'EXPECTATIONS' | 'LOG' | 'ALL';
 
 export interface SuccessFullRequest {
     statusCode: number;
