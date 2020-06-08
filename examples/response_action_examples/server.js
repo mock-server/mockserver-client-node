@@ -38,6 +38,33 @@ function responseLiteralWithUTF16BodyResponse() {
     );
 }
 
+function jsonResponseWithUTF8Body(){
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        "httpRequest": {
+            "method": "GET",
+            "path": "/simple"
+        },
+        "httpResponse": {
+            "body": {
+                "type": "STRING",
+                "string": "سلام",
+                "contentType": "text/plain; charset=utf-8"
+            }
+        },
+        "times": {
+            "unlimited": true
+        }
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
+}
+
 function responseLiteralWithStatusCodeAndReasonPhrase() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
