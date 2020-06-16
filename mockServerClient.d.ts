@@ -1,14 +1,12 @@
-// Type definitions for mockserver-client-node 5.10.0
-// Promject: https://github.com/mock-server/mockserver-client-node
-// Definitions by: David Tanner <https://github.com/DavidTanner>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+// Original definitions by: David Tanner <https://github.com/DavidTanner>
 // TypeScript Version: 2.1
 
 import {
     Expectation,
-    RequestMatcher,
-    NumberOfResponses,
-    ResponseToReturn, KeyToMultiValue,
+    RequestDefinition,
+    Times,
+    HttpResponse,
+    KeyToMultiValue,
 } from './mockServer';
 
 export type Host = string;
@@ -26,37 +24,36 @@ export interface SuccessFullRequest {
 
 export type RequestResponse = SuccessFullRequest | string;
 
-export type PathOrRequestMatcher = string | Expectation | RequestMatcher | undefined | null;
+export type PathOrRequestDefinition = string | Expectation | RequestDefinition | undefined | null;
 
 export interface MockServerClient {
     mockAnyResponse(expectation: Expectation | Expectation[]): Promise<RequestResponse>;
 
-    mockWithCallback(requestMatcher: RequestMatcher, requestHandler: (request: any) => any, times?: NumberOfResponses | number): Promise<RequestResponse>;
+    mockWithCallback(requestMatcher: RequestDefinition, requestHandler: (request: any) => any, times?: Times | number): Promise<RequestResponse>;
 
     mockSimpleResponse<T = any>(path: string, responseBody: T, statusCode?: number): Promise<RequestResponse>;
 
     setDefaultHeaders(responseHeaders: KeyToMultiValue, requestHeaders: KeyToMultiValue): MockServerClient;
 
-    verify(matcher: RequestMatcher, atLeast?: number, atMost?: number): Promise<void | string>;
+    verify(matcher: RequestDefinition, atLeast?: number, atMost?: number): Promise<void | string>;
 
-    verifySequence(matchers: RequestMatcher[]): Promise<void | string>;
+    verifySequence(matchers: RequestDefinition[]): Promise<void | string>;
 
     reset(): Promise<RequestResponse>;
 
-    clear(pathOrRequestMatcher: PathOrRequestMatcher, type: ClearType): Promise<RequestResponse>;
+    clear(pathOrRequestDefinition: PathOrRequestDefinition, type: ClearType): Promise<RequestResponse>;
 
     bind(ports: Port[]): Promise<RequestResponse>;
 
-    retrieveRecordedRequests(pathOrRequestMatcher: PathOrRequestMatcher): Promise<ResponseToReturn[]>;
+    retrieveRecordedRequests(pathOrRequestDefinition: PathOrRequestDefinition): Promise<HttpResponse[]>;
 
-    retrieveRecordedRequestsAndResponses(pathOrRequestMatcher: PathOrRequestMatcher): Promise<Expectation[]>;
+    retrieveRecordedRequestsAndResponses(pathOrRequestDefinition: PathOrRequestDefinition): Promise<Expectation[]>;
 
-    retrieveActiveExpectations(pathOrRequestMatcher: PathOrRequestMatcher): Promise<Expectation[]>;
+    retrieveActiveExpectations(pathOrRequestDefinition: PathOrRequestDefinition): Promise<Expectation[]>;
 
-    retrieveRecordedExpectations(pathOrRequestMatcher: PathOrRequestMatcher): Promise<Expectation[]>;
+    retrieveRecordedExpectations(pathOrRequestDefinition: PathOrRequestDefinition): Promise<Expectation[]>;
 
-    retrieveLogMessages(pathOrRequestMatcher: PathOrRequestMatcher): Promise<string[]>;
-
+    retrieveLogMessages(pathOrRequestDefinition: PathOrRequestDefinition): Promise<string[]>;
 }
 
 /**

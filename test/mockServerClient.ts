@@ -1,6 +1,6 @@
 import { mockServerClient } from '../index';
-import {ClearType, MockServerClient, RequestResponse} from '../mockServerClient';
-import {Expectation, RequestMatcher} from '../mockServer';
+import {MockServerClient, RequestResponse} from '../mockServerClient';
+import {Expectation, RequestDefinition} from '../mockServer';
 
 const client: MockServerClient = mockServerClient('mockhttp', 1080);
 
@@ -28,7 +28,7 @@ const expectation: Expectation = {
 
 const expectations: Expectation[] = [expectation, expectation];
 
-const matcher: RequestMatcher = {
+const matcher: RequestDefinition = {
     method: 'POST',
     path: 'some/path',
     body: {
@@ -61,7 +61,6 @@ async function test() {
        {
            "sessionId": ["786fcf9b-606e-605f-181d-c245b55e5eac"]
        });
-
 
    let string = await client.verify(matcher);
    await client.verify(matcher, 1);

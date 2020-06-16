@@ -72,7 +72,7 @@ module.exports = function (grunt) {
             },
             default: {
                 src: [
-                  'typescript/mockServerClient.ts'
+                  'test/mockServerClient.ts'
                 ]
             }
         }

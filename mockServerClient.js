@@ -672,6 +672,7 @@ var mockServerClient;
             };
         };
 
+        /* jshint -W003 */
         var _this = {
             mockAnyResponse: mockAnyResponse,
             mockWithCallback: mockWithCallback,
