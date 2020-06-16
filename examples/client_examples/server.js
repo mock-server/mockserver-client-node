@@ -71,7 +71,7 @@ function verifyRequestsExact() {
         );
 }
 
-function verifyRequestsAtLeast() {
+function verifyRequestsReceiveAtLeastTwice() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080)
         .verify(
@@ -88,13 +88,65 @@ function verifyRequestsAtLeast() {
         );
 }
 
-function verifyRequestsAtMost() {
+function verifyRequestsReceiveAtMostTwice() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080)
         .verify(
             {
                 'path': '/some/path'
             }, 0, 2)
+        .then(
+            function () {
+                console.log("request found exactly 2 times");
+            },
+            function (error) {
+                console.log(error);
+            }
+        );
+}
+
+function verifyRequestsReceiveExactlyTwice() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080)
+        .verify(
+            {
+                'path': '/some/path'
+            }, 2, 2)
+        .then(
+            function () {
+                console.log("request found exactly 2 times");
+            },
+            function (error) {
+                console.log(error);
+            }
+        );
+}
+
+function verifyRequestsReceiveAtLeastTwiceByOpenAPI() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080)
+        .verify(
+            {
+                'specUrlOrPayload': 'https://raw.githubusercontent.com/mock-server/mockserver/master/mockserver-integration-testing/src/main/resources/org/mockserver/mock/openapi_petstore_example.json'
+            }, 2)
+        .then(
+            function () {
+                console.log("request found exactly 2 times");
+            },
+            function (error) {
+                console.log(error);
+            }
+        );
+}
+
+function verifyRequestsReceiveExactlyOnceByOpenAPIWithOperation() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080)
+        .verify(
+            {
+                'specUrlOrPayload': 'org/mockserver/mock/openapi_petstore_example.json',
+                'operationId': 'showPetById'
+            }, 1, 1)
         .then(
             function () {
                 console.log("request found exactly 2 times");
@@ -117,6 +169,33 @@ function verifyRequestSequence() {
             },
             {
                 'path': '/some/path/three'
+            }
+        )
+        .then(
+            function () {
+                console.log("request sequence found in the order specified");
+            },
+            function (error) {
+                console.log(error);
+            }
+        );
+}
+
+
+function verifyRequestSequenceUsingOpenAPI() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080)
+        .verifySequence(
+            {
+                'path': '/status'
+            },
+            {
+                'specUrlOrPayload': 'org/mockserver/mock/openapi_petstore_example.json',
+                'operationId': 'listPets'
+            },
+            {
+                'specUrlOrPayload': 'org/mockserver/mock/openapi_petstore_example.json',
+                'operationId': 'showPetById'
             }
         )
         .then(
