@@ -164,7 +164,7 @@ function retrieveRecordedLogMessages() {
         );
 }
 
-function clear() {
+function clearWithRequestPropertiesMatcher() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080)
         .clear({
@@ -180,11 +180,45 @@ function clear() {
         );
 }
 
-function clearLog() {
+function clearWithOpenAPIRequestMatcher() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080)
+        .clear({
+            "specUrlOrPayload": "https://raw.githubusercontent.com/mock-server/mockserver/master/mockserver-integration-testing/src/main/resources/org/mockserver/mock/openapi_petstore_example.json",
+            "operationId": "showPetById"
+        })
+        .then(
+            function () {
+                console.log("cleared state that matches request matcher");
+            },
+            function (error) {
+                console.log(error);
+            }
+        );
+}
+
+function clearRequestsAndLogsWithRequestPropertiesMatcher() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080)
         .clear({
             'path': '/some/path'
+        }, 'LOG')
+        .then(
+            function () {
+                console.log("cleared state that matches request matcher");
+            },
+            function (error) {
+                console.log(error);
+            }
+        );
+}
+
+function clearRequestAndLogsWithOpenAPIRequestMatcher() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080)
+        .clear({
+            "specUrlOrPayload": "https://raw.githubusercontent.com/mock-server/mockserver/master/mockserver-integration-testing/src/main/resources/org/mockserver/mock/openapi_petstore_example.json",
+            "operationId": "showPetById"
         }, 'LOG')
         .then(
             function () {
