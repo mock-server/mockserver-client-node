@@ -86,7 +86,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks("grunt-ts");
 
-    grunt.registerTask('test_node', ['start_mockserver', 'nodeunit', 'stop_mockserver', 'ts']);
+    grunt.registerTask('test_node', ['ts', 'start_mockserver', 'nodeunit', 'stop_mockserver']);
     grunt.registerTask('test_browser', ['start_mockserver', 'karma:chrome', 'stop_mockserver']);
     grunt.registerTask('test', ['start_mockserver', 'nodeunit', 'karma:chrome', 'stop_mockserver']);
 
