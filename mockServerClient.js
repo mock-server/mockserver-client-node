@@ -354,7 +354,26 @@ var mockServerClient;
          * @param expectation the expectation to setup on the MockServer
          */
         var mockAnyResponse = function (expectation) {
-            return makeRequest(host, port, "/expectation", addDefaultExpectationHeaders(expectation));
+            return makeRequest(host, port, "/mockserver/expectation", addDefaultExpectationHeaders(expectation));
+        };
+        /**
+         * Setup an expectation by specifying an OpenAPI expectation
+         * for example:
+         *
+         *   client.openAPIExpectation(
+         *       {
+         *           "specUrlOrPayload": "https://raw.githubusercontent.com/mock-server/mockserver/master/mockserver-integration-testing/src/main/resources/org/mockserver/mock/openapi_petstore_example.json",
+         *           "operationsAndResponses": {
+         *               "showPetById": "200",
+         *               "createPets": "500"
+         *           }
+         *       }
+         *   );
+         *
+         * @param expectation the OpenAPI expectation to setup on the MockServer
+         */
+        var openAPIExpectation = function (expectation) {
+            return makeRequest(host, port, "/mockserver/openapi", expectation);
         };
         /**
          * Setup an expectation by specifying a request matcher, and
@@ -408,7 +427,7 @@ var mockServerClient;
                                 };
                             });
                             webSocketClient.clientIdCallback(function (clientId) {
-                                return makeRequest(host, port, "/expectation", createExpectationWithCallback(requestMatcher, clientId, times)).then(sucess, error);
+                                return makeRequest(host, port, "/mockserver/expectation", createExpectationWithCallback(requestMatcher, clientId, times)).then(sucess, error);
                             });
                         }, error);
                     } catch (e) {
@@ -453,7 +472,7 @@ var mockServerClient;
             return {
                 then: function (sucess, error) {
                     request.headers = headersUniqueConcatenate(request.headers, defaultRequestHeaders);
-                    return makeRequest(host, port, "/verify", {
+                    return makeRequest(host, port, "/mockserver/verify", {
                         "httpRequest": request,
                         "times": {
                             "atLeast": atLeast,
@@ -509,7 +528,7 @@ var mockServerClient;
             }
             return {
                 then: function (sucess, error) {
-                    return makeRequest(host, port, "/verifySequence", {
+                    return makeRequest(host, port, "/mockserver/verifySequence", {
                         "httpRequests": requestSequence
                     }).then(
                         function () {
@@ -536,7 +555,7 @@ var mockServerClient;
          * Reset by clearing all recorded requests
          */
         var reset = function () {
-            return makeRequest(host, port, "/reset");
+            return makeRequest(host, port, "/mockserver/reset");
         };
         /**
          * Clear all recorded requests, expectations and logs that match the specified path
@@ -553,7 +572,7 @@ var mockServerClient;
                     throw new Error("\"" + (type || "undefined") + "\" is not a supported value for \"type\" parameter only " + typeEnum + " are allowed values");
                 }
             }
-            return makeRequest(host, port, "/clear" + (type ? "?type=" + type : ""), addDefaultRequestMatcherHeaders(pathOrRequestMatcher));
+            return makeRequest(host, port, "/mockserver/clear" + (type ? "?type=" + type : ""), addDefaultRequestMatcherHeaders(pathOrRequestMatcher));
         };
         /**
          * Add new ports the server is bound to and listening on
@@ -564,7 +583,7 @@ var mockServerClient;
             if (!Array.isArray(ports)) {
                 throw new Error("ports parameter must be an array but found: " + JSON.stringify(ports));
             }
-            return makeRequest(host, port, "/bind", {ports: ports});
+            return makeRequest(host, port, "/mockserver/bind", {ports: ports});
         };
         /**
          * Retrieve the recorded requests that match the parameter, as follows:
@@ -579,7 +598,7 @@ var mockServerClient;
         var retrieveRecordedRequests = function (pathOrRequestMatcher) {
             return {
                 then: function (sucess, error) {
-                    makeRequest(host, port, "/retrieve?type=REQUESTS&format=JSON", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
+                    makeRequest(host, port, "/mockserver/retrieve?type=REQUESTS&format=JSON", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
                         .then(function (result) {
                             sucess(result.body && JSON.parse(result.body));
                         });
@@ -599,7 +618,7 @@ var mockServerClient;
         var retrieveRecordedRequestsAndResponses = function (pathOrRequestMatcher) {
             return {
                 then: function (sucess, error) {
-                    makeRequest(host, port, "/retrieve?type=REQUEST_RESPONSES&format=JSON", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
+                    makeRequest(host, port, "/mockserver/retrieve?type=REQUEST_RESPONSES&format=JSON", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
                         .then(function (result) {
                             sucess(result.body && JSON.parse(result.body));
                         });
@@ -621,7 +640,7 @@ var mockServerClient;
         var retrieveActiveExpectations = function (pathOrRequestMatcher) {
             return {
                 then: function (sucess, error) {
-                    return makeRequest(host, port, "/retrieve?type=ACTIVE_EXPECTATIONS&format=JSON", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
+                    return makeRequest(host, port, "/mockserver/retrieve?type=ACTIVE_EXPECTATIONS&format=JSON", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
                         .then(function (result) {
                             sucess(result.body && JSON.parse(result.body));
                         });
@@ -643,7 +662,7 @@ var mockServerClient;
         var retrieveRecordedExpectations = function (pathOrRequestMatcher) {
             return {
                 then: function (sucess, error) {
-                    return makeRequest(host, port, "/retrieve?type=RECORDED_EXPECTATIONS&format=JSON", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
+                    return makeRequest(host, port, "/mockserver/retrieve?type=RECORDED_EXPECTATIONS&format=JSON", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
                         .then(function (result) {
                             sucess(result.body && JSON.parse(result.body));
                         });
@@ -664,7 +683,7 @@ var mockServerClient;
         var retrieveLogMessages = function (pathOrRequestMatcher) {
             return {
                 then: function (sucess, error) {
-                    return makeRequest(host, port, "/retrieve?type=LOGS", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
+                    return makeRequest(host, port, "/mockserver/retrieve?type=LOGS", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
                         .then(function (result) {
                             sucess(result.body && result.body.split("------------------------------------"));
                         });
@@ -674,6 +693,7 @@ var mockServerClient;
 
         /* jshint -W003 */
         var _this = {
+            openAPIExpectation: openAPIExpectation,
             mockAnyResponse: mockAnyResponse,
             mockWithCallback: mockWithCallback,
             mockSimpleResponse: mockSimpleResponse,

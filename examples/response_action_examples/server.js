@@ -15,6 +15,49 @@ function responseLiteralWithBodyOnly() {
     );
 }
 
+function responseLiteralWithHeader() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        // if no request matcher is specified then every request matched
+        "httpResponse": {
+            "headers": {
+                "Content-Type": ["plain/text"]
+            },
+            "body": "some_response_body"
+        }
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
+}
+
+function responseLiteralWithCookie() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        // if no request matcher is specified then every request matched
+        "httpResponse": {
+            "headers": {
+                "Content-Type": ["plain/text"]
+            },
+            "cookies": {
+                "Session": "97d43b1e-fe03-4855-926a-f448eddac32f"
+            },
+            "body": "some_response_body"
+        }
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
+}
+
 function responseLiteralWithUTF16BodyResponse() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
@@ -38,7 +81,7 @@ function responseLiteralWithUTF16BodyResponse() {
     );
 }
 
-function jsonResponseWithUTF8Body(){
+function jsonResponseWithUTF8Body() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
         "httpRequest": {
@@ -255,21 +298,21 @@ function javascriptTemplatedResponse() {
         },
         "httpResponseTemplate": {
             "template": "return {\n" +
-            "     'statusCode': 200,\n" +
-            "     'cookies': {\n" +
-            "          'session' : request.headers['session-id'][0]\n" +
-            "     },\n" +
-            "     'headers': {\n" +
-            "          'Date' : Date()\n" +
-            "     },\n" +
-            "     'body': JSON.stringify(\n" +
-            "               {\n" +
-            "                    method: request.method," +
-            "                    path: request.path," +
-            "                    body: request.body" +
-            "               }\n" +
-            "          )\n" +
-            "};",
+                "     'statusCode': 200,\n" +
+                "     'cookies': {\n" +
+                "          'session' : request.headers['session-id'][0]\n" +
+                "     },\n" +
+                "     'headers': {\n" +
+                "          'Date' : Date()\n" +
+                "     },\n" +
+                "     'body': JSON.stringify(\n" +
+                "               {\n" +
+                "                    method: request.method," +
+                "                    path: request.path," +
+                "                    body: request.body" +
+                "               }\n" +
+                "          )\n" +
+                "};",
             "templateType": "JAVASCRIPT"
         }
     }).then(
@@ -288,16 +331,16 @@ function javascriptTemplatedResponseWithDelay() {
         "httpRequest": {"path": "/some/path"},
         "httpResponseTemplate": {
             "template": "if (request.method === 'POST' && request.path === '/somePath') {\n" +
-            "    return {\n" +
-            "        'statusCode': 200,\n" +
-            "        'body': JSON.stringify({name: 'value'})\n" +
-            "    };\n" +
-            "} else {\n" +
-            "    return {\n" +
-            "        'statusCode': 406,\n" +
-            "        'body': request.body\n" +
-            "    };\n" +
-            "}",
+                "    return {\n" +
+                "        'statusCode': 200,\n" +
+                "        'body': JSON.stringify({name: 'value'})\n" +
+                "    };\n" +
+                "} else {\n" +
+                "    return {\n" +
+                "        'statusCode': 406,\n" +
+                "        'body': request.body\n" +
+                "    };\n" +
+                "}",
             "templateType": "JAVASCRIPT",
             "delay": {"timeUnit": "MINUTES", "value": 2}
         }
@@ -317,15 +360,15 @@ function velocityTemplatedResponse() {
         "httpRequest": {"path": "/some/path"},
         "httpResponseTemplate": {
             "template": "{\n" +
-            "     \"statusCode\": 200,\n" +
-            "     \"cookies\": {\n" +
-            "           \"session\": \"$!request.headers['Session-Id'][0]\"\n" +
-            "      },\n" +
-            "     \"headers\": {\n" +
-            "           \"Client-User-Agent\": [ \"$!request.headers['User-Agent'][0]\" ]\n" +
-            "      },\n" +
-            "     \"body\": $!request.body\n" +
-            "}",
+                "     \"statusCode\": 200,\n" +
+                "     \"cookies\": {\n" +
+                "           \"session\": \"$!request.headers['Session-Id'][0]\"\n" +
+                "      },\n" +
+                "     \"headers\": {\n" +
+                "           \"Client-User-Agent\": [ \"$!request.headers['User-Agent'][0]\" ]\n" +
+                "      },\n" +
+                "     \"body\": $!request.body\n" +
+                "}",
             "templateType": "VELOCITY"
         }
     }).then(
