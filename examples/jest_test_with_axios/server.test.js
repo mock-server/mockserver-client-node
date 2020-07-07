@@ -28,7 +28,7 @@ test('actual service', async () => {
                 },
                 httpResponse: {
                     statusCode: 200,
-                    'body': JSON.stringify({ foo: 'bar' }),
+                    'body': JSON.stringify({foo: 'bar'}),
                     delay: {
                         timeUnit: 'MILLISECONDS',
                         value: 0
@@ -51,9 +51,9 @@ test('actual service', async () => {
 
     // expect
     await axios.get('http://localhost:1080/getMe')
-        .then( (response) => {
+        .then((response) => {
             expect(response.status).toBe(200);
             expect(response.data.foo).toBe('bar')
-        } )
+        })
 });
 

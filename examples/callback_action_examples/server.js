@@ -98,4 +98,5 @@ function createExpectationWithinObjectCallback() {
             }
         );
 }
+
 createExpectationWithinObjectCallback();

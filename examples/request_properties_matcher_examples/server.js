@@ -154,7 +154,7 @@ function matchRequestByPathAndPathParametersAndQueryParametersName() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
         "httpRequest": {
-            "path": "/some/path",
+            "path": "/some/path/{cartId}",
             "pathParameters": {
                 "cartId": ["055CA455-1DF7-45BB-8535-4F83E7266092"]
             },
@@ -179,19 +179,9 @@ function matchRequestByPathParameterRegexValue() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
         "httpRequest": {
-            "path": "/some/path/{cartId}/{maxItemCount}",
+            "path": "/some/path/{cartId}",
             "pathParameters": {
-                "cartId": [{
-                    "schema": {
-                        "type": "string",
-                        "pattern": "^[A-Z0-9-]+$"
-                    }
-                }],
-                "maxItemCount": [{
-                    "schema": {
-                        "type": "integer"
-                    }
-                }]
+                "cartId": ["[A-Z0-9\\-]+"]
             }
         },
         "httpResponse": {
@@ -211,9 +201,19 @@ function matchRequestByPathParameterJsonSchemaValue() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
         "httpRequest": {
-            "path": "/some/path/{cartId}",
+            "path": "/some/path/{cartId}/{maxItemCount}",
             "pathParameters": {
-                "cartId": ["[A-Z0-9\\-]+"]
+                "cartId": [{
+                    "schema": {
+                        "type": "string",
+                        "pattern": "^[A-Z0-9-]+$"
+                    }
+                }],
+                "maxItemCount": [{
+                    "schema": {
+                        "type": "integer"
+                    }
+                }]
             }
         },
         "httpResponse": {
@@ -309,8 +309,6 @@ function matchRequestByOptionalQueryParameterRegexValue() {
 function matchRequestByQueryParameterJsonSchemaValue() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
-        "id": "9a10ca98-323f-403a-a757-8da6e2197e3b",
-        "priority": 0,
         "httpRequest": {
             "path": "/some/path",
             "queryStringParameters": {
@@ -326,12 +324,6 @@ function matchRequestByQueryParameterJsonSchemaValue() {
                     }
                 }]
             }
-        },
-        "times": {
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         },
         "httpResponse": {
             "body": "some_response_body"
@@ -349,24 +341,24 @@ function matchRequestByQueryParameterJsonSchemaValue() {
 function matchRequestByQueryParameterSubSet() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
-        "httpRequest" : {
-            "path" : "/some/path",
-            "queryStringParameters" : {
-                "multiValuedParameter" : [ {
-                    "schema" : {
-                        "type" : "string",
-                        "pattern" : "^[A-Z0-9-]+$"
+        "httpRequest": {
+            "path": "/some/path",
+            "queryStringParameters": {
+                "multiValuedParameter": [{
+                    "schema": {
+                        "type": "string",
+                        "pattern": "^[A-Z0-9-]+$"
                     }
-                } ],
-                "maxItemCount" : [ {
-                    "schema" : {
-                        "type" : "integer"
+                }],
+                "maxItemCount": [{
+                    "schema": {
+                        "type": "integer"
                     }
-                } ]
+                }]
             }
         },
-        "httpResponse" : {
-            "body" : "some_response_body"
+        "httpResponse": {
+            "body": "some_response_body"
         }
     }).then(
         function () {
@@ -381,25 +373,25 @@ function matchRequestByQueryParameterSubSet() {
 function matchRequestByQueryParameterKeyMatching() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
-        "httpRequest" : {
-            "path" : "/some/path",
-            "queryStringParameters" : {
-                "keyMatchStyle" : "MATCHING_KEY",
-                "multiValuedParameter" : [ {
-                    "schema" : {
-                        "type" : "string",
-                        "pattern" : "^[A-Z0-9-]+$"
+        "httpRequest": {
+            "path": "/some/path",
+            "queryStringParameters": {
+                "keyMatchStyle": "MATCHING_KEY",
+                "multiValuedParameter": [{
+                    "schema": {
+                        "type": "string",
+                        "pattern": "^[A-Z0-9-]+$"
                     }
-                } ],
-                "maxItemCount" : [ {
-                    "schema" : {
-                        "type" : "integer"
+                }],
+                "maxItemCount": [{
+                    "schema": {
+                        "type": "integer"
                     }
-                } ]
+                }]
             }
         },
-        "httpResponse" : {
-            "body" : "some_response_body"
+        "httpResponse": {
+            "body": "some_response_body"
         }
     }).then(
         function () {
@@ -511,8 +503,6 @@ function matchRequestByHeaderJsonSchemaValue() {
 function matchRequestByEitherOrOptionalHeader() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
-        "id": "2c4f2747-bf8f-42dc-8c82-99f497884cfa",
-        "priority": 0,
         "httpRequest": {
             "path": "/some/path",
             "headers": {
@@ -520,12 +510,6 @@ function matchRequestByEitherOrOptionalHeader() {
                 "?headerOne": ["headerOneValue"],
                 "?headerTwo": ["headerTwoValue"]
             }
-        },
-        "times": {
-            "unlimited": true
-        },
-        "timeToLive": {
-            "unlimited": true
         },
         "httpResponse": {
             "body": "some_response_body"
@@ -575,16 +559,16 @@ function matchRequestByEitherOrOptionalHeader() {
 function matchRequestByHeaderKeyMatching() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
-        "httpRequest" : {
-            "path" : "/some/path",
-            "headers" : {
-                "keyMatchStyle" : "MATCHING_KEY",
-                "multiValuedHeader" : [ "value.*" ],
-                "headerTwo" : [ "headerTwoValue" ]
+        "httpRequest": {
+            "path": "/some/path",
+            "headers": {
+                "keyMatchStyle": "MATCHING_KEY",
+                "multiValuedHeader": ["value.*"],
+                "headerTwo": ["headerTwoValue"]
             }
         },
-        "httpResponse" : {
-            "body" : "some_response_body"
+        "httpResponse": {
+            "body": "some_response_body"
         }
     }).then(
         function () {
@@ -918,10 +902,10 @@ function matchRequestByBodyWithXml() {
 function matchRequestByBodyWithXmlWithPlaceholders() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
-        "httpRequest" : {
-            "body" : {
-                "type" : "XML",
-                "xml" : "<bookstore>\n" +
+        "httpRequest": {
+            "body": {
+                "type": "XML",
+                "xml": "<bookstore>\n" +
                     "   <book nationality=\"ITALIAN\" category=\"COOKING\">\n" +
                     "       <title lang=\"en\">Everyday Italian</title>\n" +
                     "       <author>${xmlunit.ignore}</author>\n" +
@@ -931,8 +915,8 @@ function matchRequestByBodyWithXmlWithPlaceholders() {
                     "</bookstore>"
             }
         },
-        "httpResponse" : {
-            "body" : "some_response_body"
+        "httpResponse": {
+            "body": "some_response_body"
         }
     }).then(
         function () {
@@ -1086,21 +1070,21 @@ function matchRequestByBodyWithJsonIgnoringExtraFieldsInArrayObjects() {
 function matchRequestByBodyWithJsonWithPlaceholders() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
-        "httpRequest" : {
-            "body" : {
-                "type" : "JSON",
-                "json" : {
-                    "id" : 1,
-                    "name" : "A green door",
-                    "price" : "${json-unit.ignore-element}",
-                    "enabled" : "${json-unit.any-boolean}",
-                    "tags" : [ "home", "green" ]
+        "httpRequest": {
+            "body": {
+                "type": "JSON",
+                "json": {
+                    "id": 1,
+                    "name": "A green door",
+                    "price": "${json-unit.ignore-element}",
+                    "enabled": "${json-unit.any-boolean}",
+                    "tags": ["home", "green"]
                 }
             }
         },
-        "httpResponse" : {
-            "statusCode" : 202,
-            "body" : "some_response_body"
+        "httpResponse": {
+            "statusCode": 202,
+            "body": "some_response_body"
         }
     }).then(
         function () {

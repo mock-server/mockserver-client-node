@@ -15,49 +15,6 @@ function responseLiteralWithBodyOnly() {
     );
 }
 
-function responseLiteralWithHeader() {
-    var mockServerClient = require('mockserver-client').mockServerClient;
-    mockServerClient("localhost", 1080).mockAnyResponse({
-        // if no request matcher is specified then every request matched
-        "httpResponse": {
-            "headers": {
-                "Content-Type": ["plain/text"]
-            },
-            "body": "some_response_body"
-        }
-    }).then(
-        function () {
-            console.log("expectation created");
-        },
-        function (error) {
-            console.log(error);
-        }
-    );
-}
-
-function responseLiteralWithCookie() {
-    var mockServerClient = require('mockserver-client').mockServerClient;
-    mockServerClient("localhost", 1080).mockAnyResponse({
-        // if no request matcher is specified then every request matched
-        "httpResponse": {
-            "headers": {
-                "Content-Type": ["plain/text"]
-            },
-            "cookies": {
-                "Session": "97d43b1e-fe03-4855-926a-f448eddac32f"
-            },
-            "body": "some_response_body"
-        }
-    }).then(
-        function () {
-            console.log("expectation created");
-        },
-        function (error) {
-            console.log(error);
-        }
-    );
-}
-
 function responseLiteralWithUTF16BodyResponse() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080).mockAnyResponse({
@@ -97,6 +54,49 @@ function jsonResponseWithUTF8Body() {
         },
         "times": {
             "unlimited": true
+        }
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
+}
+
+function responseLiteralWithHeader() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        // if no request matcher is specified then every request matched
+        "httpResponse": {
+            "headers": {
+                "Content-Type": ["plain/text"]
+            },
+            "body": "some_response_body"
+        }
+    }).then(
+        function () {
+            console.log("expectation created");
+        },
+        function (error) {
+            console.log(error);
+        }
+    );
+}
+
+function responseLiteralWithCookie() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse({
+        // if no request matcher is specified then every request matched
+        "httpResponse": {
+            "headers": {
+                "Content-Type": ["plain/text"]
+            },
+            "cookies": {
+                "Session": "97d43b1e-fe03-4855-926a-f448eddac32f"
+            },
+            "body": "some_response_body"
         }
     }).then(
         function () {
