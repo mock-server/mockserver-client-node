@@ -419,10 +419,30 @@
                 test.ok(false, "failed with the following error \n" + JSON.stringify(error));
                 test.done();
             }, function (error) {
-                test.equal(error, "1 error:\n" +
-                    " - object instance has properties which are not allowed by the schema: [\"paths\"] for field \"/httpRequest\"\n" +
+                test.equal(error, "incorrect expectation json format for:\n" +
                     "\n" +
-                    "See: https://app.swaggerhub.com/apis/jamesdbloom/mock-server-openapi/5.10.x for OpenAPI Specification");
+                    "  {\n" +
+                    "    \"httpRequest\" : {\n" +
+                    "      \"paths\" : \"/somePath\",\n" +
+                    "      \"body\" : {\n" +
+                    "        \"type\" : \"STRING\",\n" +
+                    "        \"vaue\" : \"someBody\"\n" +
+                    "      },\n" +
+                    "      \"headers\" : [ ]\n" +
+                    "    },\n" +
+                    "    \"httpResponse\" : {\n" +
+                    "      \"headers\" : [ ]\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "\n" +
+                    " schema validation errors:\n" +
+                    "\n" +
+                    "  3 errors:\n" +
+                    "   - field: \"/httpRequest\" for schema: \"httpRequest\" has error: \"object instance has properties which are not allowed by the schema: [\"paths\"]\"\n" +
+                    "   - field: \"/httpRequest\" for schema: \"openAPIDefinition\" has error: \"object has missing required properties ([\"specUrlOrPayload\"])\"\n" +
+                    "   - field: \"/httpRequest\" for schema: \"openAPIDefinition\" has error: \"object instance has properties which are not allowed by the schema: [\"body\",\"headers\",\"paths\"]\"\n" +
+                    "  \n" +
+                    "  See: https://app.swaggerhub.com/apis/jamesdbloom/mock-server-openapi/5.10.x for OpenAPI Specification");
                 test.done();
             });
         },
@@ -3060,7 +3080,7 @@
                                         .then(function (logMessages) {
 
                                             // then
-                                            test.equal(logMessages.length, 7);
+                                            test.equal(logMessages.length, 6);
 
                                             try {
                                                 test.ok(logMessages[0].indexOf('resetting all expectations and request logs') !== -1, logMessages[0]);
@@ -3080,12 +3100,6 @@
                                                     '\n' +
                                                     '  {\n' +
                                                     '    "statusCode" : 201') !== -1, logMessages[5]);
-                                                test.ok(logMessages[6].indexOf('retrieving logs that match:\n' +
-                                                    '\n' +
-                                                    '  {\n' +
-                                                    '    "path" : "/somePathOne"\n' +
-                                                    '  }\n' +
-                                                    '\n') !== -1, logMessages[6]);
                                             } catch (exception) {
                                                 test.ok(false, "failed with the following error \n" + JSON.stringify(exception));
                                             }
@@ -3131,7 +3145,7 @@
                                         .then(function (logMessages) {
 
                                             // then
-                                            test.equal(logMessages.length, 7);
+                                            test.equal(logMessages.length, 6);
 
                                             try {
                                                 test.ok(logMessages[0].indexOf('resetting all expectations and request logs') !== -1, logMessages[0]);
@@ -3151,12 +3165,6 @@
                                                     '\n' +
                                                     '  {\n' +
                                                     '    "statusCode" : 201') !== -1, logMessages[5]);
-                                                test.ok(logMessages[6].indexOf('retrieving logs that match:\n' +
-                                                    '\n' +
-                                                    '  {\n' +
-                                                    '    "path" : "/somePathOne"\n' +
-                                                    '  }\n' +
-                                                    '\n') !== -1, logMessages[6]);
                                             } catch (exception) {
                                                 test.ok(false, "failed with the following error \n" + JSON.stringify(exception));
                                             }
