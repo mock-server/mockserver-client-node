@@ -23,7 +23,10 @@
     "README.md",
     "LICENSE.md",
     "index.js",
+    "index.d.ts",
+    "mockServer.d.ts",
     "mockServerClient.js",
+    "mockServerClient.d.ts",
     "sendRequest.js",
     "webSocketClient.js",
     "stop_MockServer.sh"
@@ -52,7 +55,6 @@
   ],
   "dependencies": {
     "grunt-ts": "^6.0.0-beta.22",
-    "json-schema-to-typescript": "^9.1.0",
     "q": "~2.0",
     "websocket": "^1.0.30"
   }

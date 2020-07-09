@@ -1,13 +1,15 @@
-// Original definitions by: David Tanner <https://github.com/DavidTanner>
-// TypeScript Version: 2.1
+/*
+ * mockserver
+ * http://mock-server.com
+ *
+ * Original definitions by: David Tanner <https://github.com/DavidTanner>
+ *
+ * Copyright (c) 2014 James Bloom
+ * Licensed under the Apache License, Version 2.0
+ */
 
-import {
-    Expectation,
-    RequestDefinition,
-    Times,
-    HttpResponse,
-    KeyToMultiValue,
-} from './mockServer';
+// TypeScript Version: 2.1
+import {Expectation, HttpResponse, KeyToMultiValue, OpenAPIExpectation, RequestDefinition, Times,} from './mockServer';
 
 export type Host = string;
 export type Port = number;
@@ -27,6 +29,8 @@ export type RequestResponse = SuccessFullRequest | string;
 export type PathOrRequestDefinition = string | Expectation | RequestDefinition | undefined | null;
 
 export interface MockServerClient {
+    openAPIExpectation(expectation: OpenAPIExpectation): Promise<RequestResponse>;
+
     mockAnyResponse(expectation: Expectation | Expectation[]): Promise<RequestResponse>;
 
     mockWithCallback(requestMatcher: RequestDefinition, requestHandler: (request: any) => any, times?: Times | number): Promise<RequestResponse>;
@@ -68,7 +72,7 @@ export interface MockServerClient {
  * @param tls {boolean} enable TLS (i.e. HTTPS) for communication to server
  * @param caCertPemFilePath {string} provide custom CA Certificate (defaults to MockServer CA Certificate)
  */
-export declare function mockServerClient (
+export declare function mockServerClient(
     host: Host,
     port: Port,
     contextPath?: ContextPath,

@@ -1,5 +1,17 @@
-/* tslint:disable */
-export type ListOfExpectations = Expectation[];
+/*
+ * mockserver
+ * http://mock-server.com
+ *
+ * Copyright (c) 2014 James Bloom
+ * Licensed under the Apache License, Version 2.0
+ */
+
+export interface OpenAPIExpectation {
+    specUrlOrPayload: string;
+    operationsAndResponses?: {
+        [k: string]: string;
+    }
+}
 
 export interface Expectation {
     id?: string;
@@ -281,22 +293,4 @@ export interface ConnectionOptions {
     keepAliveOverride?: boolean;
     closeSocket?: boolean;
     closeSocketDelay?: Delay;
-}
-
-export interface Verification {
-    httpRequest?: RequestDefinition;
-    times?: VerificationTimes;
-}
-
-export interface VerificationTimes {
-    atLeast?: number;
-    atMost?: number;
-}
-
-export interface VerificationSequence {
-    httpRequests?: RequestDefinition[];
-}
-
-export interface Ports {
-    ports?: number[];
 }
