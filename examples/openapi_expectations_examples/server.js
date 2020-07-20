@@ -60,11 +60,10 @@ function matchRequestByOpenAPILoadedByClasspathLocation() {
 
 function matchRequestByOpenAPILoadedByJsonLiteral() {
     var fs = require('fs');
-    var jsEscape = require('js-string-escape');
     try {
         var mockServerClient = require('mockserver-client').mockServerClient;
         mockServerClient("localhost", 1080).openAPIExpectation({
-            "specUrlOrPayload": jsEscape.jsStringEscape(fs.readFileSync("/Users/jamesbloom/git/mockserver/mockserver/mockserver-core/target/test-classes/org/mockserver/mock/openapi_petstore_example.json", "utf8"))
+            "specUrlOrPayload": fs.readFileSync("/Users/jamesbloom/git/mockserver/mockserver/mockserver-core/target/test-classes/org/mockserver/mock/openapi_petstore_example.json", "utf8")
         }).then(
             function () {
                 console.log("expectation created");
