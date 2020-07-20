@@ -428,12 +428,9 @@
                     "      \"body\" : {\n" +
                     "        \"type\" : \"STRING\",\n" +
                     "        \"vaue\" : \"someBody\"\n" +
-                    "      },\n" +
-                    "      \"headers\" : [ ]\n" +
+                    "      }\n" +
                     "    },\n" +
-                    "    \"httpResponse\" : {\n" +
-                    "      \"headers\" : [ ]\n" +
-                    "    }\n" +
+                    "    \"httpResponse\" : { }\n" +
                     "  }\n" +
                     "\n" +
                     " schema validation errors:\n" +
@@ -441,7 +438,7 @@
                     "  3 errors:\n" +
                     "   - field: \"/httpRequest\" for schema: \"httpRequest\" has error: \"object instance has properties which are not allowed by the schema: [\"paths\"]\"\n" +
                     "   - field: \"/httpRequest\" for schema: \"openAPIDefinition\" has error: \"object has missing required properties ([\"specUrlOrPayload\"])\"\n" +
-                    "   - field: \"/httpRequest\" for schema: \"openAPIDefinition\" has error: \"object instance has properties which are not allowed by the schema: [\"body\",\"headers\",\"paths\"]\"\n" +
+                    "   - field: \"/httpRequest\" for schema: \"openAPIDefinition\" has error: \"object instance has properties which are not allowed by the schema: [\"body\",\"paths\"]\"\n" +
                     "  \n" +
                     "  See: https://app.swaggerhub.com/apis/jamesdbloom/mock-server-openapi/5.11.x for OpenAPI Specification");
                 test.done();
@@ -1177,6 +1174,90 @@
                                 });
                         });
                 });
+        },
+
+        'should create expectation with open api request': function (test) {
+            // when
+            var mockAnyResponse = client.mockAnyResponse(
+                {
+                    'httpRequest': {
+                        'specUrlOrPayload': 'https://raw.githubusercontent.com/mock-server/mockserver/master/mockserver-integration-testing/src/main/resources/org/mockserver/mock/openapi_petstore_example.json',
+                        'operationId': 'listPets'
+                    },
+                    'httpResponse': {
+                        'statusCode': 200,
+                        'body': "open_api_response"
+                    }
+                }
+            );
+            mockAnyResponse.then(function () {
+                // then - non matching request
+                sendRequest("GET", "localhost", mockServerPort, "/otherPath")
+                    .then(function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    }, function (error) {
+                        test.equal(error, "404 Not Found");
+                    })
+                    .then(function () {
+
+                        // then - matching request
+                        sendRequest("GET", "localhost", mockServerPort, "/pets?limit=10")
+                            .then(function (response) {
+                                test.equal(response.statusCode, 200);
+                                test.equal(response.body, 'open_api_response');
+                                test.done();
+                            }, function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            });
+                    });
+            }, function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            });
+        },
+
+        'should create open api expectation': function (test) {
+            // when
+            var mockAnyResponse = client.openAPIExpectation({
+                'specUrlOrPayload': 'https://raw.githubusercontent.com/mock-server/mockserver/master/mockserver-integration-testing/src/main/resources/org/mockserver/mock/openapi_petstore_example.json',
+                'operationsAndResponses': {
+                    'showPetById': '200',
+                    'listPets': '200'
+                }
+            });
+            mockAnyResponse.then(function () {
+
+                // then - non matching request
+                sendRequest("GET", "localhost", mockServerPort, "/otherPath")
+                    .then(function (error) {
+                        test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                        test.done();
+                    }, function (error) {
+                        test.equal(error, "404 Not Found");
+                    })
+                    .then(function () {
+
+                        // then - matching request
+                        sendRequest("GET", "localhost", mockServerPort, "/pets?limit=10")
+                            .then(function (response) {
+                                test.equal(response.statusCode, 200);
+                                test.equal(response.body, '[ {\n' +
+                                    '  "id" : 0,\n' +
+                                    '  "name" : "some_string_value",\n' +
+                                    '  "tag" : "some_string_value"\n' +
+                                    '} ]');
+                                test.done();
+                            }, function (error) {
+                                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                                test.done();
+                            });
+                    });
+            }, function (error) {
+                test.ok(false, "failed with the following error \n" + JSON.stringify(error));
+                test.done();
+            });
         },
 
         'should create expectation with method callback': function (test) {
@@ -3085,7 +3166,7 @@
 
                                             try {
                                                 test.ok(logMessages[0].indexOf('resetting all expectations and request logs') !== -1, logMessages[0]);
-test.ok(logMessages[1].indexOf("creating expectation:\n") !== -1, logMessages[1]);
+                                                test.ok(logMessages[1].indexOf("creating expectation:\n") !== -1, logMessages[1]);
                                                 test.ok(logMessages[2].indexOf("received request:\n" +
                                                     "\n" +
                                                     "  {\n" +
@@ -3150,7 +3231,7 @@ test.ok(logMessages[1].indexOf("creating expectation:\n") !== -1, logMessages[1]
 
                                             try {
                                                 test.ok(logMessages[0].indexOf('resetting all expectations and request logs') !== -1, logMessages[0]);
-test.ok(logMessages[1].indexOf("creating expectation:\n") !== -1, logMessages[1]);
+                                                test.ok(logMessages[1].indexOf("creating expectation:\n") !== -1, logMessages[1]);
                                                 test.ok(logMessages[2].indexOf("received request:\n" +
                                                     "\n" +
                                                     "  {\n" +

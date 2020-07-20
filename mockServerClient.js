@@ -79,8 +79,8 @@ var mockServerClient;
         /**
          * The default headers added to to the mocked response when using mockSimpleResponse(...)
          */
-        var defaultResponseHeaders = [];
-        var defaultRequestHeaders = [];
+        var defaultResponseHeaders;
+        var defaultRequestHeaders;
 
         var headersUniqueConcatenate = function (arrayTarget, arraySource) {
             if (!arrayTarget) {
