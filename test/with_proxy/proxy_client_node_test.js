@@ -3177,11 +3177,6 @@
                                                     "  {\n" +
                                                     "    \"method\" : \"POST\",\n" +
                                                     "    \"path\" : \"/somePathOne\",\n") !== -1, logMessages[3]);
-                                                test.ok(logMessages[4].indexOf("removed expectation:\n") !== -1, logMessages[4]);
-                                                test.ok(logMessages[5].indexOf('returning response:\n' +
-                                                    '\n' +
-                                                    '  {\n' +
-                                                    '    "statusCode" : 201') !== -1, logMessages[5]);
                                             } catch (exception) {
                                                 test.ok(false, "failed with the following error \n" + JSON.stringify(exception));
                                             }
@@ -3242,11 +3237,6 @@
                                                     "  {\n" +
                                                     "    \"method\" : \"POST\",\n" +
                                                     "    \"path\" : \"/somePathOne\",\n") !== -1, logMessages[3]);
-                                                test.ok(logMessages[4].indexOf("removed expectation:\n") !== -1, logMessages[4]);
-                                                test.ok(logMessages[5].indexOf('returning response:\n' +
-                                                    '\n' +
-                                                    '  {\n' +
-                                                    '    "statusCode" : 201') !== -1, logMessages[5]);
                                             } catch (exception) {
                                                 test.ok(false, "failed with the following error \n" + JSON.stringify(exception));
                                             }
