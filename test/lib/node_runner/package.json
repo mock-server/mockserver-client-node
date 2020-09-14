@@ -2,6 +2,6 @@
   "name": "basic-server",
   "version": "0.0.1",
   "dependencies": {
-    "http-proxy": "~1.11"
+    "http-proxy": "~1.18"
   }
 }
