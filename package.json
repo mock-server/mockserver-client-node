@@ -34,7 +34,7 @@
   "devDependencies": {
     "grunt": "^1.0.3",
     "grunt-contrib-clean": "~2.0",
-    "grunt-contrib-jshint": "~2.0",
+    "grunt-contrib-jshint": "~2.1",
     "grunt-contrib-nodeunit": "~2.0",
     "grunt-exec": "~3.0",
     "grunt-karma": "~3.0",
