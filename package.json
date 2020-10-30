@@ -54,6 +54,7 @@
     "gruntplugin"
   ],
   "dependencies": {
+    "browser-or-node": "^1.3.0",
     "grunt-ts": "^6.0.0-beta.22",
     "q": "~2.0",
     "websocket": "^1.0.30"
