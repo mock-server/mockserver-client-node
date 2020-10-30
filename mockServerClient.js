@@ -10,6 +10,10 @@ var mockServerClient;
 (function () {
     "use strict";
 
+    runningInNode = function () {
+        return (typeof require !== 'undefined') && require('browser-or-node').isNode
+    }
+
     /**
      * Start the client communicating at the specified host and port
      * for example:
@@ -24,7 +28,7 @@ var mockServerClient;
      */
     mockServerClient = function (host, port, contextPath, tls, caCertPemFilePath) {
 
-        var makeRequest = (typeof require !== 'undefined' ? require('./sendRequest').sendRequest(tls, caCertPemFilePath) : function (host, port, path, jsonBody, resolveCallback) {
+        var makeRequest = (runningInNode() ? require('./sendRequest').sendRequest(tls, caCertPemFilePath) : function (host, port, path, jsonBody, resolveCallback) {
             var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
             var url = (tls ? 'https' : 'http') + '://' + host + ':' + port + path;
 
@@ -171,7 +175,7 @@ var mockServerClient;
             };
         };
 
-        var WebSocketClient = (typeof require !== 'undefined' ? require('./webSocketClient').webSocketClient(tls, caCertPemFilePath) : function (host, port, contextPath) {
+        var WebSocketClient = (runningInNode() ? require('./webSocketClient').webSocketClient(tls, caCertPemFilePath) : function (host, port, contextPath) {
             var clientId;
             var clientIdHandler;
             var requestHandler;
