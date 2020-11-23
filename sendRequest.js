@@ -26,7 +26,7 @@
             // https://raw.githubusercontent.com/mock-server/mockserver/master/mockserver-core/src/main/resources/org/mockserver/socket/CertificateAuthorityCertificate.pem
 
             var dest = "CertificateAuthorityCertificate.pem";
-            if (!fs.existsSync('./' + dest)) {
+            if (tls && !caCertPath && !fs.existsSync('./' + dest)) {
                 var options = {
                     protocol: 'https:',
                     method: 'GET',
