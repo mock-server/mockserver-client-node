@@ -33,7 +33,7 @@ export interface MockServerClient {
 
     mockAnyResponse(expectation: Expectation | Expectation[]): Promise<RequestResponse>;
 
-    mockWithCallback(requestMatcher: RequestDefinition, requestHandler: (request: any) => any, times?: Times | number): Promise<RequestResponse>;
+    mockWithCallback(requestMatcher: RequestDefinition, requestHandler: (request: { queryStringParameters: { [name:string]: string[] } }) => HttpResponse, times?: Times | number): Promise<RequestResponse>;
 
     mockSimpleResponse<T = any>(path: string, responseBody: T, statusCode?: number): Promise<RequestResponse>;
 
