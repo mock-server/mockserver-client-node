@@ -7,7 +7,7 @@ trap finish ERR
 
 # install project npm modules
 
-npm cache clear
+npm cache verify
 npm install --no-optional
 
 # run project build
