@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 
-function finish {
-  dmesg | grep -E -i -B100 'killed process'
-}
-trap finish ERR
+nvm use v16.13.2
 
 # install project npm modules
 
+npm install grunt --global
 npm cache verify
 npm install --no-optional
+npm audit fix
 
 # run project build
 

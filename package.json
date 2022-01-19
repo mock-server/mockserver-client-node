@@ -37,8 +37,6 @@
     "grunt-contrib-jshint": "~3.1.1",
     "grunt-contrib-nodeunit": "~4.0.0",
     "grunt-exec": "~3.0.0",
-    "nodeunit": "~0.11.3",
-    "mockserver-node": "~5.11.2",
     "grunt-karma": "~4.0.2",
     "jasmine-core": "~4.0.0",
     "karma": "~6.3.11",
@@ -46,7 +44,9 @@
     "karma-firefox-launcher": "~2.1.2",
     "karma-jasmine": "~4.0.1",
     "karma-spec-reporter": "~0.0.32",
-    "karma-xvfb-chrome-launcher": "~0.0.1"
+    "karma-xvfb-chrome-launcher": "~0.0.1",
+    "mockserver-node": "~5.11.2",
+    "nodeunit": "~0.11.3"
   },
   "keywords": [
     "mockserver",
