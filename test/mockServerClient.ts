@@ -1,8 +1,17 @@
 import { mockServerClient } from '../index';
 import {MockServerClient, RequestResponse} from '../mockServerClient';
-import {Expectation, RequestDefinition} from '../mockServer';
+import {Expectation, HttpResponse, RequestDefinition} from '../mockServer';
 
 const client: MockServerClient = mockServerClient('mockhttp', 1080);
+
+const response: HttpResponse = {
+    statusCode: 200,
+    body: {
+        body: {},
+        headers: {},
+        statusCode: 200
+    }
+}
 
 const expectation: Expectation = {
     httpRequest: {
@@ -13,14 +22,7 @@ const expectation: Expectation = {
             regex: '.*'
         }
     },
-    httpResponse: {
-        statusCode: 200,
-        body: {
-            body: {},
-            headers: {},
-            statusCode: 200
-        }
-    },
+    httpResponse: response,
     times: {
         unlimited: true
     }
@@ -41,8 +43,8 @@ async function test() {
     let requestResponse: RequestResponse = await client.mockAnyResponse(expectation);
     await client.mockAnyResponse(expectations);
 
-   requestResponse = await client.mockWithCallback(matcher, (request) => 5);
-   requestResponse = await client.mockWithCallback(matcher, (request) => 5, 10);
+   requestResponse = await client.mockWithCallback(matcher, (request) => response);
+   requestResponse = await client.mockWithCallback(matcher, (request) => response, 10);
 
    requestResponse = await client.mockSimpleResponse('some/path', {});
    requestResponse = await client.mockSimpleResponse('some/path', {}, 500);

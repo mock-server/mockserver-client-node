@@ -9,7 +9,7 @@
  */
 
 // TypeScript Version: 2.1
-import {Expectation, HttpResponse, KeyToMultiValue, OpenAPIExpectation, RequestDefinition, Times,} from './mockServer';
+import {Expectation, HttpRequest, HttpResponse, KeyToMultiValue, OpenAPIExpectation, RequestDefinition, Times,} from './mockServer';
 
 export type Host = string;
 export type Port = number;
@@ -33,7 +33,7 @@ export interface MockServerClient {
 
     mockAnyResponse(expectation: Expectation | Expectation[]): Promise<RequestResponse>;
 
-    mockWithCallback(requestMatcher: RequestDefinition, requestHandler: (request: any) => any, times?: Times | number): Promise<RequestResponse>;
+    mockWithCallback(requestMatcher: RequestDefinition, requestHandler: (request: HttpRequest) => HttpResponse, times?: Times | number): Promise<RequestResponse>;
 
     mockSimpleResponse<T = any>(path: string, responseBody: T, statusCode?: number): Promise<RequestResponse>;
 
