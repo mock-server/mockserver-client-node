@@ -18,7 +18,7 @@ var mockServerClient;
      *
      * @param host the host for the server to communicate with
      * @param port the port for the server to communicate with
-     * @param contextPath the context path if server was deployed as a war
+     * @param contextPath the context path if server was deployed as a war i.e. '/myContextPath'
      * @param tls enable TLS (i.e. HTTPS) for communication to server
      * @param caCertPemFilePath provide custom CA Certificate (defaults to MockServer CA Certificate)
      */
@@ -30,7 +30,7 @@ var mockServerClient;
 
         var makeRequest = (runningInNode() ? require('./sendRequest').sendRequest(tls, caCertPemFilePath) : function (host, port, path, jsonBody) {
             var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
-            var url = (tls ? 'https' : 'http') + '://' + host + ':' + port + path;
+            var url = (tls ? 'https' : 'http') + '://' + host + ':' + port + (contextPath.startsWith("/") ? contextPath : "/" + contextPath) + path;
 
             return {
                 then: function (sucess, error) {
