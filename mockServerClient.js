@@ -152,7 +152,7 @@ var mockServerClient;
                 }
             };
         };
-        var createExpectationWithCallback = function (requestMatcher, clientId, times) {
+        var createExpectationWithCallback = function (requestMatcher, clientId, times, priority, timeToLive, id) {
             var timesObject;
             if (typeof times === 'number') {
                 timesObject = {
@@ -164,6 +164,8 @@ var mockServerClient;
             }
             requestMatcher.headers = headersUniqueConcatenate(requestMatcher.headers, defaultRequestHeaders);
             return {
+                id: typeof id === 'string' ? id : undefined,
+                priority: typeof priority === 'number' ? priority : undefined,
                 httpRequest: requestMatcher,
                 httpResponseObjectCallback: {
                     clientId: clientId
@@ -171,6 +173,9 @@ var mockServerClient;
                 times: timesObject || {
                     remainingTimes: 1,
                     unlimited: false
+                },
+                timeToLive: typeof timeToLive === 'object' ?  timeToLive : {
+                    unlimited: true
                 }
             };
         };
@@ -410,8 +415,11 @@ var mockServerClient;
          * @param requestMatcher the request matcher for the expectation
          * @param requestHandler the function to be called back when the request is matched
          * @param times the number of times the requestMatcher should be matched
+         * @param priority the priority with which this expectation is used to match requests compared to other expectations (high first)
+         * @param timeToLive the time this expectation should be used to match requests
+         * @param id the unique expectation id
          */
-        var mockWithCallback = function (requestMatcher, requestHandler, times) {
+        var mockWithCallback = function (requestMatcher, requestHandler, times, priority, timeToLive, id) {
             return {
                 then: function (sucess, error) {
                     try {
@@ -431,7 +439,7 @@ var mockServerClient;
                                 };
                             });
                             webSocketClient.clientIdCallback(function (clientId) {
-                                return makeRequest(host, port, "/mockserver/expectation", createExpectationWithCallback(requestMatcher, clientId, times)).then(sucess, error);
+                                return makeRequest(host, port, "/mockserver/expectation", createExpectationWithCallback(requestMatcher, clientId, times, priority, timeToLive, id)).then(sucess, error);
                             });
                         }, error);
                     } catch (e) {

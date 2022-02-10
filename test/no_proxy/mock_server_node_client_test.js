@@ -1285,7 +1285,10 @@
                         'statusCode': 406
                     };
                 }
-            })
+            }, 1, 10, {
+                timeUnit: "HOURS",
+                timeToLive: 1
+            }, "some_id")
                 .then(function () {
 
                     // then - non matching request
