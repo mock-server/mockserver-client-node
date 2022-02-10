@@ -73,7 +73,7 @@ async function test() {
     await client.verify(matcher, 1);
     await client.verify(matcher, 1, 2);
 
-    string = await client.verifySequence([matcher, matcher]);
+    string = await client.verifySequence(matcher, matcher);
 
     requestResponse = await client.reset();
 

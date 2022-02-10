@@ -41,7 +41,7 @@ export interface MockServerClient {
 
     verify(matcher: RequestDefinition, atLeast?: number, atMost?: number): Promise<void | string>;
 
-    verifySequence(matchers: RequestDefinition[]): Promise<void | string>;
+    verifySequence(...matchers: RequestDefinition[]): Promise<void | string>;
 
     reset(): Promise<RequestResponse>;
 
