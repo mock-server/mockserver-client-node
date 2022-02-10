@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -v
+
 #nvm use v16.13.2
 
 # install project npm modules
