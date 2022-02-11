@@ -40,11 +40,11 @@ export interface HttpRequest {
     keepAlive?: boolean;
     method?: string;
     path?: string;
-    pathParameters?: KeyToMultiValue;
-    queryStringParameters?: KeyToMultiValue;
+    pathParameters?: KeysToMultiValues;
+    queryStringParameters?: KeysToMultiValues;
     body?: Body;
-    headers?: KeyToMultiValue;
-    cookies?: KeyToValue;
+    headers?: KeysToMultiValues;
+    cookies?: KeysAndValues;
     socketAddress?: SocketAddress;
 }
 
@@ -58,11 +58,40 @@ export interface OpenAPIDefinition {
 export interface HttpResponse {
     delay?: Delay;
     body?: BodyWithContentType;
-    cookies?: KeyToValue;
+    cookies?: KeysAndValues;
     connectionOptions?: ConnectionOptions;
-    headers?: KeyToMultiValue;
+    headers?: KeysToMultiValues;
     statusCode?: number;
     reasonPhrase?: string;
+}
+
+export interface HttpRequestModifier {
+    path?: PathModifier;
+    queryStringParameters?: KeysToMultiValuesModifier;
+    headers?: KeysToMultiValuesModifier;
+    cookies?: KeysAndValuesModifier;
+}
+
+export interface HttpResponseModifier {
+    headers?: KeysToMultiValuesModifier;
+    cookies?: KeysAndValuesModifier;
+}
+
+export interface PathModifier {
+    regex: string;
+    substitution?: string;
+}
+
+export interface KeysToMultiValuesModifier {
+    add?: KeysToMultiValues;
+    replace?: KeysToMultiValues;
+    remove?: string[];
+}
+
+export interface KeysAndValuesModifier {
+    add?: KeysAndValues;
+    replace?: KeysAndValues;
+    remove?: string[];
 }
 
 export interface HttpTemplate {
@@ -89,7 +118,15 @@ export interface HttpObjectCallback {
     responseCallback?: boolean;
 }
 
-export interface HttpOverrideForwardedRequest {
+export type HttpOverrideForwardedRequest =
+    | {
+    delay?: Delay;
+    requestOverride?: HttpRequest;
+    requestModifier?: HttpRequestModifier;
+    responseOverride?: HttpResponse;
+    responseModifier?: HttpResponseModifier;
+}
+    | {
     delay?: Delay;
     httpRequest?: HttpRequest;
     httpResponse?: HttpResponse;
@@ -113,7 +150,7 @@ export interface TimeToLive {
     unlimited?: boolean;
 }
 
-export type KeyToMultiValue =
+export type KeysToMultiValues =
     | {
     name?: string;
     values?: string[];
@@ -142,7 +179,7 @@ export type KeyToMultiValue =
         values: StringOrJsonSchema[]
     };
 };
-export type KeyToValue =
+export type KeysAndValues =
     | {
     name?: string;
     value?: string;
@@ -202,7 +239,7 @@ export type Body =
     | {
     not?: boolean;
     type?: "PARAMETERS";
-    parameters?: KeyToMultiValue;
+    parameters?: KeysToMultiValues;
 }
     | {
     not?: boolean;
@@ -248,7 +285,7 @@ export type BodyWithContentType =
     | {
     not?: boolean;
     type?: "PARAMETERS";
-    parameters?: KeyToMultiValue;
+    parameters?: KeysToMultiValues;
 }
     | {
     not?: boolean;

@@ -1,10 +1,10 @@
 import {mockServerClient} from '../index';
 import {MockServerClient, RequestResponse} from '../mockServerClient';
-import {Expectation, HttpResponse, RequestDefinition} from '../mockServer';
+import {Expectation, HttpOverrideForwardedRequest, HttpResponse, RequestDefinition} from '../mockServer';
 
 const client: MockServerClient = mockServerClient('mockhttp', 1080);
 
-const response: HttpResponse = {
+const httpResponse: HttpResponse = {
     statusCode: 200,
     body: {
         body: {},
@@ -22,7 +22,7 @@ const expectation: Expectation = {
             regex: '.*'
         }
     },
-    httpResponse: response,
+    httpResponse: httpResponse,
     times: {
         unlimited: true
     },
@@ -34,7 +34,7 @@ const expectation: Expectation = {
 
 const expectations: Expectation[] = [expectation, expectation];
 
-const matcher: RequestDefinition = {
+const requestDefinition: RequestDefinition = {
     method: 'POST',
     path: 'some/path',
     body: {
@@ -43,13 +43,55 @@ const matcher: RequestDefinition = {
     },
 };
 
+const overrideForwardRequest: HttpOverrideForwardedRequest = {
+    httpRequest: requestDefinition,
+    httpResponse: httpResponse
+}
+
+const overrideForwardRequestWithModifiers: HttpOverrideForwardedRequest = {
+    requestOverride: requestDefinition,
+    requestModifier: {
+        path: {
+            regex: "^/(.+)/(.+)$",
+            substitution: "/prefix/$1/infix/$2/postfix"
+        },
+        headers: {
+            add: [
+                {"name": "Content-Type", "values": ["application/json; charset=utf-8"]},
+                {"name": "Cache-Control", "values": ["no-cache, no-store"]}
+            ],
+            replace: [
+                {"name": "Content-Type", "values": ["application/json; charset=utf-8"]},
+                {"name": "Cache-Control", "values": ["no-cache, no-store"]}
+            ],
+            remove: ["someHeader"]
+
+        }
+    },
+    responseOverride: httpResponse,
+    responseModifier: {
+        headers: {
+            add: [
+                {"name": "Content-Type", "values": ["application/json; charset=utf-8"]},
+                {"name": "Cache-Control", "values": ["no-cache, no-store"]}
+            ],
+            replace: [
+                {"name": "Content-Type", "values": ["application/json; charset=utf-8"]},
+                {"name": "Cache-Control", "values": ["no-cache, no-store"]}
+            ],
+            remove: ["someHeader"]
+
+        }
+    }
+}
+
 async function test() {
     let requestResponse: RequestResponse = await client.mockAnyResponse(expectation);
     await client.mockAnyResponse(expectations);
 
-    requestResponse = await client.mockWithCallback(matcher, (request) => response);
-    requestResponse = await client.mockWithCallback(matcher, (request) => response, 10);
-    requestResponse = await client.mockWithCallback(matcher, (request) => response, 10, 10, {unlimited: true}, "some_id");
+    requestResponse = await client.mockWithCallback(requestDefinition, (request) => httpResponse);
+    requestResponse = await client.mockWithCallback(requestDefinition, (request) => httpResponse, 10);
+    requestResponse = await client.mockWithCallback(requestDefinition, (request) => httpResponse, 10, 10, {unlimited: true}, "some_id");
 
     requestResponse = await client.mockSimpleResponse('some/path', {});
     requestResponse = await client.mockSimpleResponse('some/path', {}, 500);
@@ -69,11 +111,11 @@ async function test() {
             "sessionId": ["786fcf9b-606e-605f-181d-c245b55e5eac"]
         });
 
-    let string = await client.verify(matcher);
-    await client.verify(matcher, 1);
-    await client.verify(matcher, 1, 2);
+    let string = await client.verify(requestDefinition);
+    await client.verify(requestDefinition, 1);
+    await client.verify(requestDefinition, 1, 2);
 
-    string = await client.verifySequence(matcher, matcher);
+    string = await client.verifySequence(requestDefinition, requestDefinition);
 
     requestResponse = await client.reset();
 
