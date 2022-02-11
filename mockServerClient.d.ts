@@ -9,7 +9,7 @@
  */
 
 // TypeScript Version: 2.1
-import {Expectation, HttpRequest, HttpResponse, KeysToMultiValues, OpenAPIExpectation, RequestDefinition, Times, TimeToLive,} from './mockServer';
+import {Expectation, ExpectationId, HttpRequest, HttpResponse, KeysToMultiValues, OpenAPIExpectation, RequestDefinition, Times, TimeToLive,} from './mockServer';
 
 export type Host = string;
 export type Port = number;
@@ -46,6 +46,8 @@ export interface MockServerClient {
     reset(): Promise<RequestResponse>;
 
     clear(pathOrRequestDefinition: PathOrRequestDefinition, type: ClearType): Promise<RequestResponse>;
+
+    clearById(expectationId: ExpectationId, type: ClearType): Promise<RequestResponse>;
 
     bind(ports: Port[]): Promise<RequestResponse>;
 

@@ -31,6 +31,10 @@ export interface Expectation {
     timeToLive?: TimeToLive;
 }
 
+export interface ExpectationId {
+    id: string
+}
+
 export type RequestDefinition =
     | HttpRequest
     | OpenAPIDefinition;

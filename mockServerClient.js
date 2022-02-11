@@ -174,7 +174,7 @@ var mockServerClient;
                     remainingTimes: 1,
                     unlimited: false
                 },
-                timeToLive: typeof timeToLive === 'object' ?  timeToLive : {
+                timeToLive: typeof timeToLive === 'object' ? timeToLive : {
                     unlimited: true
                 }
             };
@@ -585,6 +585,21 @@ var mockServerClient;
                 }
             }
             return makeRequest(host, port, "/mockserver/clear" + (type ? "?type=" + type : ""), addDefaultRequestMatcherHeaders(pathOrRequestMatcher));
+        };
+        /**
+         * Clear expectations, logs or both that match the expectation id
+         *
+         * @param expectationId         the expectation id that is used to clear expectations and logs
+         * @param type                  the type to clear 'EXPECTATIONS', 'LOG' or 'ALL', defaults to 'ALL' if not specified
+         */
+        var clearById = function (expectationId, type) {
+            if (type) {
+                var typeEnum = ['EXPECTATIONS', 'LOG', 'ALL'];
+                if (typeEnum.indexOf(type) === -1) {
+                    throw new Error("\"" + (type || "undefined") + "\" is not a supported value for \"type\" parameter only " + typeEnum + " are allowed values");
+                }
+            }
+            return makeRequest(host, port, "/mockserver/clear" + (type ? "?type=" + type : ""), { id: expectationId});
         };
         /**
          * Add new ports the server is bound to and listening on
