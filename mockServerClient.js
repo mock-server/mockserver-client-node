@@ -12,7 +12,7 @@ var mockServerClient;
 
     /**
      * Start the client communicating at the specified host and port
-     * for example:
+     *, for example:
      *
      *   var client = mockServerClient("localhost", 1080);
      *
@@ -258,7 +258,7 @@ var mockServerClient;
          *
          * - headers added to every request matcher, this is particularly useful for running tests in parallel
          *
-         * for example:
+         *, for example:
          *
          *   client.setDefaultHeaders([
          *       {"name": "Content-Type", "values": ["application/json; charset=utf-8"]},
@@ -334,7 +334,7 @@ var mockServerClient;
         };
         /**
          * Setup an expectation by specifying an expectation object
-         * for example:
+         *, for example:
          *
          *   client.mockAnyResponse(
          *       {
@@ -367,7 +367,7 @@ var mockServerClient;
         };
         /**
          * Setup an expectation by specifying an OpenAPI expectation
-         * for example:
+         *, for example:
          *
          *   client.openAPIExpectation(
          *       {
@@ -389,7 +389,7 @@ var mockServerClient;
          * a local request handler function.  The request handler function receives each
          * request (that matches the request matcher) and returns the response that will be returned for this expectation.
          *
-         * for example:
+         *, for example:
          *
          *    client.mockWithCallback(
          *            {
@@ -452,7 +452,7 @@ var mockServerClient;
         };
         /**
          * Setup an expectation without having to specify the full expectation object
-         * for example:
+         *, for example:
          *
          *   client.mockSimpleResponse('/somePath', { name: 'value' }, 203);
          *
@@ -464,7 +464,7 @@ var mockServerClient;
             return mockAnyResponse(createExpectation(path, responseBody, statusCode));
         };
         /**
-         * Verify a request has been sent for example:
+         * Verify a request has been sent, for example:
          *
          *   expect(client.verify({
          *       'httpRequest': {
@@ -512,7 +512,51 @@ var mockServerClient;
             };
         };
         /**
-         * Verify a sequence of requests has been sent for example:
+         * Verify a request has been sent by expectation id, for example:
+         *
+         *   expect(client.verify({
+         *           'id': '31e4ca35-66c6-4645-afeb-6e66c4ca0559'
+         *       })).toBeTruthy();
+         *
+         * @param expectationId the expectation id that must be matched for this verification to pass
+         * @param atLeast the minimum number of times this request must be matched
+         * @param atMost  the maximum number of times this request must be matched
+         */
+        var verifyById = function (expectationId, atLeast, atMost) {
+            if (atLeast === undefined && atMost === undefined) {
+                atLeast = 1;
+            }
+            return {
+                then: function (sucess, error) {
+                    return makeRequest(host, port, "/mockserver/verify", {
+                        "expectationId": expectationId,
+                        "times": {
+                            "atLeast": atLeast,
+                            "atMost": atMost
+                        }
+                    }).then(
+                        function () {
+                            if (sucess) {
+                                sucess();
+                            }
+                        },
+                        function (result) {
+                            if (!result.statusCode || result.statusCode !== 202) {
+                                if (error) {
+                                    error(result);
+                                }
+                            } else {
+                                if (error) {
+                                    sucess(result);
+                                }
+                            }
+                        }
+                    );
+                }
+            };
+        };
+        /**
+         * Verify a sequence of requests has been sent, for example:
          *
          *   client.verifySequence(
          *       {
@@ -542,6 +586,49 @@ var mockServerClient;
                 then: function (sucess, error) {
                     return makeRequest(host, port, "/mockserver/verifySequence", {
                         "httpRequests": requestSequence
+                    }).then(
+                        function () {
+                            if (sucess) {
+                                sucess();
+                            }
+                        },
+                        function (result) {
+                            if (!result.statusCode || result.statusCode !== 202) {
+                                if (error) {
+                                    error(result);
+                                }
+                            } else {
+                                if (error) {
+                                    sucess(result);
+                                }
+                            }
+                        }
+                    );
+                }
+            };
+        };
+        /**
+         * Verify a sequence of requests has been sent by match the expectation id, for example:
+         *
+         *   client.verifySequenceById(
+         *       {
+         *           'id': '31e4ca35-66c6-4645-afeb-6e66c4ca0559'
+         *       },
+         *       {
+         *           'id': '66c6ca35-ca35-66f5-8feb-5e6ac7ca0559'
+         *       },
+         *       {
+         *           'id': 'ca3531e4-23c8-ff45-88f5-4ca0c7ca0559'
+         *       }
+         *   );
+         *
+         * @param arguments the list of expectation ids used to match requests for this verification to pass
+         */
+        var verifySequenceById = function () {
+            return {
+                then: function (sucess, error) {
+                    return makeRequest(host, port, "/mockserver/verifySequence", {
+                        "expectationIds": arguments
                     }).then(
                         function () {
                             if (sucess) {
