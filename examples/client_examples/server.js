@@ -1,3 +1,18 @@
+function runMockServer() {
+    var mockserver = require('mockserver-node');
+
+    mockserver
+        .start_mockserver({serverPort: 1080, verbose: true})
+        .then(
+            function () {
+                console.log("started MockServer");
+            },
+            function (error) {
+                console.log(JSON.stringify(error, null, "  "));
+            }
+        );
+}
+
 function createExpectation() {
     var mockServerClient = require('mockserver-client').mockServerClient;
     mockServerClient("localhost", 1080)
@@ -180,7 +195,6 @@ function verifyRequestSequence() {
             }
         );
 }
-
 
 function verifyRequestSequenceUsingOpenAPI() {
     var mockServerClient = require('mockserver-client').mockServerClient;

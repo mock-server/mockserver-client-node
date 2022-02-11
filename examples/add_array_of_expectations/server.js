@@ -1,7 +1,6 @@
-var client = require('mockserver-client').mockServerClient("localhost", 1080);
-
-client
-    .mockAnyResponse(
+function addArrayOfExpectations() {
+    var mockServerClient = require('mockserver-client').mockServerClient;
+    mockServerClient("localhost", 1080).mockAnyResponse(
         [
             {
                 'httpRequest': {
@@ -32,11 +31,12 @@ client
             }
         ]
     )
-    .then(
-        function () {
-            console.log("created expectations");
-        },
-        function (error) {
-            console.log(error);
-        }
-    );
+        .then(
+            function () {
+                console.log("expectations created");
+            },
+            function (error) {
+                console.log(error);
+            }
+        );
+}
