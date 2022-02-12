@@ -35,10 +35,6 @@ export interface ExpectationId {
     id: string
 }
 
-export type RequestDefinition =
-    | HttpRequest
-    | OpenAPIDefinition;
-
 export interface HttpRequest {
     secure?: boolean;
     keepAlive?: boolean;
@@ -58,6 +54,10 @@ export interface OpenAPIDefinition {
         | object;
     operationId?: string
 }
+
+export type RequestDefinition =
+    | HttpRequest
+    | OpenAPIDefinition;
 
 export interface HttpResponse {
     delay?: Delay;

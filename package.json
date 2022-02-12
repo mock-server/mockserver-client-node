@@ -55,7 +55,7 @@
   ],
   "dependencies": {
     "browser-or-node": "^2.0.0",
-    "grunt-ts": "^4.0.1",
+    "grunt-ts": "~6.0.0-beta.22",
     "q": "~2.0",
     "websocket": "~1.0.34"
   }
