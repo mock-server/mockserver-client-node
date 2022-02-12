@@ -185,7 +185,7 @@ describe("mockServerClient client:", function () {
             expect(error).toEqual("1 error:\n" +
                 " - object instance has properties which are not allowed by the schema: [\"paths\"] for field \"/httpRequest\"\n" +
                     "\n" +
-                    "See: https://app.swaggerhub.com/apis/jamesdbloom/mock-server-openapi/5.11.x for OpenAPI Specification");
+                    "See: https://app.swaggerhub.com/apis/jamesdbloom/mock-server-openapi/5.12.x for OpenAPI Specification");
             done();
         });
     });

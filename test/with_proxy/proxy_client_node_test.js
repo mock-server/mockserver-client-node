@@ -435,12 +435,12 @@
                     "\n" +
                     " schema validation errors:\n" +
                     "\n" +
-                    "  3 errors:\n" +
-                    "   - field: \"/httpRequest\" for schema: \"httpRequest\" has error: \"object instance has properties which are not allowed by the schema: [\"paths\"]\"\n" +
-                    "   - field: \"/httpRequest\" for schema: \"openAPIDefinition\" has error: \"object has missing required properties ([\"specUrlOrPayload\"])\"\n" +
-                    "   - field: \"/httpRequest\" for schema: \"openAPIDefinition\" has error: \"object instance has properties which are not allowed by the schema: [\"body\",\"paths\"]\"\n" +
+                    "  2 errors:\n" +
+                    "   - $.httpRequest.paths: is not defined in the schema and the schema does not allow additional properties\n" +
+                    "   - $.httpRequest.specUrlOrPayload: is missing, but is required, if specifying OpenAPI request matcher\n" +
                     "  \n" +
-                    "  See: https://app.swaggerhub.com/apis/jamesdbloom/mock-server-openapi/5.11.x for OpenAPI Specification");
+                    "  OpenAPI Specification: https://app.swaggerhub.com/apis/jamesdbloom/mock-server-openapi/5.12.x\n" +
+                    "  Documentation: https://mock-server.com/mock_server/creating_expectations.html");
                 test.done();
             });
         },
@@ -1692,9 +1692,9 @@
                                 test.done();
                             }, function (message) {
                                 test.ok(message.startsWith("Request not found between 2 and 3 times, expected:<{\n" +
+                                    "  \"body\" : \"someBody\",\n" +
                                     "  \"method\" : \"POST\",\n" +
-                                    "  \"path\" : \"/somePath\",\n" +
-                                    "  \"body\" : \"someBody\"\n" +
+                                    "  \"path\" : \"/somePath\"\n" +
                                     "}> but was:<{\n"), message);
                                 test.done();
                             });
@@ -1730,9 +1730,9 @@
                                 test.done();
                             }, function (message) {
                                 test.ok(message.startsWith("Request not found at least 2 times, expected:<{\n" +
+                                    "  \"body\" : \"someBody\",\n" +
                                     "  \"method\" : \"POST\",\n" +
-                                    "  \"path\" : \"/somePath\",\n" +
-                                    "  \"body\" : \"someBody\"\n" +
+                                    "  \"path\" : \"/somePath\"\n" +
                                     "}> but was:<{\n"), message);
                                 test.done();
                             });
@@ -1864,9 +1864,9 @@
                                                     test.done();
                                                 }, function (message) {
                                                     test.ok(message.startsWith("Request sequence not found, expected:<[ {\n" +
+                                                        "  \"body\" : \"someBody\",\n" +
                                                         "  \"method\" : \"POST\",\n" +
-                                                        "  \"path\" : \"/somePathOne\",\n" +
-                                                        "  \"body\" : \"someBody\"\n" +
+                                                        "  \"path\" : \"/somePathOne\"\n" +
                                                         "}, {\n" +
                                                         "  \"method\" : \"GET\",\n" +
                                                         "  \"path\" : \"/somePathTwo\"\n" +
@@ -1943,9 +1943,9 @@
                                                 test.done();
                                             }, function (message) {
                                                 test.ok(message.startsWith("Request sequence not found, expected:<[ {\n" +
+                                                    "  \"body\" : \"some_incorrect_body\",\n" +
                                                     "  \"method\" : \"POST\",\n" +
-                                                    "  \"path\" : \"/somePathOne\",\n" +
-                                                    "  \"body\" : \"some_incorrect_body\"\n" +
+                                                    "  \"path\" : \"/somePathOne\"\n" +
                                                     "}, {\n" +
                                                     "  \"method\" : \"GET\",\n" +
                                                     "  \"path\" : \"/notFound\"\n" +
