@@ -7,3 +7,14 @@
  */
 
 export { mockServerClient } from './mockServerClient';
+export {
+  Expectation,
+  ExpectationId,
+  HttpRequest,
+  HttpResponse,
+  KeysToMultiValues,
+  OpenAPIExpectation,
+  RequestDefinition,
+  Times,
+  TimeToLive,
+} from  './mockServer';
