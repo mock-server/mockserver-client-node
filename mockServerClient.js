@@ -371,7 +371,7 @@ var mockServerClient;
          *
          *   client.openAPIExpectation(
          *       {
-         *           "specUrlOrPayload": "https://raw.githubusercontent.com/mock-server/mockserver/master/mockserver-integration-testing/src/main/resources/org/mockserver/mock/openapi_petstore_example.json",
+         *           "specUrlOrPayload": "https://raw.githubusercontent.com/mock-server/mockserver/master/mockserver-integration-testing/src/main/resources/org/mockserver/openapi/openapi_petstore_example.json",
          *           "operationsAndResponses": {
          *               "showPetById": "200",
          *               "createPets": "500"
