@@ -439,7 +439,7 @@
                     "   - $.httpRequest.paths: is not defined in the schema and the schema does not allow additional properties\n" +
                     "   - $.httpRequest.specUrlOrPayload: is missing, but is required, if specifying OpenAPI request matcher\n" +
                     "  \n" +
-                    "  OpenAPI Specification: https://app.swaggerhub.com/apis/jamesdbloom/mock-server-openapi/5.12.x\n" +
+                    "  OpenAPI Specification: https://app.swaggerhub.com/apis/jamesdbloom/mock-server-openapi/5.13.x\n" +
                     "  Documentation: https://mock-server.com/mock_server/creating_expectations.html");
                 test.done();
             });
