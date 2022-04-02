@@ -3270,7 +3270,7 @@
                         "  \"artifactId\" : \"mockserver-core\",\n" +
                         "  \"groupId\" : \"org.mock-server\",\n" +
                         "  \"ports\" : [ " + (mockServerPort + 1) + " ],\n" +
-                        "  \"version\" : \"5.13.0\"\n" +
+                        "  \"version\" : \"5.13.1\"\n" +
                         "}") !== -1, response.body);
                     sendRequest("PUT", "localhost", mockServerPort + 1, "/status")
                         .then(function (response) {
@@ -3279,7 +3279,7 @@
                                 "  \"artifactId\" : \"mockserver-core\",\n" +
                                 "  \"groupId\" : \"org.mock-server\",\n" +
                                 "  \"ports\" : [ " + mockServerPort + ", " + (mockServerPort + 1) + " ],\n" +
-                                "  \"version\" : \"5.13.0\"\n" +
+                                "  \"version\" : \"5.13.1\"\n" +
                                 "}") !== -1, response.body);
                             test.done();
                         }, function (error) {
