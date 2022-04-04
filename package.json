@@ -37,7 +37,7 @@
     "grunt-contrib-nodeunit": "~4.0.0",
     "grunt-exec": "~3.0.0",
     "grunt-karma": "~4.0.2",
-    "grunt-ts": "^4.0.1",
+    "grunt-ts": "^5.5.1",
     "jasmine-core": "~4.0.0",
     "karma": "~6.3.11",
     "karma-chrome-launcher": "~3.1.0",
