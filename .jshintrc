@@ -13,6 +13,14 @@
   "globals": {
     "window": true,
     "WebSocket": true,
-    "XMLHttpRequest": true
+    "XMLHttpRequest": true,
+    "HttpRequest": true,
+    "jasmine": true,
+    "expect": true,
+    "describe": true,
+    "beforeEach": true,
+    "afterEach": true,
+    "it": true,
+    "navigator": true
   }
 }

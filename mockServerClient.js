@@ -30,7 +30,7 @@ var mockServerClient;
 
         var makeRequest = (runningInNode() ? require('./sendRequest').sendRequest(tls, caCertPemFilePath) : function (host, port, path, jsonBody) {
             var body = (typeof jsonBody === "string" ? jsonBody : JSON.stringify(jsonBody || ""));
-            var url = (tls ? 'https' : 'http') + '://' + host + ':' + port + (contextPath.startsWith("/") ? contextPath : "/" + contextPath) + path;
+            var url = (tls ? 'https' : 'http') + '://' + host + ':' + port + (contextPath ? (contextPath.indexOf("/") === 0 ? contextPath : "/" + contextPath) : "") + path;
 
             return {
                 then: function (sucess, error) {
