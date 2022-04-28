@@ -8,14 +8,15 @@
  * Licensed under the Apache License, Version 2.0
  */
 
-// TypeScript Version: 2.1
-import {Expectation, ExpectationId, HttpRequest, HttpResponse, KeysToMultiValues, OpenAPIExpectation, RequestDefinition, Times, TimeToLive,} from './mockServer';
+import {Expectation, ExpectationId, HttpRequest, HttpResponse, KeyToMultiValue, OpenAPIExpectation, RequestDefinition, Times, TimeToLive,} from './mockServer';
 
 export type Host = string;
 export type Port = number;
 export type ContextPath = string;
 export type TLS = boolean;
 export type CaCertPemFilePath = string;
+// Retains backwards compatability.
+export type KeysToMultiValues = KeyToMultiValue;
 
 export type ClearType = 'EXPECTATIONS' | 'LOG' | 'ALL';
 

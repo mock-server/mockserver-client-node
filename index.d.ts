@@ -6,13 +6,13 @@
  * Licensed under the Apache License, Version 2.0
  */
 
-export { mockServerClient } from './mockServerClient';
+export { mockServerClient, KeysToMultiValues } from './mockServerClient';
 export {
   Expectation,
   ExpectationId,
   HttpRequest,
   HttpResponse,
-  KeysToMultiValues,
+  KeyToMultiValue,
   OpenAPIExpectation,
   RequestDefinition,
   Times,
