@@ -6,203 +6,165 @@
  * Licensed under the Apache License, Version 2.0
  */
 
-export interface OpenAPIExpectation {
-    specUrlOrPayload: string;
-    operationsAndResponses?: {
-        [k: string]: string;
-    }
-}
+/* eslint-disable */
+/* tslint:disable */
+/*
+ * ---------------------------------------------------------------
+ * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
+ * ##                                                           ##
+ * ## AUTHOR: acacode                                           ##
+ * ## SOURCE: https://github.com/acacode/swagger-typescript-api ##
+ * ---------------------------------------------------------------
+ */
 
-export interface Expectation {
-    id?: string;
-    priority?: number;
-    httpRequest?: RequestDefinition;
-    httpResponse?: HttpResponse;
-    httpResponseTemplate?: HttpTemplate;
-    httpResponseClassCallback?: HttpClassCallback;
-    httpResponseObjectCallback?: HttpObjectCallback;
-    httpForward?: HttpForward;
-    httpForwardTemplate?: HttpTemplate;
-    httpForwardClassCallback?: HttpClassCallback;
-    httpForwardObjectCallback?: HttpObjectCallback;
-    httpOverrideForwardedRequest?: HttpOverrideForwardedRequest;
-    httpError?: HttpError;
-    times?: Times;
-    timeToLive?: TimeToLive;
-}
+export type Expectations = Expectation | Expectation[];
+
+export type Expectation = {
+  id?: string;
+  priority?: number;
+  httpRequest?: RequestDefinition;
+  openAPIDefinition?: OpenAPIDefinition;
+  httpResponse?: HttpResponse;
+  httpResponseTemplate?: HttpTemplate;
+  httpResponseClassCallback?: HttpClassCallback;
+  httpResponseObjectCallback?: HttpObjectCallback;
+  httpForward?: HttpForward;
+  httpForwardTemplate?: HttpTemplate;
+  httpForwardClassCallback?: HttpClassCallback;
+  httpForwardObjectCallback?: HttpObjectCallback;
+  httpOverrideForwardedRequest?: HttpOverrideForwardedRequest;
+  httpError?: HttpError;
+  times?: Times;
+  timeToLive?: TimeToLive;
+};
 
 export interface ExpectationId {
-    id: string
+  id: string;
 }
 
+export type OpenAPIExpectations = OpenAPIExpectation | OpenAPIExpectation[];
+
+export interface OpenAPIExpectation {
+  specUrlOrPayload: string | object;
+  operationsAndResponses?: Record<string, string>;
+}
+
+export type RequestDefinition = HttpRequest | OpenAPIDefinition;
+
 export interface HttpRequest {
-    secure?: boolean;
-    keepAlive?: boolean;
-    method?: string;
-    path?: string;
-    pathParameters?: KeysToMultiValues;
-    queryStringParameters?: KeysToMultiValues;
-    body?: Body;
-    headers?: KeysToMultiValues;
-    cookies?: KeysAndValues;
-    socketAddress?: SocketAddress;
+  secure?: boolean;
+  keepAlive?: boolean;
+  method?: StringOrJsonSchema;
+  path?: StringOrJsonSchema;
+  pathParameters?: KeyToMultiValue;
+  queryStringParameters?: KeyToMultiValue;
+
+  /** request body matcher */
+  body?: Body;
+  headers?: KeyToMultiValue;
+  cookies?: KeyToValue;
+  socketAddress?: SocketAddress;
 }
 
 export interface OpenAPIDefinition {
-    specUrlOrPayload?:
-        string
-        | object;
-    operationId?: string
+  specUrlOrPayload?: string;
+  operationId?: string;
 }
-
-export type RequestDefinition =
-    | HttpRequest
-    | OpenAPIDefinition;
 
 export interface HttpResponse {
-    delay?: Delay;
-    body?: BodyWithContentType;
-    cookies?: KeysAndValues;
-    connectionOptions?: ConnectionOptions;
-    headers?: KeysToMultiValues;
-    statusCode?: number;
-    reasonPhrase?: string;
-}
+  /** response delay */
+  delay?: Delay;
 
-export interface HttpRequestModifier {
-    path?: PathModifier;
-    queryStringParameters?: KeysToMultiValuesModifier;
-    headers?: KeysToMultiValuesModifier;
-    cookies?: KeysAndValuesModifier;
-}
+  /** response body */
+  body?: BodyWithContentType;
+  cookies?: KeyToValue;
 
-export interface HttpResponseModifier {
-    headers?: KeysToMultiValuesModifier;
-    cookies?: KeysAndValuesModifier;
-}
-
-export interface PathModifier {
-    regex: string;
-    substitution?: string;
-}
-
-export interface KeysToMultiValuesModifier {
-    add?: KeysToMultiValues;
-    replace?: KeysToMultiValues;
-    remove?: string[];
-}
-
-export interface KeysAndValuesModifier {
-    add?: KeysAndValues;
-    replace?: KeysAndValues;
-    remove?: string[];
+  /** connection options */
+  connectionOptions?: ConnectionOptions;
+  headers?: KeyToMultiValue;
+  statusCode?: number;
+  reasonPhrase?: string;
 }
 
 export interface HttpTemplate {
-    delay?: Delay;
-    templateType?: "JAVASCRIPT" | "VELOCITY";
-    template?: string;
+  /** response delay */
+  delay?: Delay;
+  templateType?: "VELOCITY" | "JAVASCRIPT" | "MUSTACHE";
+  template?: string;
 }
 
 export interface HttpForward {
-    delay?: Delay;
-    host?: string;
-    port?: number;
-    scheme?: "HTTP" | "HTTPS";
+  /** response delay */
+  delay?: Delay;
+  host?: string;
+  port?: number;
+  scheme?: "HTTP" | "HTTPS";
 }
 
 export interface HttpClassCallback {
-    delay?: Delay;
-    callbackClass?: string;
+  /** response delay */
+  delay?: Delay;
+  callbackClass?: string;
 }
 
 export interface HttpObjectCallback {
-    delay?: Delay;
-    clientId?: string;
-    responseCallback?: boolean;
+  /** response delay */
+  delay?: Delay;
+  clientId?: string;
+  responseCallback?: boolean;
 }
 
 export type HttpOverrideForwardedRequest =
-    | {
-    delay?: Delay;
-    requestOverride?: HttpRequest;
-    requestModifier?: HttpRequestModifier;
-    responseOverride?: HttpResponse;
-    responseModifier?: HttpResponseModifier;
-}
-    | {
-    delay?: Delay;
-    httpRequest?: HttpRequest;
-    httpResponse?: HttpResponse;
-}
+  | {
+      delay?: Delay;
+      requestOverride?: HttpRequest;
+      requestModifier?: {
+        path?: { regex?: string; substitution?: string };
+        queryStringParameters?: { add?: KeyToMultiValue; replace?: KeyToMultiValue; remove?: string[] };
+        headers?: { add?: KeyToMultiValue; replace?: KeyToMultiValue; remove?: string[] };
+        cookies?: { add?: KeyToValue; replace?: KeyToValue; remove?: string[] };
+      };
+      responseOverride?: HttpResponse;
+      responseModifier?: {
+        headers?: { add?: KeyToMultiValue; replace?: KeyToMultiValue; remove?: string[] };
+        cookies?: { add?: KeyToValue; replace?: KeyToValue; remove?: string[] };
+      };
+    }
+  | { delay?: Delay; httpRequest?: HttpRequest; httpResponse?: HttpResponse };
 
 export interface HttpError {
-    delay?: Delay;
-    dropConnection?: boolean;
-    responseBytes?: string;
+  /** response delay */
+  delay?: Delay;
+  dropConnection?: boolean;
+  responseBytes?: string;
 }
 
 export interface Times {
-    remainingTimes?: number;
-    unlimited?: boolean;
+  remainingTimes?: number;
+  unlimited?: boolean;
 }
 
 export interface TimeToLive {
-    timeUnit?: "DAYS" | "HOURS" | "MINUTES" | "SECONDS" | "MILLISECONDS" | "MICROSECONDS" | "NANOSECONDS";
-    timeToLive?: number;
-    endDate?: number;
-    unlimited?: boolean;
+  timeUnit?: "DAYS" | "HOURS" | "MINUTES" | "SECONDS" | "MILLISECONDS" | "MICROSECONDS" | "NANOSECONDS";
+  timeToLive?: number;
+  unlimited?: boolean;
 }
 
-export type KeysToMultiValues =
-    | {
-    name?: string;
-    values?: string[];
-}[]
-    | {
-    // TODO keyMatchStyle?: "MATCHING_KEY" | "SUB_SET";
-    /**
-     * via the `patternProperty` "^\S+$".
-     */
-    [k: string]:
-        StringOrJsonSchema[]
-        | {
-        parameterStyle?: "SIMPLE"
-            | "SIMPLE_EXPLODED"
-            | "LABEL"
-            | "LABEL_EXPLODED"
-            | "MATRIX"
-            | "MATRIX_EXPLODED"
-            | "FORM_EXPLODED"
-            | "FORM"
-            | "SPACE_DELIMITED_EXPLODED"
-            | "SPACE_DELIMITED"
-            | "PIPE_DELIMITED_EXPLODED"
-            | "PIPE_DELIMITED"
-            | "DEEP_OBJECT";
-        values: StringOrJsonSchema[]
-    };
-};
-export type KeysAndValues =
-    | {
-    name?: string;
-    value?: string;
-}[]
-    | {
-    /**
-     * via the `patternProperty` "^\S+$".
-     */
-    [k: string]: StringOrJsonSchema;
-};
+export type KeyToMultiValue =
+  | { name?: string; values?: string[] }[]
+  | { keyMatchStyle?: "MATCHING_KEY" | "SUB_SET"; [key: string]: any };
+
+export type KeyToValue = { name?: string; value?: string }[] | Record<string, any>;
 
 export type StringOrJsonSchema =
-    string
-    | {
-    not?: boolean;
-    optional?: number;
-    value?: string;
-    schema?: object;
-    parameterStyle?: "SIMPLE"
+  | string
+  | {
+      not?: boolean;
+      optional?: boolean;
+      value?: string;
+      schema?: any;
+      parameterStyle?:
+        | "SIMPLE"
         | "SIMPLE_EXPLODED"
         | "LABEL"
         | "LABEL_EXPLODED"
@@ -215,123 +177,140 @@ export type StringOrJsonSchema =
         | "PIPE_DELIMITED_EXPLODED"
         | "PIPE_DELIMITED"
         | "DEEP_OBJECT";
-};
+    };
 
 export interface SocketAddress {
-    host?: string;
-    port?: number;
-    scheme?: "HTTP" | "HTTPS";
+  host?: string;
+  port?: number;
+  scheme?: "HTTP" | "HTTPS";
 }
 
+/**
+ * request body matcher
+ */
 export type Body =
-    | {
-    not?: boolean;
-    type?: "BINARY";
-    base64Bytes?: string;
-    contentType?: string;
-}
-    | {
-    not?: boolean;
-    type?: "JSON";
-    json?: string;
-    contentType?: string;
-}
-    | {
-    [k: string]: any;
-}
-    | any[]
-    | {
-    not?: boolean;
-    type?: "PARAMETERS";
-    parameters?: KeysToMultiValues;
-}
-    | {
-    not?: boolean;
-    type?: "STRING";
-    string?: string;
-    contentType?: string;
-}
-    | string
-    | {
-    not?: boolean;
-    type?: "XML";
-    xml?: string;
-    contentType?: string;
-};
+  | { not?: boolean; type?: "BINARY"; base64Bytes?: string; contentType?: string }
+  | { not?: boolean; type?: "JSON"; json?: string; contentType?: string; matchType?: "STRICT" | "ONLY_MATCHING_FIELDS" }
+  | Record<string, any>
+  | { not?: boolean; type?: "JSON_SCHEMA"; jsonSchema?: any }
+  | { not?: boolean; type?: "JSON_PATH"; jsonPath?: string }
+  | { not?: boolean; type?: "PARAMETERS"; parameters?: KeyToMultiValue }
+  | { not?: boolean; type?: "REGEX"; regex?: string }
+  | { not?: boolean; type?: "STRING"; string?: string; contentType?: string; subString?: boolean }
+  | string
+  | { not?: boolean; type?: "XML"; xml?: string; contentType?: string }
+  | { not?: boolean; type?: "XML_SCHEMA"; xmlSchema?: string }
+  | { not?: boolean; type?: "XPATH"; xpath?: string }
+  | ({ not?: boolean; type?: "BINARY"; base64Bytes?: string; contentType?: string } & {
+      not?: boolean;
+      type?: "JSON";
+      json?: string;
+      contentType?: string;
+      matchType?: "STRICT" | "ONLY_MATCHING_FIELDS";
+    } & Record<string, any> & { not?: boolean; type?: "JSON_SCHEMA"; jsonSchema?: any } & {
+        not?: boolean;
+        type?: "JSON_PATH";
+        jsonPath?: string;
+      } & { not?: boolean; type?: "PARAMETERS"; parameters?: KeyToMultiValue } & {
+        not?: boolean;
+        type?: "REGEX";
+        regex?: string;
+      } & { not?: boolean; type?: "STRING"; string?: string; contentType?: string; subString?: boolean } & {
+        not?: boolean;
+        type?: "XML";
+        xml?: string;
+        contentType?: string;
+      } & { not?: boolean; type?: "XML_SCHEMA"; xmlSchema?: string } & {
+        not?: boolean;
+        type?: "XPATH";
+        xpath?: string;
+      });
+
+/**
+ * response body
+ */
 export type BodyWithContentType =
-    | {
-    not?: boolean;
-    type?: "BINARY";
-    base64Bytes?: string;
-    contentType?: string;
+  | { not?: boolean; type?: "BINARY"; base64Bytes?: string; contentType?: string }
+  | { not?: boolean; type?: "JSON"; json?: string; contentType?: string }
+  | Record<string, any>
+  | { not?: boolean; type?: "STRING"; string?: string; contentType?: string }
+  | string
+  | { not?: boolean; type?: "XML"; xml?: string; contentType?: string }
+  | ({ not?: boolean; type?: "BINARY"; base64Bytes?: string; contentType?: string } & {
+      not?: boolean;
+      type?: "JSON";
+      json?: string;
+      contentType?: string;
+    } & Record<string, any> & { not?: boolean; type?: "STRING"; string?: string; contentType?: string } & {
+        not?: boolean;
+        type?: "XML";
+        xml?: string;
+        contentType?: string;
+      });
+
+/**
+ * response delay
+ */
+export interface Delay {
+  timeUnit?: string;
+  value?: number;
 }
-    | {
-    not?: boolean;
-    type?: "JSON";
-    json?: string;
-    contentType?: string;
-    matchType?: "STRICT" | "ONLY_MATCHING_FIELDS";
+
+/**
+ * connection options
+ */
+export interface ConnectionOptions {
+  suppressContentLengthHeader?: boolean;
+  contentLengthHeaderOverride?: number;
+  suppressConnectionHeader?: boolean;
+  chunkSize?: number;
+  keepAliveOverride?: boolean;
+  closeSocket?: boolean;
+
+  /** response delay */
+  closeSocketDelay?: Delay;
 }
-    | {
-    [k: string]: any;
-}
-    | any[]
-    | {
-    not?: boolean;
-    type?: "JSON_SCHEMA";
-    jsonSchema?: string;
-}
-    | {
-    not?: boolean;
-    type?: "JSON_PATH";
-    jsonPath?: string;
-}
-    | {
-    not?: boolean;
-    type?: "PARAMETERS";
-    parameters?: KeysToMultiValues;
-}
-    | {
-    not?: boolean;
-    type?: "REGEX";
-    regex?: string;
-}
-    | {
-    not?: boolean;
-    type?: "STRING";
-    string?: string;
-    subString?: boolean;
-    contentType?: string;
-}
-    | string
-    | {
-    not?: boolean;
-    type?: "XML";
-    xml?: string;
-    contentType?: string;
-}
-    | {
-    not?: boolean;
-    type?: "XML_SCHEMA";
-    xmlSchema?: string;
-}
-    | {
-    not?: boolean;
-    type?: "XPATH";
-    xpath?: string;
+
+/**
+ * verification
+ */
+export type Verification = {
+  expectationId?: ExpectationId;
+  httpRequest?: RequestDefinition;
+  times?: VerificationTimes;
+  maximumNumberOfRequestToReturnInVerificationFailure?: number;
 };
 
-export interface Delay {
-    timeUnit?: string;
-    value?: number;
+/**
+ * number of request to verify
+ */
+export interface VerificationTimes {
+  atLeast?: number;
+  atMost?: number;
 }
 
-export interface ConnectionOptions {
-    suppressContentLengthHeader?: boolean;
-    contentLengthHeaderOverride?: number;
-    suppressConnectionHeader?: boolean;
-    chunkSize?: number;
-    keepAliveOverride?: boolean;
-    closeSocket?: boolean;
-    closeSocketDelay?: Delay;
+/**
+ * verification sequence
+ */
+export type VerificationSequence = {
+  expectationIds?: ExpectationId[];
+  httpRequests?: RequestDefinition[];
+  maximumNumberOfRequestToReturnInVerificationFailure?: number;
+};
+
+/**
+ * list of ports
+ */
+export interface Ports {
+  ports?: number[];
+}
+
+export type ClearUpdatePayload = RequestDefinition | ExpectationId;
+
+export interface RetrieveUpdateParams {
+  /** changes response format, default if not specificed is "json", supported values are "java", "json", "log_entries" */
+  format?: "java" | "json" | "log_entries";
+
+  /** specifies the type of object that is retrieve, default if not specified is "requests", supported values are "logs", "requests", "recorded_expectations", "active_expectations" */
+  type?: "logs" | "requests" | "request_responses" | "recorded_expectations" | "active_expectations";
 }
