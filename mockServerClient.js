@@ -625,10 +625,14 @@ var mockServerClient;
          * @param arguments the list of expectation ids used to match requests for this verification to pass
          */
         var verifySequenceById = function () {
+            /**
+             * Convert to array, because otherwise it JSON-encoded as object
+             */
+            var expectationIds = Array.from(arguments);
             return {
                 then: function (sucess, error) {
                     return makeRequest(host, port, "/mockserver/verifySequence", {
-                        "expectationIds": arguments
+                        "expectationIds": expectationIds
                     }).then(
                         function () {
                             if (sucess) {
