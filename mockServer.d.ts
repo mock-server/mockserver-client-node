@@ -305,6 +305,15 @@ export interface Ports {
   ports?: number[];
 }
 
+/**
+ * verification sequence
+ */
+export type HttpRequestAndHttpResponse = {
+    httpRequest?: HttpRequest[];
+    httpResponse?: HttpResponse[];
+    timestamp?: string;
+};
+
 export type ClearUpdatePayload = RequestDefinition | ExpectationId;
 
 export interface RetrieveUpdateParams {
