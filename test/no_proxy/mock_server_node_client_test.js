@@ -438,7 +438,7 @@
                     "   - $.httpRequest.paths: is not defined in the schema and the schema does not allow additional properties\n" +
                     "   - $.httpRequest.specUrlOrPayload: is missing, but is required, if specifying OpenAPI request matcher\n" +
                     "  \n" +
-                    "  OpenAPI Specification: https://app.swaggerhub.com/apis/jamesdbloom/mock-server-openapi/5.14.x\n" +
+                    "  OpenAPI Specification: https://app.swaggerhub.com/apis/jamesdbloom/mock-server-openapi/5.15.x\n" +
                     "  Documentation: https://mock-server.com/mock_server/creating_expectations.html");
                 test.done();
             });
@@ -3270,7 +3270,7 @@
                         "  \"artifactId\" : \"mockserver-core\",\n" +
                         "  \"groupId\" : \"org.mock-server\",\n" +
                         "  \"ports\" : [ " + (mockServerPort + 1) + " ],\n" +
-                        "  \"version\" : \"5.14.0\"\n" +
+                        "  \"version\" : \"5.15.0\"\n" +
                         "}") !== -1, response.body);
                     sendRequest("PUT", "localhost", mockServerPort + 1, "/status")
                         .then(function (response) {
@@ -3279,7 +3279,7 @@
                                 "  \"artifactId\" : \"mockserver-core\",\n" +
                                 "  \"groupId\" : \"org.mock-server\",\n" +
                                 "  \"ports\" : [ " + mockServerPort + ", " + (mockServerPort + 1) + " ],\n" +
-                                "  \"version\" : \"5.14.0\"\n" +
+                                "  \"version\" : \"5.15.0\"\n" +
                                 "}") !== -1, response.body);
                             test.done();
                         }, function (error) {

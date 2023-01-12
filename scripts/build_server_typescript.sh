@@ -2,7 +2,7 @@
 
 # Ran successfully with Node.js 16.  Experienced issues with Node.js 12
 npx swagger-typescript-api -n mockServer.d.ts \
-   -p https://app.swaggerhub.com/apiproxy/schema/file/apis/jamesdbloom/mock-server-openapi/5.14.x?format=yaml \
+   -p https://app.swaggerhub.com/apiproxy/schema/file/apis/jamesdbloom/mock-server-openapi/5.15.x?format=yaml \
    -r true \
    --no-client \
    --extract-request-params \
