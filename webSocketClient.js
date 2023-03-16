@@ -74,6 +74,7 @@
                     var clientId;
                     var clientIdHandler;
                     var requestHandler;
+                    var requestAndResponseHandler;
                     var webSocketLocation = (tls ? "wss" : "ws") + "://" + host + ":" + port + contextPath + "/_mockserver_callback_websocket";
 
                     var client = new WebSocketClient({
@@ -105,14 +106,16 @@
                         connection.on('message', function (message) {
                             if (message.type === 'utf8') {
                                 var payload = JSON.parse(message.utf8Data);
+                                var value = JSON.parse(payload.value);
                                 if (payload.type === "org.mockserver.model.HttpRequest") {
-                                    var request = JSON.parse(payload.value);
-                                    var response = requestHandler(request);
+                                    var response = requestHandler(value);
                                     connection.sendUTF(JSON.stringify(response));
+                                } else if (payload.type === "org.mockserver.model.HttpRequestAndHttpResponse")  {
+                                    var requestAndResponse = requestAndResponseHandler(value);
+                                    connection.sendUTF(JSON.stringify(requestAndResponse));
                                 } else if (payload.type === "org.mockserver.serialization.model.WebSocketClientIdDTO") {
-                                    var registration = JSON.parse(payload.value);
-                                    if (registration.clientId) {
-                                        clientId = registration.clientId;
+                                    if (value.clientId) {
+                                        clientId = value.clientId;
                                         if (clientIdHandler) {
                                             clientIdHandler(clientId);
                                         }
@@ -129,6 +132,9 @@
                     deferred.resolve({
                         requestCallback: function requestCallback(callback) {
                             requestHandler = callback;
+                        },
+                        requestAndResponseCallback: function requestAndResponseCallback(callback) {
+                            requestAndResponseHandler = callback;
                         },
                         clientIdCallback: function clientIdCallback(callback) {
                             clientIdHandler = callback;
