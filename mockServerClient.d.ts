@@ -65,6 +65,16 @@ export interface MockServerClient {
     retrieveRecordedExpectations(pathOrRequestDefinition: PathOrRequestDefinition): Promise<Expectation[]>;
 
     retrieveLogMessages(pathOrRequestDefinition: PathOrRequestDefinition): Promise<string[]>;
+
+    forwardWithCallback(
+        requestMatcher: RequestDefinition, 
+        requestHandler: (request: HttpRequest) => HttpResponse, 
+        requestAndResponseHandler: (request: HttpRequestAndHttpResponse) => HttpResponse, 
+        times?: Times | number,
+        priority?: number,
+        timeToLive?: TimeToLive,
+        id?: string
+    ): Promise<RequestResponse>;
 }
 
 /**
