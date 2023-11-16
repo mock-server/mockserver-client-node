@@ -69,7 +69,7 @@ export interface MockServerClient {
     forwardWithCallback(
         requestMatcher: RequestDefinition, 
         requestHandler: (request: HttpRequest) => HttpResponse, 
-        requestAndResponseHandler: (request: HttpRequestAndHttpResponse) => HttpResponse, 
+        requestAndResponseHandler: (requestAndResponse: HttpRequestAndHttpResponse) => HttpResponse, 
         times?: Times | number,
         priority?: number,
         timeToLive?: TimeToLive,
