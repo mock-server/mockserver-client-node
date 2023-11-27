@@ -44,7 +44,7 @@ export type HttpRequestCallbackHandler = (
 export type HttpRequestResponseCallbackHandler = ({
   httpRequest: ModifiableHttpRequest,
   httpResponse: ModifiableHttpResponse,
-}) => ModifiableHttpResponse;
+}) => ModifiableHttpResponse; 
 
 export interface MockServerClient {
     openAPIExpectation(expectation: OpenAPIExpectation): Promise<RequestResponse>;
@@ -69,7 +69,7 @@ export interface MockServerClient {
 
     clear(pathOrRequestDefinition: PathOrRequestDefinition, type: ClearType): Promise<RequestResponse>;
 
-    clearById(expectationId: ExpectationId, type: ClearType): Promise<RequestResponse>;
+    clearById(expectationId: string, type: ClearType): Promise<RequestResponse>;
 
     bind(ports: Port[]): Promise<RequestResponse>;
 
