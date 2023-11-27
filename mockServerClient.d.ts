@@ -29,6 +29,23 @@ export type RequestResponse = SuccessFullRequest | string;
 
 export type PathOrRequestDefinition = string | Expectation | RequestDefinition | undefined | null;
 
+export type ModifiableHttpRequest = Omit<HttpRequest, "headers"> & {
+  headers: { [key: string]: string[] };
+};
+
+export type ModifiableHttpResponse = Omit<HttpResponse, "headers"> & {
+  headers: { [key: string]: string[] };
+};
+
+export type HttpRequestCallbackHandler = (
+  request: ModifiableHttpRequest
+) => ModifiableHttpRequest;
+
+export type HttpRequestResponseCallbackHandler = ({
+  httpRequest: ModifiableHttpRequest,
+  httpResponse: ModifiableHttpResponse,
+}) => ModifiableHttpResponse;
+
 export interface MockServerClient {
     openAPIExpectation(expectation: OpenAPIExpectation): Promise<RequestResponse>;
 
@@ -68,8 +85,8 @@ export interface MockServerClient {
 
     forwardWithCallback(
         requestMatcher: RequestDefinition, 
-        requestHandler: (request: HttpRequest) => HttpResponse, 
-        requestAndResponseHandler: (requestAndResponse: HttpRequestAndHttpResponse) => HttpResponse, 
+        requestHandler: HttpRequestCallbackHandler, 
+        requestAndResponseHandler: HttpRequestResponseCallbackHandler, 
         times?: Times | number,
         priority?: number,
         timeToLive?: TimeToLive,
