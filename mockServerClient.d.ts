@@ -41,10 +41,14 @@ export type HttpRequestCallbackHandler = (
   request: ModifiableHttpRequest
 ) => ModifiableHttpRequest;
 
-export type HttpRequestResponseCallbackHandler = ({
-  httpRequest: ModifiableHttpRequest,
-  httpResponse: ModifiableHttpResponse,
-}) => ModifiableHttpResponse; 
+export type ModifiableHttpResponseAndRequest = {
+  httpRequest: ModifiableHttpRequest;
+  httpResponse: ModifiableHttpResponse;
+};
+
+export type HttpRequestResponseCallbackHandler = (
+  requestAndResponse: ModifiableHttpResponseAndRequest
+) => ModifiableHttpResponse; 
 
 export interface MockServerClient {
     openAPIExpectation(expectation: OpenAPIExpectation): Promise<RequestResponse>;
