@@ -29,6 +29,27 @@ export type RequestResponse = SuccessFullRequest | string;
 
 export type PathOrRequestDefinition = string | Expectation | RequestDefinition | undefined | null;
 
+export type ModifiableHttpRequest = Omit<HttpRequest, "headers"> & {
+  headers: { [key: string]: string[] };
+};
+
+export type ModifiableHttpResponse = Omit<HttpResponse, "headers"> & {
+  headers: { [key: string]: string[] };
+};
+
+export type HttpRequestCallbackHandler = (
+  request: ModifiableHttpRequest
+) => ModifiableHttpRequest;
+
+export type ModifiableHttpResponseAndRequest = {
+  httpRequest: ModifiableHttpRequest;
+  httpResponse: ModifiableHttpResponse;
+};
+
+export type HttpRequestResponseCallbackHandler = (
+  requestAndResponse: ModifiableHttpResponseAndRequest
+) => ModifiableHttpResponse; 
+
 export interface MockServerClient {
     openAPIExpectation(expectation: OpenAPIExpectation): Promise<RequestResponse>;
 
@@ -52,7 +73,7 @@ export interface MockServerClient {
 
     clear(pathOrRequestDefinition: PathOrRequestDefinition, type: ClearType): Promise<RequestResponse>;
 
-    clearById(expectationId: ExpectationId, type: ClearType): Promise<RequestResponse>;
+    clearById(expectationId: string, type: ClearType): Promise<RequestResponse>;
 
     bind(ports: Port[]): Promise<RequestResponse>;
 
@@ -65,6 +86,16 @@ export interface MockServerClient {
     retrieveRecordedExpectations(pathOrRequestDefinition: PathOrRequestDefinition): Promise<Expectation[]>;
 
     retrieveLogMessages(pathOrRequestDefinition: PathOrRequestDefinition): Promise<string[]>;
+
+    forwardWithCallback(
+        requestMatcher: RequestDefinition, 
+        requestHandler: HttpRequestCallbackHandler, 
+        requestAndResponseHandler: HttpRequestResponseCallbackHandler, 
+        times?: Times | number,
+        priority?: number,
+        timeToLive?: TimeToLive,
+        id?: string
+    ): Promise<RequestResponse>;
 }
 
 /**

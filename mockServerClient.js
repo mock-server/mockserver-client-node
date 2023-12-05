@@ -180,6 +180,35 @@ var mockServerClient;
             };
         };
 
+        var createForwardWithCallback = function (requestMatcher, clientId, times, priority, timeToLive, id, responseCallback) {
+            var timesObject;
+            if (typeof times === 'number') {
+                timesObject = {
+                    remainingTimes: times,
+                    unlimited: false
+                };
+            } else if (typeof times === 'object') {
+                timesObject = times;
+            }
+            requestMatcher.headers = headersUniqueConcatenate(requestMatcher.headers, defaultRequestHeaders);
+            return {
+                id: typeof id === 'string' ? id : undefined,
+                priority: typeof priority === 'number' ? priority : undefined,
+                httpRequest: requestMatcher,
+                httpForwardObjectCallback: {
+                    clientId: clientId,
+                    responseCallback: responseCallback || false
+                },
+                times: timesObject || {
+                    remainingTimes: 1,
+                    unlimited: false
+                },
+                timeToLive: typeof timeToLive === 'object' ? timeToLive : {
+                    unlimited: true
+                }
+            };
+        };
+
         var WebSocketClient = (runningInNode() ? require('./webSocketClient').webSocketClient(tls, caCertPemFilePath) : function (host, port, contextPath) {
             var clientId;
             var clientIdHandler;
@@ -384,6 +413,55 @@ var mockServerClient;
         var openAPIExpectation = function (expectation) {
             return makeRequest(host, port, "/mockserver/openapi", expectation);
         };
+
+        var forwardWithCallback = function (requestMatcher, requestHandler, requestAndResponseHandler, times, priority, timeToLive, id) {
+            return {
+                then: function (sucess, error) {
+                    try {
+                        var webSocketClientPromise = new WebSocketClient(host, port, cleanedContextPath);
+                        webSocketClientPromise.then(function (webSocketClient) {
+                            webSocketClient.requestCallback(function (request) {
+                                var modifiedRequest = requestHandler(request);
+                                modifiedRequest.headers = headersUniqueConcatenate(modifiedRequest.headers, [
+                                    {
+                                        "name": "WebSocketCorrelationId",
+                                        "values": request.headers["WebSocketCorrelationId"] || request.headers["websocketcorrelationid"]
+                                    }
+                                ]);
+                                return {
+                                    type: "org.mockserver.model.HttpRequest",
+                                    value: JSON.stringify(modifiedRequest)
+                                };
+                            });
+                            if (requestAndResponseHandler) {
+                                webSocketClient.requestAndResponseCallback(function (requestAndResponse) {
+                                    var response = requestAndResponseHandler(requestAndResponse);
+                                    var headers = requestAndResponse.httpRequest.headers;
+                                    response.headers = headersUniqueConcatenate(response.headers, [
+                                        {
+                                            "name": "WebSocketCorrelationId",
+                                            "values": headers["WebSocketCorrelationId"] || headers["websocketcorrelationid"]
+                                        }
+                                    ]);
+                                    return {
+                                        type: "org.mockserver.model.HttpResponse",
+                                        value: JSON.stringify(response)
+                                    };
+                                });
+                            }
+                            webSocketClient.clientIdCallback(function (clientId) {
+                                return makeRequest(host, port, "/mockserver/expectation", createForwardWithCallback(requestMatcher, clientId, times, priority, timeToLive, id, requestAndResponseHandler ? true : false)).then(sucess, error);
+                            });
+                        }, error);
+                    } catch (e) {
+                        if (error) {
+                            error(e);
+                        }
+                    }
+                }
+            };
+        };
+
         /**
          * Setup an expectation by specifying a request matcher, and
          * a local request handler function.  The request handler function receives each
@@ -823,6 +901,7 @@ var mockServerClient;
         var _this = {
             openAPIExpectation: openAPIExpectation,
             mockAnyResponse: mockAnyResponse,
+            forwardWithCallback: forwardWithCallback,
             mockWithCallback: mockWithCallback,
             mockSimpleResponse: mockSimpleResponse,
             setDefaultHeaders: setDefaultHeaders,
