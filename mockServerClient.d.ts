@@ -52,7 +52,7 @@ export interface MockServerClient {
 
     clear(pathOrRequestDefinition: PathOrRequestDefinition, type: ClearType): Promise<RequestResponse>;
 
-    clearById(expectationId: ExpectationId, type: ClearType): Promise<RequestResponse>;
+    clearById(expectationId: string, type: ClearType): Promise<RequestResponse>;
 
     bind(ports: Port[]): Promise<RequestResponse>;
 
